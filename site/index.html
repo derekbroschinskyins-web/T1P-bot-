@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T1P — The Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#0B0B0C;
+  --panel:#131315;
+  --panel-2:#1A1A1D;
+  --panel-3:#222226;
+  --edge:rgba(201,162,39,.22);
+  --edge-dim:rgba(255,255,255,.07);
+  --gold:#C9A227;
+  --gold-bright:#E8C34D;
+  --gold-deep:#8A6E15;
+  --ink:#EDEAE2;
+  --ink-2:#A8A49A;
+  --ink-3:#6E6B63;
+  --mark-gold:#B08D1E;
+  --mark-blue:#5D8FDE;
+  --good:#4CAF6E;
+  --warn:#D9903F;
+  --bad:#C25454;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.disp{font-family:'Oswald','Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::selection{background:var(--gold);color:#0B0B0C}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(11,11,12,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--edge);
+}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:22px;height:60px}
+.logo{display:flex;align-items:baseline;gap:10px;flex:none}
+.logo .mark{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--gold);letter-spacing:.02em}
+.logo .sub{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:var(--ink-2);text-transform:uppercase}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-2);padding:6px 12px;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:color .15s;
+}
+nav.tabs a:hover{color:var(--ink)}
+nav.tabs a.active{color:var(--gold-bright);border-bottom-color:var(--gold)}
+nav.tabs a.hidden{display:none}
+.top-right{margin-left:auto;flex:none;display:flex;align-items:center;gap:14px}
+.live-dot{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif}
+.live-dot i{width:7px;height:7px;background:var(--good);display:inline-block;animation:pulse 2s infinite}
+.live-dot.offline i{background:var(--warn);animation:none}
+.whoami{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-bright)}
+.logout-btn{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--edge-dim);padding:4px 10px}
+.logout-btn:hover{color:var(--ink);border-color:var(--edge)}
+@media(max-width:760px){
+  .logo .sub{display:none}
+  .topbar-inner{gap:12px;padding:0 14px}
+  .live-dot span{display:none}
+  .whoami{display:none}
+  nav.tabs a{padding:6px 9px;font-size:12px}
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---------- layout ---------- */
+main{max-width:1200px;margin:0 auto;padding:36px 20px 90px}
+.view{display:none}
+.view.on{display:block}
+.kicker{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.page-h{font-size:clamp(30px,5vw,48px);font-weight:700;line-height:1.05;margin-bottom:6px}
+.page-sub{color:var(--ink-2);max-width:640px;margin-bottom:34px}
+.panel{background:var(--panel);border:1px solid var(--edge-dim);padding:24px}
+.panel + .panel{margin-top:20px}
+.rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:14px 0 20px}
+.banner{
+  border:1px solid var(--warn);background:rgba(217,144,63,.08);color:var(--warn);
+  padding:10px 16px;font-size:13px;margin-bottom:24px;display:none;
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.06em;
+}
+.banner.on{display:block}
+.btn{
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--gold);color:var(--gold-bright);padding:6px 14px;transition:all .15s;white-space:nowrap;
+}
+.btn:hover{background:var(--gold);color:#0B0B0C}
+.btn.ghost{border-color:var(--edge-dim);color:var(--ink-3)}
+.btn.ghost:hover{background:none;color:var(--ink);border-color:var(--edge)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.danger:hover{background:var(--bad);color:#0B0B0C}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.tag-pending{
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--warn);border:1px solid rgba(217,144,63,.4);padding:2px 8px;white-space:nowrap;
+}
+
+/* ---------- the vault (login gate) ---------- */
+#loginGate{
+  position:fixed;inset:0;z-index:100;
+  background:radial-gradient(900px 500px at 50% -10%, #16130A, var(--bg) 65%);
+  display:none;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+}
+body.locked #loginGate{display:flex}
+body.locked main, body.locked footer{display:none}
+#loginGate.granted{animation:gateOut .7s ease forwards .9s}
+@keyframes gateOut{to{opacity:0;visibility:hidden}}
+.gate-card{
+  width:100%;max-width:400px;text-align:center;position:relative;
+  border:1px solid var(--edge);background:linear-gradient(180deg,var(--panel),#0D0D0F);
+  padding:32px 28px 28px;box-shadow:0 0 60px rgba(201,162,39,.06);
+}
+.granted .gate-card{animation:doorSwing 1s cubic-bezier(.6,0,.3,1) forwards .35s;transform-origin:left center}
+@keyframes doorSwing{to{transform:perspective(1000px) rotateY(-75deg) translateX(-12%);opacity:0}}
+.gate-card.deny{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}35%{transform:translateX(9px)}55%{transform:translateX(-6px)}75%{transform:translateX(4px)}90%{transform:translateX(-2px)}}
+.vault-door{width:180px;height:180px;margin:0 auto 14px;position:relative;filter:drop-shadow(0 6px 24px rgba(0,0,0,.6))}
+.vault-door svg{width:100%;height:100%;display:block}
+#vaultWheel{transform-origin:50% 50%}
+.checking #vaultWheel{animation:wheelSpin 1.1s cubic-bezier(.4,.1,.6,.9) infinite}
+.granted-door #vaultWheel{animation:wheelUnlock 1.1s cubic-bezier(.5,0,.15,1) forwards}
+@keyframes wheelSpin{to{transform:rotate(360deg)}}
+@keyframes wheelUnlock{60%{transform:rotate(900deg)}100%{transform:rotate(1080deg)}}
+.deny-glow #vaultRing{stroke:var(--bad) !important}
+.granted-door #vaultRing{stroke:var(--good) !important}
+.gate-title{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:32px;color:var(--gold);letter-spacing:.18em;line-height:1}
+.gate-tag{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-3);margin:6px 0 18px}
+select#gateAgent{
+  width:100%;background:var(--panel-2);color:var(--ink);border:1px solid var(--edge-dim);
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:15px;letter-spacing:.08em;padding:10px 14px;text-align:center;
+}
+select#gateAgent:focus{outline:none;border-color:var(--gold)}
+.pin-dots{display:flex;gap:11px;justify-content:center;margin:20px 0 16px;height:13px}
+.pin-dots i{width:12px;height:12px;border:1.5px solid var(--ink-3);border-radius:50%;transition:all .12s}
+.pin-dots i.f{background:var(--gold);border-color:var(--gold);box-shadow:0 0 9px rgba(201,162,39,.55)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:232px;margin:0 auto}
+.key{
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:600;color:var(--ink);
+  padding:13px 0;border:1px solid var(--edge-dim);background:var(--panel-2);transition:all .12s;user-select:none;
+}
+.key:hover{border-color:var(--gold);color:var(--gold-bright)}
+.key:active{transform:scale(.93);background:var(--panel-3)}
+.key.go{color:var(--gold-bright);border-color:var(--gold)}
+.key.go:active{background:var(--gold);color:#0B0B0C}
+.gate-status{
+  min-height:22px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;
+  letter-spacing:.28em;text-transform:uppercase;margin-top:16px;color:var(--ink-3);
+}
+.gate-status.ok{color:var(--good);text-shadow:0 0 12px rgba(76,175,110,.5)}
+.gate-status.no{color:var(--bad);text-shadow:0 0 12px rgba(194,84,84,.5)}
+@media (prefers-reduced-motion: reduce){
+  #vaultWheel,.checking #vaultWheel,.granted-door #vaultWheel{animation:none;transition:none}
+  .gate-card.deny{animation:none}
+  .granted .gate-card{animation:none;opacity:0}
+  #loginGate.granted{animation:gateOut .2s ease forwards}
+}
+
+/* ---------- reveal animation ---------- */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .rv{transform:none;transition:opacity .3s ease}
+  .live-dot i{animation:none}
+  *{animation-duration:.001s !important}
+}
+
+/* ---------- leaderboard ---------- */
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:860px){.boards{grid-template-columns:1fr}}
+.board h3{font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px}
+.board h3 .swatch{width:12px;height:12px;flex:none}
+.board .hint{font-size:12px;color:var(--ink-3);margin-top:2px}
+.row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--edge-dim)}
+.row:last-child{border-bottom:none}
+.row .pos{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:15px;color:var(--ink-3);text-align:center}
+.row.p1 .pos{color:var(--gold-bright)}
+.row.p2 .pos,.row.p3 .pos{color:var(--ink-2)}
+.row .who{min-width:0}
+.row .name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row .bar-wrap{height:6px;background:var(--panel-3);margin-top:6px;position:relative}
+.row .bar{position:relative;height:100%;width:0;transition:width .8s cubic-bezier(.2,.7,.3,1)}
+.row .bar.gold{background:var(--mark-gold)}
+.row .bar.blue{background:var(--mark-blue)}
+.row .bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 3px 3px 0;background:inherit}
+.row .pts{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:17px;color:var(--ink);text-align:right;min-width:56px}
+.row .pts small{display:block;font-family:'Inter';font-weight:400;font-size:10px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase}
+
+/* ---------- rank badge ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;flex:none;
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  padding:2px 8px 2px 6px;border:1px solid;line-height:1.5;
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,0 100%);
+  padding-right:12px;
+}
+.badge svg{width:10px;height:10px;flex:none}
+.badge.r0{color:#9BA0A8;border-color:#3A3D42;background:rgba(155,160,168,.08)}
+.badge.r1{color:#C98B5E;border-color:#5E4430;background:rgba(201,139,94,.08)}
+.badge.r2{color:#7FA8DE;border-color:#31415E;background:rgba(93,143,222,.08)}
+.badge.r3{color:var(--gold);border-color:#5E4F18;background:rgba(201,162,39,.08)}
+.badge.r4{color:var(--gold-bright);border-color:var(--gold);background:rgba(232,195,77,.12);box-shadow:0 0 12px rgba(201,162,39,.25)}
+
+/* ---------- rank ladder ---------- */
+.ladder{display:grid;gap:14px}
+.tier{
+  display:grid;grid-template-columns:64px 1fr auto;gap:18px;align-items:center;
+  background:var(--panel);border:1px solid var(--edge-dim);padding:20px 24px;
+  border-left:3px solid var(--tier-c,#3A3D42);
+}
+.tier .num{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--tier-c,#3A3D42)}
+.tier h3{font-size:20px;color:var(--ink)}
+.tier .range{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-family:'Oswald','Arial Narrow',Arial,sans-serif}
+.tier .members{font-size:13px;color:var(--ink-2);margin-top:4px}
+.tier .count{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:26px;color:var(--ink-2)}
+.tier .count small{font-size:11px;display:block;color:var(--ink-3);font-weight:400;letter-spacing:.1em}
+
+/* ---------- my progress / building ---------- */
+.me-head{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+select.agent-pick{
+  background:var(--panel-2);color:var(--ink);border:1px solid var(--edge);
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:15px;letter-spacing:.05em;padding:10px 14px;min-width:220px;
+}
+select.agent-pick[disabled]{opacity:.7}
+.stat-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.stat{background:var(--panel);border:1px solid var(--edge-dim);padding:18px 20px}
+.stat .v{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:34px;line-height:1;color:var(--ink)}
+.stat .v.gold{color:var(--gold-bright)}
+.stat .v.dim{color:var(--warn)}
+.stat .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif;margin-top:6px}
+.steps{display:grid;gap:0;counter-reset:step}
+.step{display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--edge-dim);position:relative}
+.step:last-child{border-bottom:none}
+.step .node{
+  width:26px;height:26px;border:2px solid var(--ink-3);display:flex;align-items:center;justify-content:center;
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--ink-3);margin:0 auto;position:relative;z-index:1;background:var(--panel);
+}
+.step.done .node{border-color:var(--gold);background:var(--gold);color:#0B0B0C}
+.step.pending .node{border-color:var(--warn);color:var(--warn)}
+.step .t{font-weight:600;font-size:14px}
+.step.done .t{color:var(--ink)}
+.step:not(.done) .t{color:var(--ink-2)}
+.step .d{font-size:12px;color:var(--ink-3)}
+.step .side{display:flex;align-items:center;gap:12px}
+.step .p{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;color:var(--ink-3);font-size:15px}
+.step.done .p{color:var(--gold)}
+.step::before{content:'';position:absolute;left:21px;top:0;bottom:0;width:2px;background:var(--panel-3)}
+.step:first-child::before{top:50%}
+.step:last-child::before{bottom:50%}
+.step.done::before{background:var(--gold-deep)}
+.step .cnt{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
+
+/* ---------- tree ---------- */
+.tree{padding:8px 0}
+.tnode{position:relative;padding-left:26px}
+.tree>.tnode{padding-left:0}
+.tcard{
+  display:inline-flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--edge-dim);
+  padding:10px 16px;margin:5px 0;transition:border-color .2s, box-shadow .2s;max-width:100%;
+}
+.tcard:hover{border-color:var(--gold);box-shadow:0 0 16px rgba(201,162,39,.12)}
+.tcard .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcard .meta{font-size:11px;color:var(--ink-3)}
+.tcard .tog{font-family:'Oswald','Arial Narrow',Arial,sans-serif;color:var(--gold);font-size:16px;width:22px;height:22px;border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;flex:none}
+.tkids{position:relative;margin-left:12px;border-left:1px solid var(--edge);padding-left:0}
+.tkids .tnode::before{content:'';position:absolute;left:0;top:26px;width:20px;height:1px;background:var(--edge)}
+.tkids.hid{display:none}
+.gen-tag{font-size:10px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.1em;color:var(--mark-blue);border:1px solid #31415E;padding:1px 6px;text-transform:uppercase}
+
+/* ---------- rewards ---------- */
+.rewards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.reward{background:var(--panel);border:1px solid var(--edge-dim);padding:26px 24px;position:relative;overflow:hidden}
+.reward.unlocked{border-color:var(--gold)}
+.reward .cost{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:40px;color:var(--ink-3);line-height:1}
+.reward.unlocked .cost{color:var(--gold-bright)}
+.reward h3{font-size:17px;margin:10px 0 4px}
+.reward p{font-size:13px;color:var(--ink-2)}
+.reward .lock{position:absolute;top:18px;right:18px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.16em;color:var(--ink-3);border:1px solid var(--edge-dim);padding:3px 8px;text-transform:uppercase}
+.reward.unlocked .lock{color:#0B0B0C;background:var(--gold);border-color:var(--gold)}
+.reward .pbar{height:5px;background:var(--panel-3);margin-top:18px}
+.reward .pbar i{display:block;height:100%;background:var(--mark-gold);width:0;transition:width .8s cubic-bezier(.2,.7,.3,1)}
+.reward .pnum{font-size:11px;color:var(--ink-3);margin-top:6px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.08em}
+.rules-note{font-size:12px;color:var(--ink-3);margin-top:22px;line-height:1.7}
+
+/* ---------- skills ---------- */
+.skill-grid{overflow-x:auto}
+.skill-grid table{border-collapse:collapse;width:100%;min-width:760px}
+.skill-grid th{
+  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);
+  padding:10px 8px;border-bottom:1px solid var(--edge);text-align:center;vertical-align:bottom;
+}
+.skill-grid th:first-child{text-align:left;padding-left:0}
+.skill-grid td{padding:9px 8px;border-bottom:1px solid var(--edge-dim);text-align:center}
+.skill-grid td:first-child{text-align:left;padding-left:0;font-weight:600;font-size:13px;white-space:nowrap}
+.chk{
+  width:22px;height:22px;border:1.5px solid var(--ink-3);display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;background:transparent;
+}
+.chk:hover{border-color:var(--gold)}
+.chk.on{background:var(--gold);border-color:var(--gold)}
+.chk.on::after{content:'✓';color:#0B0B0C;font-weight:700;font-size:13px}
+.chk[disabled]{cursor:default;pointer-events:none;opacity:.75}
+.skill-count{font-size:11px;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.06em}
+
+/* ---------- approvals ---------- */
+.claim{
+  display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--edge-dim);
+}
+.claim:last-child{border-bottom:none}
+.claim .who{font-weight:600;font-size:14px}
+.claim .what{font-size:13px;color:var(--ink-2);margin-top:2px}
+.claim .note{font-size:12px;color:var(--ink-3);font-style:italic;margin-top:2px}
+.claim .acts{display:flex;gap:8px}
+.claim .pv{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;color:var(--gold-bright)}
+
+footer{border-top:1px solid var(--edge-dim);margin-top:80px;padding:26px 20px;text-align:center;color:var(--ink-3);font-size:12px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase}
+</style>
+</head>
+<body class="locked">
+
+<div id="loginGate">
+  <div class="gate-card" id="gateCard">
+    <div class="vault-door" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle id="vaultRing" cx="100" cy="100" r="92" fill="#101012" stroke="#8A6E15" stroke-width="7"/>
+        <g fill="#2A2A2E" stroke="#3A3A40" stroke-width="1">
+          <circle cx="100" cy="16" r="5"/><circle cx="159" cy="41" r="5"/><circle cx="184" cy="100" r="5"/>
+          <circle cx="159" cy="159" r="5"/><circle cx="100" cy="184" r="5"/><circle cx="41" cy="159" r="5"/>
+          <circle cx="16" cy="100" r="5"/><circle cx="41" cy="41" r="5"/>
+        </g>
+        <circle cx="100" cy="100" r="66" fill="#141416" stroke="#5E4F18" stroke-width="3"/>
+        <g id="vaultWheel" stroke="#C9A227" stroke-width="7" stroke-linecap="round">
+          <circle cx="100" cy="100" r="42" fill="none" stroke-width="5"/>
+          <line x1="100" y1="52" x2="100" y2="148"/>
+          <line x1="58.4" y1="76" x2="141.6" y2="124"/>
+          <line x1="58.4" y1="124" x2="141.6" y2="76"/>
+          <circle cx="100" cy="100" r="13" fill="#C9A227" stroke="none"/>
+        </g>
+      </svg>
+    </div>
+    <div class="gate-title">THE VAULT</div>
+    <div class="gate-tag">T1P · Authorized Agents Only</div>
+    <select id="gateAgent" aria-label="Select your name"></select>
+    <div class="pin-dots" id="pinDots" aria-label="PIN entry"></div>
+    <div class="keypad" id="keypad">
+      <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+      <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+      <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+      <button class="key" data-k="del" aria-label="Delete">⌫</button><button class="key" data-k="0">0</button><button class="key go" data-k="go" aria-label="Unlock">➔</button>
+    </div>
+    <div class="gate-status" id="gateStatus">Enter your code</div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" href="#/board"><span class="mark">T1P</span><span class="sub">Top One Percent</span></a>
+    <nav class="tabs" id="tabs">
+      <a href="#/board" data-v="board">Leaderboard</a>
+      <a href="#/ranks" data-v="ranks">Ranks</a>
+      <a href="#/me" data-v="me">My Progress</a>
+      <a href="#/building" data-v="building">Building</a>
+      <a href="#/tree" data-v="tree">Duplication Tree</a>
+      <a href="#/rewards" data-v="rewards">Rewards</a>
+      <a href="#/skills" data-v="skills">Skills</a>
+      <a href="#/approvals" data-v="approvals" id="tabApprovals" class="hidden">Approvals</a>
+    </nav>
+    <span class="top-right">
+      <span class="whoami" id="whoami"></span>
+      <span class="live-dot" id="liveDot"><i></i><span id="liveTxt">Live</span></span>
+      <button class="logout-btn" id="logoutBtn" style="display:none">Log out</button>
+    </span>
+  </div>
+</header>
+
+<main>
+  <div class="banner" id="demoBanner">DEMO DATA — database offline. Displayed numbers are placeholders; the board reconnects automatically.</div>
+
+  <!-- LEADERBOARD -->
+  <section class="view" id="v-board">
+    <div class="rv"><div class="kicker">Live Standings</div>
+    <h1 class="page-h">The Board Doesn't Lie</h1>
+    <p class="page-sub">Two tracks. Points stack. Every dial, every deal, every recruit — counted once it's approved. Updates land for the whole floor in real time.</p></div>
+    <div class="boards">
+      <div class="panel board rv">
+        <h3><span class="swatch" style="background:var(--mark-gold)"></span>Top Builders</h3>
+        <div class="hint">Builder points — earned by growing the org</div>
+        <div class="rule"></div>
+        <div id="boardRecruiters"></div>
+      </div>
+      <div class="panel board rv">
+        <h3><span class="swatch" style="background:var(--mark-blue)"></span>Top New Agents</h3>
+        <div class="hint">$20K-ladder points — earned by climbing</div>
+        <div class="rule"></div>
+        <div id="boardAgents"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RANKS -->
+  <section class="view" id="v-ranks">
+    <div class="rv"><div class="kicker">The Climb</div>
+    <h1 class="page-h">Rank Ladder</h1>
+    <p class="page-sub">Cumulative approved points decide your title. Your badge follows your name everywhere on this site. Nobody stays a Recruit for long — unless they choose to.</p></div>
+    <div class="ladder" id="ladder"></div>
+  </section>
+
+  <!-- MY PROGRESS -->
+  <section class="view" id="v-me">
+    <div class="rv me-head">
+      <div>
+        <div class="kicker">Individual</div>
+        <h1 class="page-h">My Progress</h1>
+      </div>
+      <select class="agent-pick" id="agentPick" aria-label="Select agent"></select>
+    </div>
+    <div class="stat-tiles rv" id="meStats"></div>
+    <div class="panel rv">
+      <h3 class="disp" style="font-size:18px">The $20K Ladder</h3>
+      <div class="hint" style="font-size:12px;color:var(--ink-3)">Nine steps from licensed to duplicating yourself. Submit a step when you hit it — Derek approves, points land.</div>
+      <div class="rule"></div>
+      <div class="steps" id="meSteps"></div>
+    </div>
+  </section>
+
+  <!-- BUILDING -->
+  <section class="view" id="v-building">
+    <div class="rv me-head">
+      <div>
+        <div class="kicker">Builder Track</div>
+        <h1 class="page-h">Building Progress</h1>
+      </div>
+      <select class="agent-pick" id="agentPickB" aria-label="Select agent"></select>
+    </div>
+    <div class="stat-tiles rv" id="buildStats"></div>
+    <div class="panel rv">
+      <h3 class="disp" style="font-size:18px">Builder Actions</h3>
+      <div class="hint" style="font-size:12px;color:var(--ink-3)">Repeatable — every referral you move down the pipe earns again. Submit it, get it approved, watch the org grow.</div>
+      <div class="rule"></div>
+      <div class="steps" id="buildSteps"></div>
+    </div>
+  </section>
+
+  <!-- TREE -->
+  <section class="view" id="v-tree">
+    <div class="rv"><div class="kicker">Duplication</div>
+    <h1 class="page-h">The Org Grows</h1>
+    <p class="page-sub">Who recruited whom. Every branch is a business someone started. Second generation and beyond nest under their recruiter — this is what compounding looks like.</p></div>
+    <div class="panel rv">
+      <div class="tree" id="tree"></div>
+    </div>
+  </section>
+
+  <!-- REWARDS -->
+  <section class="view" id="v-rewards">
+    <div class="rv me-head">
+      <div>
+        <div class="kicker">Redemption Catalog</div>
+        <h1 class="page-h">Cash It In</h1>
+      </div>
+      <select class="agent-pick" id="agentPickR" aria-label="Select agent"></select>
+    </div>
+    <div class="rewards" id="rewardCards"></div>
+    <p class="rules-note rv">Rewards are being finalized — the point tiers are locked, the prizes are coming. Points are tracked per agent, not per team. Points expire 12 months after being earned. You must be active, licensed, and in good standing to redeem.</p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="view" id="v-skills">
+    <div class="rv"><div class="kicker">Core Seven</div>
+    <h1 class="page-h">Skills Tracker</h1>
+    <p class="page-sub">The seven skills every T1P agent gets coached on. Checked off by leadership as each agent is trained.</p></div>
+    <div class="panel skill-grid rv">
+      <table id="skillTable"></table>
+    </div>
+  </section>
+
+  <!-- APPROVALS (admin) -->
+  <section class="view" id="v-approvals">
+    <div class="rv"><div class="kicker">Command Center</div>
+    <h1 class="page-h">Approvals</h1>
+    <p class="page-sub">Every claim the team submits lands here — from the site, or texted to you and logged from here. Approve it and the points hit the board instantly for everyone.</p></div>
+    <div class="panel rv">
+      <div id="claimList"></div>
+    </div>
+  </section>
+</main>
+
+<footer>T1P · Top One Percent · Run Your Lane</footer>
+
+<script>
+'use strict';
+/* ================= CONFIG ================= */
+const SUPABASE_URL = 'https://obtlrivpgdrxgydcpnqo.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_sJSPpAp1-2IIpUDTuQTMHA_1nVUFbY1';
+
+const RANKS = [
+  {name:'Recruit', min:0, max:99, cls:'r0', c:'#9BA0A8'},
+  {name:'Builder', min:100, max:299, cls:'r1', c:'#C98B5E'},
+  {name:'Closer', min:300, max:599, cls:'r2', c:'#7FA8DE'},
+  {name:'Captain', min:600, max:999, cls:'r3', c:'#C9A227'},
+  {name:'Empire Builder', min:1000, max:Infinity, cls:'r4', c:'#E8C34D'},
+];
+const LADDER_STEPS = [
+  {action:'licensed', t:'Get Licensed', d:'Pass the exam, get appointed', p:50},
+  {action:'onboarding', t:'Onboarding Complete', d:'Full training checklist done', p:50},
+  {action:'first_appointment', t:'First Appointment Set', d:'First real conversation booked', p:25},
+  {action:'first_sale', t:'First Sale', d:'First family protected', p:100},
+  {action:'month_5k', t:'First $5K Month', d:'Proof of concept', p:100},
+  {action:'month_10k', t:'First $10K Month', d:'Consistency unlocked', p:200},
+  {action:'month_15k', t:'First $15K Month', d:'Top-quartile territory', p:300},
+  {action:'month_20k', t:'First $20K Month', d:'The One Percent threshold', p:500},
+  {action:'first_recruit', t:'Recruit Your First Agent', d:'Duplication — within your first 90 days', p:150},
+];
+const BUILDER_ACTIONS = [
+  {action:'referral_submitted', t:'Qualified Referral Submitted', d:'A real candidate, in the pipe', p:25},
+  {action:'referral_interview', t:'Referral Completes Interview', d:'They showed up to the final call', p:25},
+  {action:'referral_licensed', t:'Referral Licensed & Contracted', d:'Your recruit is official', p:50},
+  {action:'referral_first_sale', t:"Referral's First Sale", d:'Your recruit is producing', p:75},
+  {action:'referral_active_30d', t:'Referral Active at 30 Days', d:'They stuck. That is retention', p:50},
+  {action:'referral_20k_month', t:'Referral Hits $20K Month', d:'You built a One Percenter', p:300},
+  {action:'second_gen_duplication', t:'2nd-Gen Duplication', d:'Your recruit recruited within 90 days', p:200},
+];
+const ACTION_LABEL = {};
+for (const s of LADDER_STEPS) ACTION_LABEL[s.action] = s.t;
+for (const s of BUILDER_ACTIONS) ACTION_LABEL[s.action] = s.t;
+ACTION_LABEL.weekly_activity = 'Weekly Activity Minimum';
+
+const REWARD_TIERS = [100, 250, 500, 1000];
+const SKILLS = ['Inviting','Presenting','Follow-Up','Launching a New Agent','Promoting Events','Objection Handling','Leading From the Front'];
+
+/* ================= DEMO FALLBACK ================= */
+function demoData(){
+  const agents=[
+    {id:'derek',name:'Derek',recruiter_id:null,date_joined:'2025-09-01',is_admin:true},
+    {id:'isaia',name:'Isaia',recruiter_id:'derek',date_joined:'2026-01-10',is_admin:false},
+    {id:'birch',name:'Birch',recruiter_id:'derek',date_joined:'2026-02-01',is_admin:false},
+    {id:'bella',name:'Bella',recruiter_id:'isaia',date_joined:'2026-05-01',is_admin:false},
+    {id:'jon',name:'Jon',recruiter_id:'birch',date_joined:'2026-06-01',is_admin:false},
+  ];
+  return {agents, log:[], skills:[]};
+}
+
+/* ================= STATE ================= */
+let db=null, demo=false;
+let DATA={agents:[],log:[],skills:[]};
+let AUTH=null; // {id, pin, admin}
+let viewAgent=null; // whose page is displayed on me/building/rewards
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const approved=p=>!p.status||p.status==='approved';
+const pendingRows=()=>DATA.log.filter(p=>p.status==='pending');
+
+function totals(agentId){
+  const cut=Date.now()-365.25*24*3600*1000;
+  let rec=0, na=0, pend=0;
+  for(const p of DATA.log){
+    if(p.agent_id!==agentId) continue;
+    if(new Date(p.earned_at).getTime()<cut) continue;
+    if(p.status==='pending'){ pend+=p.points; continue; }
+    if(!approved(p)) continue;
+    if(p.track==='recruiter') rec+=p.points; else na+=p.points;
+  }
+  return {rec,na,pend,total:rec+na};
+}
+function rankOf(pts){ return RANKS.find(r=>pts>=r.min&&pts<=r.max) || RANKS[0]; }
+function badge(pts){
+  const r=rankOf(pts);
+  return `<span class="badge ${r.cls}" title="${r.name} · ${pts} pts"><svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.5 3.2L10 3.8 7.5 6.2 8.1 10 5 8.2 1.9 10l.6-3.8L0 3.8l3.5-.6z"/></svg>${esc(r.name)}</span>`;
+}
+function agentById(id){ return DATA.agents.find(a=>a.id===id); }
+const isSelf=()=>AUTH&&viewAgent===AUTH.id;
+const isAdmin=()=>AUTH&&AUTH.admin;
+
+/* ================= AUTH ================= */
+function saveSession(){ try{sessionStorage.setItem('t1p-auth',JSON.stringify(AUTH));}catch(e){} }
+function loadSession(){ try{return JSON.parse(sessionStorage.getItem('t1p-auth'));}catch(e){return null;} }
+function clearSession(){ try{sessionStorage.removeItem('t1p-auth');}catch(e){} }
+
+function fillGate(){
+  $('#gateAgent').innerHTML=DATA.agents
+    .slice().sort((a,b)=>a.name.localeCompare(b.name))
+    .map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+}
+async function tryLogin(id, pin){
+  if(demo) return pin==='1234';
+  const {data,error}=await db.rpc('login_agent',{p_agent_id:id,p_pin:pin});
+  if(error) throw error;
+  return data===true;
+}
+function unlock(){
+  document.body.classList.remove('locked');
+  const a=agentById(AUTH.id);
+  $('#whoami').textContent=a?a.name:AUTH.id;
+  $('#logoutBtn').style.display='';
+  $('#tabApprovals').classList.toggle('hidden',!isAdmin());
+  viewAgent=AUTH.id;
+  route();
+}
+function resetGateFx(){
+  $('#loginGate').classList.remove('granted');
+  $('#gateCard').classList.remove('checking','deny','granted-door','deny-glow');
+  gatePinBuf=''; drawDots();
+  setStatus('Enter your code');
+}
+function lock(){
+  AUTH=null; clearSession();
+  document.body.classList.add('locked');
+  $('#whoami').textContent='';
+  $('#logoutBtn').style.display='none';
+  fillGate(); resetGateFx();
+}
+
+/* --- vault keypad --- */
+let gatePinBuf='';
+let gateBusy=false;
+const MOTION_OFF=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setStatus(msg, cls){
+  const el=$('#gateStatus');
+  el.textContent=msg;
+  el.className='gate-status'+(cls?' '+cls:'');
+}
+function drawDots(){
+  const n=Math.max(4, gatePinBuf.length);
+  $('#pinDots').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<gatePinBuf.length?'f':''}"></i>`).join('');
+}
+async function crackVault(){
+  if(gateBusy) return;
+  if(!gatePinBuf){ setStatus('Enter your code','no'); return; }
+  gateBusy=true;
+  const card=$('#gateCard');
+  card.classList.add('checking');
+  setStatus('Verifying…');
+  const started=Date.now();
+  let ok=false, err=null;
+  try{ ok=await tryLogin($('#gateAgent').value, gatePinBuf); }
+  catch(e){ err=e; }
+  // let the wheel spin at least a beat — the tension is the point
+  const wait=MOTION_OFF?0:Math.max(0, 900-(Date.now()-started));
+  setTimeout(()=>{
+    card.classList.remove('checking');
+    if(ok){
+      const id=$('#gateAgent').value, a=agentById(id);
+      AUTH={id, pin:gatePinBuf, admin:!!(a&&a.is_admin)};
+      saveSession();
+      card.classList.add('granted-door');
+      setStatus('Access granted','ok');
+      $('#loginGate').classList.add('granted');
+      setTimeout(()=>{ unlock(); resetGateFx(); gateBusy=false; }, MOTION_OFF?250:1650);
+    } else {
+      card.classList.add('deny','deny-glow');
+      setStatus(err?('Vault sealed — '+(err.message||'try again')):'Access denied','no');
+      setTimeout(()=>{
+        card.classList.remove('deny','deny-glow');
+        gatePinBuf=''; drawDots(); gateBusy=false;
+      }, 600);
+    }
+  }, wait);
+}
+$('#keypad').addEventListener('click',e=>{
+  const k=e.target.closest('.key'); if(!k||gateBusy) return;
+  const v=k.dataset.k;
+  if(v==='go') return void crackVault();
+  if(v==='del'){ gatePinBuf=gatePinBuf.slice(0,-1); }
+  else if(gatePinBuf.length<8){ gatePinBuf+=v; }
+  drawDots();
+  if(!gateBusy) setStatus('Enter your code');
+});
+document.addEventListener('keydown',e=>{
+  if(!document.body.classList.contains('locked')||gateBusy) return;
+  if(e.target && e.target.id==='gateAgent') { if(e.key!=='Enter') return; }
+  if(/^[0-9]$/.test(e.key)&&gatePinBuf.length<8){ gatePinBuf+=e.key; drawDots(); }
+  else if(e.key==='Backspace'){ gatePinBuf=gatePinBuf.slice(0,-1); drawDots(); }
+  else if(e.key==='Enter'){ crackVault(); }
+});
+$('#logoutBtn').addEventListener('click',lock);
+
+/* ================= ACTIONS (claims) ================= */
+async function submitClaim(track, action, points){
+  if(!AUTH) return;
+  try{
+    if(demo){
+      DATA.log.push({id:Date.now(),agent_id:AUTH.id,track,action,points,status:'pending',earned_at:new Date().toISOString()});
+    } else {
+      const {error}=await db.rpc('submit_claim',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_track:track,p_action:action,p_points:points,p_note:null});
+      if(error) throw error;
+      await loadAll();
+    }
+    rerender();
+  }catch(e){ alert('Could not submit: '+e.message); }
+}
+async function awardDirect(agentId, track, action, points){
+  if(!isAdmin()) return;
+  try{
+    if(demo){
+      DATA.log.push({agent_id:agentId,track,action,points,status:'approved',earned_at:new Date().toISOString()});
+    } else {
+      const {error}=await db.rpc('award_points',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_agent_id:agentId,p_track:track,p_action:action,p_points:points,p_note:'awarded by admin'});
+      if(error) throw error;
+      await loadAll();
+    }
+    rerender();
+  }catch(e){ alert('Could not award: '+e.message); }
+}
+async function decideClaim(id, approve){
+  if(!isAdmin()) return;
+  try{
+    if(demo){
+      const c=DATA.log.find(p=>p.id===id); if(c) c.status=approve?'approved':'rejected';
+    } else {
+      const {error}=await db.rpc('decide_claim',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_claim_id:id,p_approve:approve});
+      if(error) throw error;
+      await loadAll();
+    }
+    rerender();
+  }catch(e){ alert('Could not decide: '+e.message); }
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-claim]'); if(b){
+    const [track,action,points]=b.dataset.claim.split('|');
+    submitClaim(track,action,Number(points)); return;
+  }
+  const aw=e.target.closest('[data-award]'); if(aw){
+    const [agentId,track,action,points]=aw.dataset.award.split('|');
+    awardDirect(agentId,track,action,Number(points)); return;
+  }
+  const d=e.target.closest('[data-decide]'); if(d){
+    const [id,ok]=d.dataset.decide.split('|');
+    decideClaim(Number(id), ok==='1'); return;
+  }
+});
+
+/* ================= RENDER: LEADERBOARD ================= */
+function renderBoard(){
+  const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
+  const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
+  const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
+  const maxR=Math.max(1,...recs.map(r=>r.rec)), maxN=Math.max(1,...nas.map(r=>r.na));
+  const row=(r,i,val,max,cls)=>`
+    <div class="row p${i+1}">
+      <div class="pos">${i+1}</div>
+      <div class="who">
+        <div class="name">${esc(r.a.name)} ${badge(r.total)}</div>
+        <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
+      </div>
+      <div class="pts">${val}<small>pts</small></div>
+    </div>`;
+  $('#boardRecruiters').innerHTML = recs.map((r,i)=>row(r,i,r.rec,maxR,'gold')).join('') || '<p style="color:var(--ink-3)">No builder points yet. First referral takes it.</p>';
+  $('#boardAgents').innerHTML = nas.map((r,i)=>row(r,i,r.na,maxN,'blue')).join('') || '<p style="color:var(--ink-3)">No agent points yet. First one licensed takes it.</p>';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
+  }));
+}
+
+/* ================= RENDER: RANKS ================= */
+function renderRanks(){
+  const withT=DATA.agents.map(a=>({a,...totals(a.id)}));
+  $('#ladder').innerHTML = RANKS.map((r,i)=>{
+    const members=withT.filter(x=>rankOf(x.total)===r).sort((a,b)=>b.total-a.total);
+    const names=members.slice(0,6).map(m=>esc(m.a.name)).join(' · ');
+    return `<div class="tier rv" style="--tier-c:${r.c}">
+      <div class="num">0${i+1}</div>
+      <div>
+        <h3>${r.name}</h3>
+        <div class="range">${r.max===Infinity?`${r.min}+ points`:`${r.min}–${r.max} points`}</div>
+        <div class="members">${names||'<em style="color:var(--ink-3)">Unclaimed — be first.</em>'}${members.length>6?` +${members.length-6} more`:''}</div>
+      </div>
+      <div class="count">${members.length}<small>agents</small></div>
+    </div>`;
+  }).join('');
+  observeReveals();
+}
+
+/* ================= PICKERS ================= */
+function fillPick(sel){
+  const el=$(sel); if(!el) return;
+  if(isAdmin()){
+    el.disabled=false;
+    el.innerHTML=DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
+      .map(a=>`<option value="${esc(a.id)}"${a.id===viewAgent?' selected':''}>${esc(a.name)}</option>`).join('');
+  } else {
+    const a=agentById(AUTH?AUTH.id:'');
+    el.innerHTML=a?`<option value="${esc(a.id)}" selected>${esc(a.name)}</option>`:'';
+    el.disabled=true;
+  }
+}
+function fillAgentPicks(){ fillPick('#agentPick'); fillPick('#agentPickB'); fillPick('#agentPickR'); }
+for (const sel of ['#agentPick','#agentPickB','#agentPickR']){
+  $(sel).addEventListener('change',e=>{ viewAgent=e.target.value; fillAgentPicks(); rerenderView(); });
+}
+
+/* ================= RENDER: MY PROGRESS ================= */
+function renderMe(){
+  const a=agentById(viewAgent); if(!a) return;
+  const t=totals(a.id);
+  const r=rankOf(t.total);
+  const rows=DATA.log.filter(p=>p.agent_id===a.id&&p.track==='new_agent');
+  const doneActions=new Set(rows.filter(approved).map(p=>p.action));
+  const pendActions=new Set(rows.filter(p=>p.status==='pending').map(p=>p.action));
+  const stepsDone=LADDER_STEPS.filter(s=>doneActions.has(s.action)).length;
+  $('#meStats').innerHTML=`
+    <div class="stat"><div class="v gold">${t.total}</div><div class="l">Total Points</div></div>
+    <div class="stat"><div class="v">${t.na}</div><div class="l">Agent Track</div></div>
+    <div class="stat"><div class="v">${t.rec}</div><div class="l">Builder Track</div></div>
+    ${t.pend?`<div class="stat"><div class="v dim">${t.pend}</div><div class="l">Pending Approval</div></div>`:''}
+    <div class="stat"><div class="v" style="color:${r.c}">${esc(r.name)}</div><div class="l">Current Rank</div></div>
+    <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>`;
+  $('#meSteps').innerHTML=LADDER_STEPS.map((s,i)=>{
+    const done=doneActions.has(s.action);
+    const pend=!done&&pendActions.has(s.action);
+    let side='';
+    if(done) side='';
+    else if(pend) side='<span class="tag-pending">Pending</span>';
+    else if(isSelf()) side=`<button class="btn" data-claim="new_agent|${s.action}|${s.p}">Submit</button>`;
+    else if(isAdmin()) side=`<button class="btn ghost" data-award="${esc(a.id)}|new_agent|${s.action}|${s.p}">Award</button>`;
+    return `<div class="step${done?' done':''}${pend?' pending':''}">
+      <div class="node">${done?'✓':(pend?'…':i+1)}</div>
+      <div><div class="t">${s.t}</div><div class="d">${s.d}</div></div>
+      <div class="side">${side}<div class="p">+${s.p}</div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= RENDER: BUILDING ================= */
+function downlineOf(id){
+  const kids=DATA.agents.filter(a=>a.recruiter_id===id);
+  return kids.reduce((n,k)=>n+1+downlineOf(k.id),0);
+}
+function renderBuilding(){
+  const a=agentById(viewAgent); if(!a) return;
+  const t=totals(a.id);
+  const directs=DATA.agents.filter(x=>x.recruiter_id===a.id).length;
+  const dl=downlineOf(a.id);
+  const rows=DATA.log.filter(p=>p.agent_id===a.id&&p.track==='recruiter');
+  const pendB=rows.filter(p=>p.status==='pending').reduce((n,p)=>n+p.points,0);
+  $('#buildStats').innerHTML=`
+    <div class="stat"><div class="v gold">${t.rec}</div><div class="l">Builder Points</div></div>
+    <div class="stat"><div class="v">${directs}</div><div class="l">Direct Recruits</div></div>
+    <div class="stat"><div class="v">${dl}</div><div class="l">Total Downline</div></div>
+    <div class="stat"><div class="v">${Math.max(0,dl-directs)}</div><div class="l">Gen 2+</div></div>
+    ${pendB?`<div class="stat"><div class="v dim">${pendB}</div><div class="l">Pending Approval</div></div>`:''}`;
+  $('#buildSteps').innerHTML=BUILDER_ACTIONS.map((s,i)=>{
+    const cnt=rows.filter(p=>p.action===s.action&&approved(p)).length;
+    const pend=rows.filter(p=>p.action===s.action&&p.status==='pending').length;
+    let side='';
+    if(pend) side+=`<span class="tag-pending">${pend} pending</span>`;
+    if(isSelf()) side+=`<button class="btn" data-claim="recruiter|${s.action}|${s.p}">Submit</button>`;
+    else if(isAdmin()) side+=`<button class="btn ghost" data-award="${esc(a.id)}|recruiter|${s.action}|${s.p}">Award</button>`;
+    return `<div class="step${cnt?' done':''}${!cnt&&pend?' pending':''}">
+      <div class="node">${cnt?'✓':(pend?'…':i+1)}</div>
+      <div><div class="t">${s.t}</div><div class="d">${s.d}</div></div>
+      <div class="side">${cnt?`<span class="cnt">×${cnt}</span>`:''}${side}<div class="p">+${s.p}</div></div>
+    </div>`;
+  }).join('');
+}
+
+/* ================= RENDER: TREE ================= */
+function renderTree(){
+  const kids=id=>DATA.agents.filter(a=>a.recruiter_id===id).sort((a,b)=>new Date(a.date_joined)-new Date(b.date_joined));
+  const downline=id=>kids(id).reduce((n,k)=>n+1+downline(k.id),0);
+  const node=(a,gen)=>{
+    const t=totals(a.id), ks=kids(a.id), dl=downline(a.id);
+    return `<div class="tnode">
+      <div class="tcard" ${ks.length?`data-tog="${esc(a.id)}" role="button" tabindex="0" aria-expanded="true"`:''}>
+        ${ks.length?`<span class="tog">−</span>`:''}
+        <div style="min-width:0">
+          <div class="nm">${esc(a.name)} ${badge(t.total)} ${gen>1?`<span class="gen-tag">Gen ${gen}</span>`:''}</div>
+          <div class="meta">${t.total} pts${dl?` · ${dl} in downline`:''} · joined ${a.date_joined}</div>
+        </div>
+      </div>
+      ${ks.length?`<div class="tkids" data-kids="${esc(a.id)}">${ks.map(k=>node(k,gen+1)).join('')}</div>`:''}
+    </div>`;
+  };
+  const roots=DATA.agents.filter(a=>!a.recruiter_id);
+  $('#tree').innerHTML=roots.map(r=>node(r,1)).join('') || '<p style="color:var(--ink-3)">No agents yet.</p>';
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-tog]'); if(!c) return;
+  const kids=document.querySelector(`[data-kids="${CSS.escape(c.dataset.tog)}"]`);
+  const hid=kids.classList.toggle('hid');
+  c.querySelector('.tog').textContent=hid?'+':'−';
+  c.setAttribute('aria-expanded',String(!hid));
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-tog]')){e.preventDefault();e.target.click();}
+});
+
+/* ================= RENDER: REWARDS ================= */
+function renderRewards(){
+  const a=agentById(viewAgent); if(!a) return;
+  const t=totals(a.id);
+  $('#rewardCards').innerHTML=REWARD_TIERS.map(cost=>{
+    const unlocked=t.total>=cost;
+    const pct=Math.min(100,t.total/cost*100);
+    return `<div class="reward rv${unlocked?' unlocked':''}">
+      <span class="lock">${unlocked?'Unlocked':'Locked'}</span>
+      <div class="cost">${cost}</div>
+      <h3 class="disp">To Be Determined</h3>
+      <p>Reward being finalized. The tier is real — your points count now.</p>
+      <div class="pbar"><i data-w="${pct.toFixed(1)}"></i></div>
+      <div class="pnum">${Math.min(t.total,cost)} / ${cost} pts${unlocked?'':` · ${cost-t.total} to go`}</div>
+    </div>`;
+  }).join('');
+  observeReveals();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('.reward .pbar i').forEach(b=>b.style.width=b.dataset.w+'%');
+  }));
+}
+
+/* ================= RENDER: SKILLS ================= */
+function renderSkills(){
+  const canEdit=isAdmin();
+  const head=`<thead><tr><th>Agent</th>${SKILLS.map(s=>`<th>${esc(s)}</th>`).join('')}<th></th></tr></thead>`;
+  const body=DATA.agents.map(a=>{
+    const t=totals(a.id);
+    const cells=SKILLS.map(s=>{
+      const on=DATA.skills.some(k=>k.agent_id===a.id&&k.skill_name===s&&k.completed);
+      return `<td><button class="chk${on?' on':''}" ${canEdit?'':'disabled'} data-skill="${esc(s)}" data-agent="${esc(a.id)}" aria-pressed="${on}" aria-label="${esc(a.name)}: ${esc(s)}"></button></td>`;
+    }).join('');
+    const n=SKILLS.filter(s=>DATA.skills.some(k=>k.agent_id===a.id&&k.skill_name===s&&k.completed)).length;
+    return `<tr><td>${esc(a.name)} ${badge(t.total)}</td>${cells}<td class="skill-count">${n}/7</td></tr>`;
+  }).join('');
+  $('#skillTable').innerHTML=head+`<tbody>${body}</tbody>`;
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('.chk'); if(!b||b.disabled||!isAdmin()) return;
+  const agent_id=b.dataset.agent, skill_name=b.dataset.skill;
+  const on=!b.classList.contains('on');
+  try{
+    if(demo){
+      const ex=DATA.skills.find(k=>k.agent_id===agent_id&&k.skill_name===skill_name);
+      if(ex) ex.completed=on; else DATA.skills.push({agent_id,skill_name,completed:on});
+    } else {
+      const {error}=await db.rpc('set_skill',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_agent_id:agent_id,p_skill:skill_name,p_on:on});
+      if(error) throw error;
+      await loadAll();
+    }
+    renderSkills();
+  }catch(err){ alert('Could not save skill: '+err.message); }
+});
+
+/* ================= RENDER: APPROVALS ================= */
+function renderApprovals(){
+  const pend=pendingRows().slice().sort((a,b)=>new Date(a.earned_at)-new Date(b.earned_at));
+  $('#claimList').innerHTML = pend.length ? pend.map(p=>{
+    const a=agentById(p.agent_id);
+    return `<div class="claim">
+      <div>
+        <div class="who">${esc(a?a.name:p.agent_id)} <span class="pv">+${p.points}</span></div>
+        <div class="what">${esc(ACTION_LABEL[p.action]||p.action)} · ${p.track==='recruiter'?'Builder track':'Agent track'} · ${new Date(p.earned_at).toLocaleDateString()}</div>
+        ${p.note?`<div class="note">"${esc(p.note)}"</div>`:''}
+      </div>
+      <div class="acts">
+        <button class="btn" data-decide="${p.id}|1">Approve</button>
+        <button class="btn danger" data-decide="${p.id}|0">Reject</button>
+      </div>
+    </div>`;
+  }).join('') : '<p style="color:var(--ink-3)">Queue is clear. Nothing waiting on you.</p>';
+  const n=pendingRows().length;
+  $('#tabApprovals').textContent = n?`Approvals (${n})`:'Approvals';
+}
+
+/* ================= ROUTER ================= */
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','approvals'];
+function route(){
+  if(!AUTH) return;
+  let v=(location.hash.replace('#/','')||'board');
+  if(!VIEWS.includes(v)) v='board';
+  if(v==='approvals'&&!isAdmin()) v='board';
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
+  $('#v-'+v).classList.add('on');
+  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
+  fillAgentPicks();
+  renderCurrent(v);
+  observeReveals();
+  window.scrollTo({top:0,behavior:'auto'});
+}
+function renderCurrent(name){
+  if(name==='board') renderBoard();
+  else if(name==='ranks') renderRanks();
+  else if(name==='me') renderMe();
+  else if(name==='building') renderBuilding();
+  else if(name==='tree') renderTree();
+  else if(name==='rewards') renderRewards();
+  else if(name==='skills') renderSkills();
+  else if(name==='approvals') renderApprovals();
+  if(isAdmin()) renderApprovals(); // keep tab count fresh
+}
+function rerenderView(){
+  const v=(location.hash.replace('#/','')||'board');
+  renderCurrent(VIEWS.includes(v)?v:'board');
+}
+window.addEventListener('hashchange',route);
+
+/* ================= REVEALS ================= */
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let io=null;
+function observeReveals(){
+  if(!io){
+    io=new IntersectionObserver(entries=>{
+      entries.forEach((en)=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
+    },{threshold:.08});
+  }
+  document.querySelectorAll('.rv:not(.in)').forEach((el,i)=>{
+    if(!reduceMotion) el.style.transitionDelay=Math.min(i*70,350)+'ms';
+    io.observe(el);
+  });
+}
+
+/* ================= DATA ================= */
+function setLive(ok){
+  $('#liveDot').classList.toggle('offline',!ok);
+  $('#liveTxt').textContent=ok?'Live':'Demo';
+  $('#demoBanner').classList.toggle('on',!ok);
+}
+async function loadAll(){
+  if(!db) throw new Error('no client');
+  const [a,p,s]=await Promise.all([
+    db.from('agents').select('*').order('date_joined'),
+    db.from('points_log').select('*'),
+    db.from('skills').select('*'),
+  ]);
+  if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
+  DATA={agents:a.data,log:p.data,skills:s.data};
+}
+function rerender(){
+  fillAgentPicks();
+  rerenderView();
+  if(isAdmin()) renderApprovals();
+}
+async function init(){
+  try{
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    await loadAll();
+    if(!DATA.agents.length) throw new Error('empty');
+    demo=false; setLive(true);
+    db.channel('t1p-live')
+      .on('postgres_changes',{event:'*',schema:'public'},async()=>{ try{await loadAll();rerender();}catch(e){} })
+      .subscribe();
+  }catch(err){
+    demo=true; DATA=demoData(); setLive(false);
+    setInterval(async()=>{
+      try{ await loadAll(); if(DATA.agents.length){demo=false;setLive(true);rerender();} }catch(e){}
+    },30000);
+  }
+  fillGate();
+  const s=loadSession();
+  if(s&&agentById(s.id)){
+    // re-verify quietly so a stale PIN doesn't linger
+    try{
+      if(await tryLogin(s.id,s.pin)){
+        const a=agentById(s.id);
+        AUTH={id:s.id,pin:s.pin,admin:!!(a&&a.is_admin)};
+        unlock();
+        return;
+      }
+    }catch(e){}
+    clearSession();
+  }
+  lock();
+}
+init();
+</script>
+</body>
+</html>
