@@ -1075,6 +1075,11 @@ async function init(){
   lock();
 }
 init();
+// When served from Supabase, ping the sync endpoint so the hosted copy
+// refreshes itself from the repo. Harmless no-op anywhere else.
+if(location.hostname.endsWith('.supabase.co')){
+  fetch('/functions/v1/vault?sync=1').catch(()=>{});
+}
 </script>
 </body>
 </html>
