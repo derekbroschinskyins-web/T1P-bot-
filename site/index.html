@@ -6,7 +6,7 @@
 <title>T1P — The Vault</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{
@@ -38,7 +38,7 @@ body{
     var(--bg);
   background-attachment:fixed;
   color:var(--ink);
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  font-family:'Manrope',system-ui,-apple-system,sans-serif;
   font-size:15px;line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
@@ -75,7 +75,10 @@ body .panel:hover, body .stat:hover, body .reward:hover{
   animation:sheen 6s linear infinite;
 }
 @keyframes sheen{0%{background-position:120% 0}100%{background-position:-130% 0}}
-h1,h2,h3,.disp{font-family:'Oswald','Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+h1,h2,h3,.disp{font-family:'Space Grotesk','Manrope',sans-serif;text-transform:uppercase;letter-spacing:.06em}
+.page-h,.gate-title,.logo .mark,.tier h3,.disp{font-family:'Cinzel','Times New Roman',serif}
+.page-h{letter-spacing:.03em;font-weight:800}
+.disp{letter-spacing:.08em}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 ::selection{background:var(--gold);color:#0B0B0C}
@@ -96,24 +99,24 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .logo .crest{width:38px;height:38px;flex:none;align-self:center;mix-blend-mode:screen;filter:drop-shadow(0 0 8px rgba(201,162,39,.5))}
 .topbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:22px;height:60px}
 .logo{display:flex;align-items:baseline;gap:10px;flex:none}
-.logo .mark{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:26px;color:var(--gold);letter-spacing:.02em}
-.logo .sub{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:var(--ink-2);text-transform:uppercase}
+.logo .mark{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:700;font-size:26px;color:var(--gold);letter-spacing:.02em}
+.logo .sub{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:var(--ink-2);text-transform:uppercase}
 nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
 nav.tabs::-webkit-scrollbar{display:none}
 nav.tabs a{
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--ink-2);padding:6px 12px;white-space:nowrap;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-2);padding:6px 10px;white-space:nowrap;
   border-bottom:2px solid transparent;transition:color .15s;
 }
 nav.tabs a:hover{color:var(--ink)}
 nav.tabs a.active{color:var(--gold-bright);border-bottom-color:var(--gold)}
 nav.tabs a.hidden{display:none}
 .top-right{margin-left:auto;flex:none;display:flex;align-items:center;gap:14px}
-.live-dot{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif}
+.live-dot{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-family:'Space Grotesk','Manrope',sans-serif}
 .live-dot i{width:7px;height:7px;background:var(--good);display:inline-block;animation:pulse 2s infinite}
 .live-dot.offline i{background:var(--warn);animation:none}
-.whoami{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-bright)}
-.logout-btn{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--edge-dim);padding:4px 10px}
+.whoami{font-family:'Space Grotesk','Manrope',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-bright)}
+.logout-btn{font-family:'Space Grotesk','Manrope',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--edge-dim);padding:4px 10px}
 .logout-btn:hover{color:var(--ink);border-color:var(--edge)}
 @media(max-width:760px){
   .logo .sub{display:none}
@@ -125,23 +128,23 @@ nav.tabs a.hidden{display:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 /* ---------- layout ---------- */
-main{max-width:1200px;margin:0 auto;padding:36px 20px 90px}
+main{max-width:1200px;margin:0 auto;padding:48px 24px 110px}
 .view{display:none}
 .view.on{display:block}
-.kicker{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.page-h{font-size:clamp(30px,5vw,48px);font-weight:700;line-height:1.05;margin-bottom:6px}
-.page-sub{color:var(--ink-2);max-width:640px;margin-bottom:34px}
-.panel{background:var(--panel);border:1px solid var(--edge-dim);padding:24px}
+.kicker{font-family:'Space Grotesk','Manrope',sans-serif;font-size:11px;font-weight:600;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.page-h{font-size:clamp(30px,4.6vw,46px);line-height:1.12;margin-bottom:10px}
+.page-sub{color:var(--ink-2);max-width:620px;margin-bottom:42px;line-height:1.65;font-size:15px}
+.panel{background:var(--panel);border:1px solid var(--edge-dim);padding:28px}
 .panel + .panel{margin-top:20px}
 .rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:14px 0 20px}
 .banner{
   border:1px solid var(--warn);background:rgba(217,144,63,.08);color:var(--warn);
   padding:10px 16px;font-size:13px;margin-bottom:24px;display:none;
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.06em;
+  font-family:'Space Grotesk','Manrope',sans-serif;letter-spacing:.06em;
 }
 .banner.on{display:block}
 .btn{
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
   border:1px solid var(--gold);color:var(--gold-bright);padding:6px 14px;transition:all .15s;white-space:nowrap;
 }
 .btn:hover{background:var(--gold);color:#0B0B0C}
@@ -151,7 +154,7 @@ main{max-width:1200px;margin:0 auto;padding:36px 20px 90px}
 .btn.danger:hover{background:var(--bad);color:#0B0B0C}
 .btn[disabled]{opacity:.4;pointer-events:none}
 .tag-pending{
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--warn);border:1px solid rgba(217,144,63,.4);padding:2px 8px;white-space:nowrap;
 }
 
@@ -192,11 +195,11 @@ body.locked main, body.locked footer{display:none}
 @keyframes wheelUnlock{60%{transform:rotate(900deg)}100%{transform:rotate(1080deg)}}
 .deny-glow #vaultRing{stroke:var(--bad) !important}
 .granted-door #vaultRing{stroke:var(--good) !important}
-.gate-title{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:32px;color:var(--gold);letter-spacing:.18em;line-height:1}
-.gate-tag{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-3);margin:6px 0 18px}
+.gate-title{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:700;font-size:32px;color:var(--gold);letter-spacing:.18em;line-height:1}
+.gate-tag{font-family:'Space Grotesk','Manrope',sans-serif;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-3);margin:6px 0 18px}
 select#gateAgent{
   width:100%;background:var(--panel-2);color:var(--ink);border:1px solid var(--edge-dim);
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:15px;letter-spacing:.08em;padding:10px 14px;text-align:center;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:15px;letter-spacing:.08em;padding:10px 14px;text-align:center;
 }
 select#gateAgent:focus{outline:none;border-color:var(--gold)}
 .pin-dots{display:flex;gap:11px;justify-content:center;margin:20px 0 16px;height:13px}
@@ -204,7 +207,7 @@ select#gateAgent:focus{outline:none;border-color:var(--gold)}
 .pin-dots i.f{background:var(--gold);border-color:var(--gold);box-shadow:0 0 9px rgba(201,162,39,.55)}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:232px;margin:0 auto}
 .key{
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:18px;font-weight:600;color:var(--ink);
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:18px;font-weight:600;color:var(--ink);
   padding:13px 0;border:1px solid var(--edge-dim);background:var(--panel-2);transition:all .12s;user-select:none;
 }
 .key:hover{border-color:var(--gold);color:var(--gold-bright)}
@@ -212,11 +215,21 @@ select#gateAgent:focus{outline:none;border-color:var(--gold)}
 .key.go{color:var(--gold-bright);border-color:var(--gold)}
 .key.go:active{background:var(--gold);color:#0B0B0C}
 .gate-status{
-  min-height:22px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;
+  min-height:22px;font-family:'Space Grotesk','Manrope',sans-serif;font-size:12px;font-weight:600;
   letter-spacing:.28em;text-transform:uppercase;margin-top:16px;color:var(--ink-3);
 }
 .gate-status.ok{color:var(--good);text-shadow:0 0 12px rgba(76,175,110,.5)}
 .gate-status.no{color:var(--bad);text-shadow:0 0 12px rgba(194,84,84,.5)}
+/* cinematic vault door video */
+.vault-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;filter:brightness(.45) saturate(1.1);transition:opacity 1s ease, filter 1s ease;pointer-events:none}
+#loginGate.cinema .vault-vid{opacity:1}
+#loginGate.cinema .vault-door{display:none}
+#loginGate.cinema .gate-card{
+  background:rgba(13,13,15,.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 24px 70px rgba(0,0,0,.65), inset 0 1px 0 rgba(232,195,77,.12);
+}
+#loginGate.playing .vault-vid{filter:brightness(1.05) saturate(1.15)}
+#loginGate.playing .gate-card{opacity:0;transform:scale(.96);pointer-events:none;transition:opacity .7s ease, transform .7s ease}
 @media (prefers-reduced-motion: reduce){
   #vaultWheel,.checking #vaultWheel,.granted-door #vaultWheel{animation:none;transition:none}
   .gate-card.deny{animation:none}
@@ -267,7 +280,7 @@ select#gateAgent:focus{outline:none;border-color:var(--gold)}
 .board .hint{font-size:12px;color:var(--ink-3);margin-top:2px}
 .row{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--edge-dim)}
 .row:last-child{border-bottom:none}
-.row .pos{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:15px;color:var(--ink-3);text-align:center}
+.row .pos{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:600;font-size:15px;color:var(--ink-3);text-align:center}
 .row.p1 .pos{color:var(--gold-bright)}
 .row.p2 .pos,.row.p3 .pos{color:var(--ink-2)}
 .row .who{min-width:0}
@@ -277,13 +290,13 @@ select#gateAgent:focus{outline:none;border-color:var(--gold)}
 .row .bar.gold{background:var(--mark-gold)}
 .row .bar.blue{background:var(--mark-blue)}
 .row .bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 3px 3px 0;background:inherit}
-.row .pts{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:17px;color:var(--ink);text-align:right;min-width:56px}
-.row .pts small{display:block;font-family:'Inter';font-weight:400;font-size:10px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase}
+.row .pts{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:600;font-size:17px;color:var(--ink);text-align:right;min-width:56px}
+.row .pts small{display:block;font-family:'Manrope',sans-serif;font-weight:500;font-size:10px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
 
 /* ---------- rank badge ---------- */
 .badge{
   display:inline-flex;align-items:center;gap:5px;flex:none;
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-weight:500;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
   padding:2px 8px 2px 6px;border:1px solid;line-height:1.5;
   clip-path:polygon(0 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,0 100%);
   padding-right:12px;
@@ -302,32 +315,32 @@ select#gateAgent:focus{outline:none;border-color:var(--gold)}
   background:var(--panel);border:1px solid var(--edge-dim);padding:20px 24px;
   border-left:3px solid var(--tier-c,#3A3D42);
 }
-.tier .num{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:30px;color:var(--tier-c,#3A3D42)}
+.tier .num{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:700;font-size:30px;color:var(--tier-c,#3A3D42)}
 .tier h3{font-size:20px;color:var(--ink)}
-.tier .range{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-family:'Oswald','Arial Narrow',Arial,sans-serif}
+.tier .range{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;font-family:'Space Grotesk','Manrope',sans-serif}
 .tier .members{font-size:13px;color:var(--ink-2);margin-top:4px}
-.tier .count{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;font-size:26px;color:var(--ink-2)}
+.tier .count{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:600;font-size:26px;color:var(--ink-2)}
 .tier .count small{font-size:11px;display:block;color:var(--ink-3);font-weight:400;letter-spacing:.1em}
 
 /* ---------- my progress / building ---------- */
 .me-head{display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
 select.agent-pick{
   background:var(--panel-2);color:var(--ink);border:1px solid var(--edge);
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:15px;letter-spacing:.05em;padding:10px 14px;min-width:220px;
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:15px;letter-spacing:.05em;padding:10px 14px;min-width:220px;
 }
 select.agent-pick[disabled]{opacity:.7}
 .stat-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
 .stat{background:var(--panel);border:1px solid var(--edge-dim);padding:18px 20px}
-.stat .v{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:34px;line-height:1;color:var(--ink)}
+.stat .v{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:700;font-size:34px;line-height:1;color:var(--ink)}
 .stat .v.gold{color:var(--gold-bright)}
 .stat .v.dim{color:var(--warn)}
-.stat .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif;margin-top:6px}
+.stat .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-family:'Space Grotesk','Manrope',sans-serif;margin-top:6px}
 .steps{display:grid;gap:0;counter-reset:step}
 .step{display:grid;grid-template-columns:44px 1fr auto;gap:16px;align-items:center;padding:13px 0;border-bottom:1px solid var(--edge-dim);position:relative}
 .step:last-child{border-bottom:none}
 .step .node{
   width:26px;height:26px;border:2px solid var(--ink-3);display:flex;align-items:center;justify-content:center;
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:12px;font-weight:600;color:var(--ink-3);margin:0 auto;position:relative;z-index:1;background:var(--panel);
+  font-family:'Space Grotesk','Manrope',sans-serif;font-size:12px;font-weight:600;color:var(--ink-3);margin:0 auto;position:relative;z-index:1;background:var(--panel);
 }
 .step.done .node{border-color:var(--gold);background:var(--gold);color:#0B0B0C}
 .step.pending .node{border-color:var(--warn);color:var(--warn)}
@@ -336,13 +349,13 @@ select.agent-pick[disabled]{opacity:.7}
 .step:not(.done) .t{color:var(--ink-2)}
 .step .d{font-size:12px;color:var(--ink-3)}
 .step .side{display:flex;align-items:center;gap:12px}
-.step .p{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;color:var(--ink-3);font-size:15px}
+.step .p{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:600;color:var(--ink-3);font-size:15px}
 .step.done .p{color:var(--gold)}
 .step::before{content:'';position:absolute;left:21px;top:0;bottom:0;width:2px;background:var(--panel-3)}
 .step:first-child::before{top:50%}
 .step:last-child::before{bottom:50%}
 .step.done::before{background:var(--gold-deep)}
-.step .cnt{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
+.step .cnt{font-family:'Space Grotesk','Manrope',sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
 
 /* ---------- tree ---------- */
 .tree{padding:8px 0}
@@ -355,32 +368,32 @@ select.agent-pick[disabled]{opacity:.7}
 .tcard:hover{border-color:var(--gold);box-shadow:0 0 16px rgba(201,162,39,.12)}
 .tcard .nm{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tcard .meta{font-size:11px;color:var(--ink-3)}
-.tcard .tog{font-family:'Oswald','Arial Narrow',Arial,sans-serif;color:var(--gold);font-size:16px;width:22px;height:22px;border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;flex:none}
+.tcard .tog{font-family:'Space Grotesk','Manrope',sans-serif;color:var(--gold);font-size:16px;width:22px;height:22px;border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;flex:none}
 .tkids{position:relative;margin-left:12px;border-left:1px solid var(--edge);padding-left:0}
 .tkids .tnode::before{content:'';position:absolute;left:0;top:26px;width:20px;height:1px;background:var(--edge)}
 .tkids.hid{display:none}
-.gen-tag{font-size:10px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.1em;color:var(--mark-blue);border:1px solid #31415E;padding:1px 6px;text-transform:uppercase}
+.gen-tag{font-size:10px;font-family:'Space Grotesk','Manrope',sans-serif;letter-spacing:.1em;color:var(--mark-blue);border:1px solid #31415E;padding:1px 6px;text-transform:uppercase}
 
 /* ---------- rewards ---------- */
 .rewards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
 .reward{background:var(--panel);border:1px solid var(--edge-dim);padding:26px 24px;position:relative;overflow:hidden}
 .reward.unlocked{border-color:var(--gold)}
-.reward .cost{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;font-size:40px;color:var(--ink-3);line-height:1}
+.reward .cost{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:700;font-size:40px;color:var(--ink-3);line-height:1}
 .reward.unlocked .cost{color:var(--gold-bright)}
 .reward h3{font-size:17px;margin:10px 0 4px}
 .reward p{font-size:13px;color:var(--ink-2)}
-.reward .lock{position:absolute;top:18px;right:18px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:10px;letter-spacing:.16em;color:var(--ink-3);border:1px solid var(--edge-dim);padding:3px 8px;text-transform:uppercase}
+.reward .lock{position:absolute;top:18px;right:18px;font-family:'Space Grotesk','Manrope',sans-serif;font-size:10px;letter-spacing:.16em;color:var(--ink-3);border:1px solid var(--edge-dim);padding:3px 8px;text-transform:uppercase}
 .reward.unlocked .lock{color:#0B0B0C;background:var(--gold);border-color:var(--gold)}
 .reward .pbar{height:5px;background:var(--panel-3);margin-top:18px}
 .reward .pbar i{display:block;height:100%;background:var(--mark-gold);width:0;transition:width .8s cubic-bezier(.2,.7,.3,1)}
-.reward .pnum{font-size:11px;color:var(--ink-3);margin-top:6px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.08em}
+.reward .pnum{font-size:11px;color:var(--ink-3);margin-top:6px;font-family:'Space Grotesk','Manrope',sans-serif;letter-spacing:.08em}
 .rules-note{font-size:12px;color:var(--ink-3);margin-top:22px;line-height:1.7}
 
 /* ---------- skills ---------- */
 .skill-grid{overflow-x:auto}
 .skill-grid table{border-collapse:collapse;width:100%;min-width:760px}
 .skill-grid th{
-  font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);
+  font-family:'Space Grotesk','Manrope',sans-serif;font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);
   padding:10px 8px;border-bottom:1px solid var(--edge);text-align:center;vertical-align:bottom;
 }
 .skill-grid th:first-child{text-align:left;padding-left:0}
@@ -394,7 +407,7 @@ select.agent-pick[disabled]{opacity:.7}
 .chk.on{background:var(--gold);border-color:var(--gold)}
 .chk.on::after{content:'✓';color:#0B0B0C;font-weight:700;font-size:13px}
 .chk[disabled]{cursor:default;pointer-events:none;opacity:.75}
-.skill-count{font-size:11px;color:var(--ink-3);font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.06em}
+.skill-count{font-size:11px;color:var(--ink-3);font-family:'Space Grotesk','Manrope',sans-serif;letter-spacing:.06em}
 
 /* ---------- approvals ---------- */
 .claim{
@@ -406,15 +419,16 @@ select.agent-pick[disabled]{opacity:.7}
 .claim .what{font-size:13px;color:var(--ink-2);margin-top:2px}
 .claim .note{font-size:12px;color:var(--ink-3);font-style:italic;margin-top:2px}
 .claim .acts{display:flex;gap:8px}
-.claim .pv{font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:600;color:var(--gold-bright)}
+.claim .pv{font-family:'Space Grotesk','Manrope',sans-serif;font-weight:600;color:var(--gold-bright)}
 
-footer{border-top:1px solid var(--edge-dim);margin-top:80px;padding:26px 20px;text-align:center;color:var(--ink-3);font-size:12px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase}
+footer{border-top:1px solid var(--edge-dim);margin-top:80px;padding:26px 20px;text-align:center;color:var(--ink-3);font-size:12px;font-family:'Space Grotesk','Manrope',sans-serif;letter-spacing:.2em;text-transform:uppercase}
 </style>
 </head>
 <body class="locked">
 <canvas id="dust" aria-hidden="true"></canvas>
 
 <div id="loginGate">
+  <video id="vaultVid" class="vault-vid" muted playsinline preload="auto" src="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/vault-open.mp4"></video>
   <div class="gate-card" id="gateCard">
     <div class="vault-door" aria-hidden="true">
       <svg viewBox="0 0 200 200">
@@ -697,7 +711,7 @@ function unlock(){
   route();
 }
 function resetGateFx(){
-  $('#loginGate').classList.remove('granted');
+  $('#loginGate').classList.remove('granted','playing');
   $('#gateCard').classList.remove('checking','deny','granted-door','deny-glow');
   gatePinBuf=''; drawDots();
   setStatus('Enter your code');
@@ -742,10 +756,31 @@ async function crackVault(){
       const id=$('#gateAgent').value, a=agentById(id);
       AUTH={id, pin:gatePinBuf, admin:!!(a&&a.is_admin)};
       saveSession();
-      card.classList.add('granted-door');
       setStatus('Access granted','ok');
-      $('#loginGate').classList.add('granted');
-      setTimeout(()=>{ unlock(); resetGateFx(); gateBusy=false; }, MOTION_OFF?250:1650);
+      const gate=$('#loginGate'), vid=$('#vaultVid');
+      if(!MOTION_OFF && vid && gate.classList.contains('cinema')){
+        // the real vault opens
+        gate.classList.add('playing');
+        let done=false;
+        const finish=()=>{
+          if(done) return; done=true;
+          gate.style.transition='opacity .7s ease'; gate.style.opacity='0';
+          setTimeout(()=>{
+            unlock(); resetGateFx();
+            gate.style.opacity=''; gate.style.transition='';
+            try{ vid.pause(); vid.currentTime=0; }catch(e){}
+            gateBusy=false;
+          }, 720);
+        };
+        vid.onended=finish;
+        setTimeout(finish, 7200);              // safety cap
+        gate.addEventListener('click', finish, {once:true}); // tap to skip
+        vid.play().catch(finish);
+      } else {
+        card.classList.add('granted-door');
+        gate.classList.add('granted');
+        setTimeout(()=>{ unlock(); resetGateFx(); gateBusy=false; }, MOTION_OFF?250:1650);
+      }
     } else {
       card.classList.add('deny','deny-glow');
       setStatus(err?('Vault sealed — '+(err.message||'try again')):'Access denied','no');
@@ -1192,6 +1227,16 @@ async function init(){
   }
   lock();
 }
+/* ================= CINEMA DOOR ================= */
+(function(){
+  const vid=document.getElementById('vaultVid');
+  if(!vid||reduceMotion) return;
+  const arm=()=>document.getElementById('loginGate').classList.add('cinema');
+  if(vid.readyState>=3) arm();
+  else vid.addEventListener('canplaythrough',arm,{once:true});
+  vid.addEventListener('error',()=>{ document.getElementById('loginGate').classList.remove('cinema'); },{once:true});
+})();
+
 /* ================= GOLD DUST ================= */
 (function(){
   if(reduceMotion) return;
