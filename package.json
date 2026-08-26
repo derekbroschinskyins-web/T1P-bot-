@@ -1,0 +1,14 @@
+{
+  "name": "t1p-whatsapp-bot",
+  "version": "1.0.0",
+  "description": "T1P WhatsApp leaderboard bot (Meta Cloud API). Zero npm dependencies.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {}
+}
