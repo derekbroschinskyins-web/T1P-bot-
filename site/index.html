@@ -578,6 +578,62 @@ body:not(.locked) #ticker{display:flex}
 .war-card .nums .deals b{color:#EAFFF4}
 .war-empty{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--neon-dim);line-height:2}
 
+/* ---------- goal hud / duel ---------- */
+#goalHud{margin-bottom:16px}
+.goal-bar{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.12em;
+  color:var(--neon-dim);text-transform:uppercase;
+}
+.goal-track{height:8px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);margin-top:6px;position:relative;border-radius:2px;overflow:hidden}
+.goal-track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--neon) 60%,var(--neon-bright));width:0;transition:width 1s cubic-bezier(.2,.7,.3,1);box-shadow:0 0 12px rgba(0,230,118,.5)}
+.goal-track.hit i{animation:goalGlow 1.6s ease-in-out infinite}
+@keyframes goalGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
+#duelCard .duel{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;
+  padding:14px 20px;margin-bottom:18px;background:rgba(3,10,6,.72);
+  border:1px solid rgba(0,230,118,.18);
+}
+.duel .side{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:17px}
+.duel .side small{display:block;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;color:var(--neon-dim);font-weight:400;margin-top:2px}
+.duel .side.rgt{text-align:right}
+.duel .vs{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.2em;color:#FF4D4D;text-shadow:0 0 8px rgba(255,60,60,.4)}
+.duel .lead{color:var(--neon-bright);text-shadow:0 0 10px rgba(0,230,118,.5)}
+.streak{
+  font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;color:#FFB454;
+  text-shadow:0 0 8px rgba(255,150,50,.5);letter-spacing:.02em;white-space:nowrap;
+}
+/* ---------- code storm (goal celebration) ---------- */
+#storm{position:fixed;inset:0;z-index:94;display:none;pointer-events:none}
+#storm.on{display:block}
+#storm canvas{position:absolute;inset:0}
+body.storming main{animation:stormShake .5s steps(3,end) 4}
+@keyframes stormShake{0%,100%{transform:translate(0)}30%{transform:translate(-3px,2px)}60%{transform:translate(3px,-2px)}}
+/* ---------- scripts ---------- */
+.script-search{
+  width:100%;max-width:420px;background:rgba(3,10,6,.8);color:var(--neon);
+  border:1px solid rgba(0,230,118,.3);border-radius:3px;padding:10px 14px;margin-bottom:20px;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;outline:none;
+}
+.script-search:focus{border-color:var(--neon)}
+.script-cat{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.2em;color:var(--neon);text-transform:uppercase;margin:22px 0 10px}
+.script-cat::before{content:'> '}
+.script{margin-bottom:10px;padding:16px 20px}
+.script h4{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:16px;margin-bottom:6px;cursor:pointer}
+.script .b{display:none;white-space:pre-wrap;color:var(--ink-2);font-size:14px;line-height:1.7}
+.script.open .b{display:block}
+.script h4::after{content:' +';color:var(--neon-dim)}
+.script.open h4::after{content:' −'}
+/* ---------- report ---------- */
+.report-pre{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.9;
+  color:var(--neon);white-space:pre-wrap;text-shadow:0 0 6px rgba(0,230,118,.3);
+}
+.report-pre .w{color:#EAFFF4;font-weight:700}
+/* ---------- tv mode ---------- */
+body.tv .topbar, body.tv footer, body.tv #ticker{display:none}
+body.tv main{max-width:none;padding:40px 60px}
+body.tv{font-size:19px}
+body.tv .page-h{font-size:64px}
 /* ---------- sound toggle ---------- */
 .snd-btn{
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--neon-dim);
@@ -632,11 +688,14 @@ body:not(.locked) #ticker{display:flex}
       <a href="#/rewards" data-v="rewards">Rewards</a>
       <a href="#/skills" data-v="skills">Skills</a>
       <a href="#/war" data-v="war">War Room</a>
+      <a href="#/scripts" data-v="scripts">Scripts</a>
+      <a href="#/report" data-v="report">Report</a>
       <a href="#/approvals" data-v="approvals" id="tabApprovals" class="hidden">Approvals</a>
     </nav>
     <span class="top-right">
       <span class="whoami" id="whoami"></span>
       <span class="live-dot" id="liveDot"><i></i><span id="liveTxt">Live</span></span>
+      <button class="snd-btn" id="bellBtn" title="Desktop alerts" aria-label="Enable alerts">◎</button>
       <button class="snd-btn" id="sndBtn" title="Sound on/off" aria-label="Toggle sound">▶))</button>
       <button class="logout-btn" id="logoutBtn" style="display:none">Log out</button>
     </span>
@@ -653,6 +712,8 @@ body:not(.locked) #ticker{display:flex}
       <h1 class="page-h">The Board Doesn't Lie</h1>
       <p class="page-sub">Two tracks. Points stack. Every dial, every deal, every recruit — counted once it's approved. Updates land for the whole floor in real time.</p>
     </div>
+    <div id="goalHud" class="rv"></div>
+    <div id="duelCard" class="rv"></div>
     <div class="boards">
       <div class="panel board rv">
         <h3><span class="swatch" style="background:var(--mark-gold)"></span>Top Builders</h3>
@@ -767,6 +828,23 @@ body:not(.locked) #ticker{display:flex}
     <div id="warBoard"></div>
   </section>
 
+  <!-- SCRIPTS -->
+  <section class="view" id="v-scripts">
+    <div class="rv"><div class="kicker">Playbook</div>
+    <h1 class="page-h">Scripts</h1>
+    <p class="page-sub">Every opener, rebuttal, and close — loaded for reading between dials. Know it cold.</p></div>
+    <input id="scriptSearch" class="script-search rv" placeholder="> search the playbook..." autocomplete="off">
+    <div id="scriptList"></div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="view" id="v-report">
+    <div class="rv"><div class="kicker">Weekly Debrief</div>
+    <h1 class="page-h">Heist Report</h1>
+    <p class="page-sub">The week's take, straight from the ledger.</p></div>
+    <div class="panel rv"><pre id="reportBody" class="report-pre"></pre></div>
+  </section>
+
   <!-- APPROVALS (admin) -->
   <section class="view" id="v-approvals">
     <div class="rv"><div class="kicker">Command Center</div>
@@ -781,6 +859,7 @@ body:not(.locked) #ticker{display:flex}
 <footer>T1P · Top One Percent · Run Your Lane</footer>
 
 <div id="ticker" aria-live="polite"><span class="tk-led"></span><span id="tickerTxt"></span></div>
+<div id="storm"><canvas id="stormCv"></canvas></div>
 
 <div id="promo" aria-hidden="true">
   <div class="promo-inner">
@@ -847,12 +926,15 @@ function demoData(){
     {id:'bella',name:'Bella',recruiter_id:'isaia',date_joined:'2026-05-01',is_admin:false},
     {id:'jon',name:'Jon',recruiter_id:'birch',date_joined:'2026-06-01',is_admin:false},
   ];
-  return {agents, log:[], skills:[]};
+  return {agents, log:[], skills:[], config:{daily_goal_points:'100'}, scripts:[
+    {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
+  ]};
 }
 
 /* ================= STATE ================= */
 let db=null, demo=false;
-let DATA={agents:[],log:[],skills:[]};
+let DATA={agents:[],log:[],skills:[],config:{},scripts:[]};
+let SPECTATE=false;
 let AUTH=null; // {id, pin, admin}
 let viewAgent=null; // whose page is displayed on me/building/rewards
 
@@ -997,6 +1079,7 @@ async function submitClaim(track, action, points){
   try{
     if(demo){
       DATA.log.push({id:Date.now(),agent_id:AUTH.id,track,action,points,status:'pending',earned_at:new Date().toISOString()});
+      try{ diffData(); }catch(e){}
     } else {
       const {error}=await db.rpc('submit_claim',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_track:track,p_action:action,p_points:points,p_note:null});
       if(error) throw error;
@@ -1049,8 +1132,61 @@ document.addEventListener('click',e=>{
   }
 });
 
+/* ================= GOALS / STREAKS / DUEL ================= */
+function dayKey(d){ const t=d?new Date(d):new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+function goalTarget(){ return Math.max(0, parseInt(DATA.config.daily_goal_points||'0',10)||0); }
+function todaysPoints(){
+  const k=dayKey();
+  return DATA.log.reduce((n,p)=>n+((approved(p)&&dayKey(p.earned_at)===k)?p.points:0),0);
+}
+function agentDayPoints(id){
+  const k=dayKey();
+  return DATA.log.reduce((n,p)=>n+((p.agent_id===id&&approved(p)&&dayKey(p.earned_at)===k)?p.points:0),0);
+}
+function streakOf(id){
+  const days=new Set(DATA.log.filter(p=>p.agent_id===id&&approved(p)).map(p=>dayKey(p.earned_at)));
+  if(!days.size) return 0;
+  let n=0; const d=new Date();
+  if(!days.has(dayKey(d))) d.setDate(d.getDate()-1); // today not logged yet — count from yesterday
+  while(days.has(dayKey(d))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+const flame=id=>{ const s=streakOf(id); return s>=2?` <span class="streak" title="${s}-day streak">▲${s}</span>`:''; };
+function renderGoalHud(){
+  const el=$('#goalHud'); if(!el) return;
+  const target=goalTarget();
+  if(!target){ el.innerHTML=''; return; }
+  const now=todaysPoints(), pct=Math.min(100, now/target*100), hit=now>=target;
+  el.innerHTML=`<div class="goal-bar">TODAY'S TARGET :: <span style="color:${hit?'var(--neon-bright)':'var(--neon)'}">${now} / ${target} PTS${hit?' — SMASHED':''}</span></div>
+    <div class="goal-track${hit?' hit':''}"><i data-w="${pct.toFixed(1)}"></i></div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const b=el.querySelector('.goal-track i'); if(b) b.style.width=b.dataset.w+'%';
+  }));
+}
+function duelPair(){
+  const pool=DATA.agents.filter(a=>!a.is_admin).sort((a,b)=>a.id.localeCompare(b.id));
+  if(pool.length<2) return null;
+  const k=dayKey(); let h=0;
+  for(const ch of k) h=(h*31+ch.charCodeAt(0))>>>0;
+  const i=h%pool.length; let j=(i+1+(h>>3)%(pool.length-1))%pool.length;
+  if(j===i) j=(i+1)%pool.length;
+  return [pool[i],pool[j]];
+}
+function renderDuel(){
+  const el=$('#duelCard'); if(!el) return;
+  const pr=duelPair();
+  if(!pr){ el.innerHTML=''; return; }
+  const [a,b]=pr, pa=agentDayPoints(a.id), pb=agentDayPoints(b.id);
+  el.innerHTML=`<div class="duel">
+    <div class="side${pa>=pb&&pa>0?' lead':''}">${esc(a.name)}<small>${pa} pts today</small></div>
+    <div class="vs">— DAILY DUEL —<br>VS</div>
+    <div class="side rgt${pb>pa?' lead':''}">${esc(b.name)}<small>${pb} pts today</small></div>
+  </div>`;
+}
+
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
+  renderGoalHud(); renderDuel();
   const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
   const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
   const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
@@ -1059,7 +1195,7 @@ function renderBoard(){
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
-        <div class="name">${esc(r.a.name)} ${badge(r.total)}</div>
+        <div class="name">${esc(r.a.name)}${flame(r.a.id)} ${badge(r.total)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
       <div class="pts">${val}<small>pts</small></div>
@@ -1311,9 +1447,9 @@ function renderApprovals(){
 }
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','approvals'];
 function route(){
-  if(!AUTH) return;
+  if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
   if(!VIEWS.includes(v)) v='board';
   if(v==='approvals'&&!isAdmin()) v='board';
@@ -1335,6 +1471,8 @@ function renderCurrent(name){
   else if(name==='rewards') renderRewards();
   else if(name==='skills') renderSkills();
   else if(name==='war') renderWar();
+  else if(name==='scripts') renderScripts();
+  else if(name==='report') renderReport();
   else if(name==='approvals') renderApprovals();
   if(isAdmin()) renderApprovals(); // keep tab count fresh
   enhance();
@@ -1445,10 +1583,21 @@ function fmtEv(p,kind){
 
 /* ================= DIFF ENGINE / CEREMONIES ================= */
 let PREV=null;
+const HYPE=[
+  "The scoreboard doesn't lie, and right now it's SCREAMING.",
+  "Another family protected. Another agent PAID.",
+  "One percent behavior detected.",
+  "The dial gods have been fed. They are pleased.",
+  "That's not a deal, that's a MESSAGE.",
+  "We don't chase deals at T1P. They surrender.",
+];
+const KILL_ACTIONS=new Set(['first_sale','referral_first_sale','month_5k','month_10k','month_15k','month_20k','referral_20k_month','second_gen_duplication']);
 function snapData(){
   return {
     rows:new Map(DATA.log.filter(p=>p.id!=null).map(p=>[p.id, p.status||'approved'])),
     totals:new Map(DATA.agents.map(a=>[a.id, totals(a.id).total])),
+    today:todaysPoints(),
+    goal:goalTarget(),
   };
 }
 function diffData(){
@@ -1465,6 +1614,10 @@ function diffData(){
       else if(approved(p)) tickerPush(fmtEv(p,'approved'));
     } else if(old==='pending'&&p.status==='approved'){
       tickerPush(fmtEv(p,'approved'));
+      if(KILL_ACTIONS.has(p.action)){
+        const a=agentById(p.agent_id);
+        setTimeout(()=>tickerPush(`<span class="dim">[KILL SHOT]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: ${esc(HYPE[Math.floor(Math.random()*HYPE.length)])}`), 4000);
+      }
       if(AUTH&&p.agent_id===AUTH.id) celebrate(p);
       else sApprove();
     } else if(old==='pending'&&p.status==='rejected'&&AUTH&&p.agent_id===AUTH.id){
@@ -1475,7 +1628,13 @@ function diffData(){
     const ot=PREV.totals.get(a.id);
     if(ot===undefined) continue;
     const nr=RANKS.indexOf(rankOf(totals(a.id).total)), or_=RANKS.indexOf(rankOf(ot));
-    if(nr>or_) queuePromo(a.name, RANKS[nr].name);
+    if(nr>or_){ queuePromo(a.name, RANKS[nr].name); notify('T1P — PROMOTION', a.name+' just hit '+RANKS[nr].name.toUpperCase()); }
+  }
+  // daily goal crossing — the code itself erupts, every open screen at once
+  const target=goalTarget();
+  if(target>0 && PREV.today<target && todaysPoints()>=target && PREV.goal===target){
+    codeStorm(`the floor put up ${todaysPoints()} points today`);
+    tickerPush(`<span class="dim">[GOAL]</span> ▸ DAILY TARGET SMASHED :: ${todaysPoints()}/${target} PTS`);
   }
   PREV=snapData();
 }
@@ -1523,6 +1682,24 @@ function palExec(raw){
   if(c==='logout'){ palClose(); lock(); return; }
   if(c==='goto'&&PAL_TABS[arg]){ location.hash='#/'+PAL_TABS[arg]; sKey(); return palClose(); }
   if(PAL_TABS[c]){ location.hash='#/'+PAL_TABS[c]; sKey(); return palClose(); }
+  if(c==='goal'){
+    if(!isAdmin()){ hint.innerHTML='<span class="err">clearance denied :: admin only</span>'; sDeny(); return; }
+    const n=parseInt(arg,10);
+    if(!Number.isFinite(n)||n<0){ hint.innerHTML='<span class="err">usage: goal 500</span>'; return; }
+    (async()=>{
+      try{
+        if(!demo){ const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'daily_goal_points',p_value:String(n)}); if(error) throw error; await loadAll(); }
+        else DATA.config.daily_goal_points=String(n);
+        hint.innerHTML=`daily target set :: <span class="hit">${n} pts</span>`; sKey(); rerender();
+      }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
+    })();
+    return;
+  }
+  if(c==='qr'){
+    const u='https://obtlrivpgdrxgydcpnqo.supabase.co/functions/v1/vault';
+    hint.innerHTML=`<div style="text-align:center;padding:8px"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=00E676&bgcolor=020503&data=${encodeURIComponent(u)}" width="180" height="180" style="border:1px solid rgba(0,230,118,.3)"><br><span class="dim" style="font-size:10px">${u}</span></div>`;
+    return;
+  }
   if(c==='stats'&&arg){
     const a=DATA.agents.find(x=>x.name.toLowerCase().startsWith(arg)||x.id.toLowerCase().startsWith(arg));
     if(!a){ hint.innerHTML='<span class="err">no such operative</span>'; sDeny(); return; }
@@ -1542,6 +1719,7 @@ document.addEventListener('keydown',e=>{
 });
 $('#palInput').addEventListener('keydown',e=>{
   if(e.key==='Enter') palExec(e.target.value);
+  else if(e.key==='Escape') palClose();
   e.stopPropagation();
 });
 $('#palette').addEventListener('click',e=>{ if(e.target.id==='palette') palClose(); });
@@ -1599,6 +1777,64 @@ document.addEventListener('click',e=>{
   sKey(); renderWar();
 });
 
+/* ================= SCRIPTS ================= */
+let scriptQ='';
+function renderScripts(){
+  const el=$('#scriptList'); if(!el) return;
+  const q=scriptQ.toLowerCase();
+  const rows=DATA.scripts.filter(s=>!q||s.title.toLowerCase().includes(q)||s.body.toLowerCase().includes(q)||s.category.toLowerCase().includes(q));
+  if(!rows.length){ el.innerHTML='<p class="war-empty">&gt; nothing in the playbook matches.</p>'; return; }
+  const cats=[...new Set(rows.map(s=>s.category))];
+  el.innerHTML=cats.map(c=>
+    `<div class="script-cat">${esc(c)}</div>`+
+    rows.filter(s=>s.category===c).map(s=>
+      `<div class="panel script rv" data-sid="${s.id}"><h4>${esc(s.title)}</h4><div class="b">${esc(s.body)}</div></div>`
+    ).join('')
+  ).join('');
+  observeReveals();
+}
+document.addEventListener('click',e=>{
+  const s=e.target.closest('.script'); if(!s) return;
+  s.classList.toggle('open'); sKey();
+});
+(function(){
+  const i=$('#scriptSearch'); if(!i) return;
+  i.addEventListener('input',()=>{ scriptQ=i.value; renderScripts(); });
+  i.addEventListener('keydown',e=>e.stopPropagation());
+})();
+
+/* ================= HEIST REPORT ================= */
+function renderReport(){
+  const el=$('#reportBody'); if(!el) return;
+  const now=new Date();
+  const start=new Date(now); start.setDate(start.getDate()-((start.getDay()+6)%7)); // monday
+  const sk=dayKey(start);
+  const wk=p=>approved(p)&&dayKey(p.earned_at)>=sk;
+  const per=DATA.agents.map(a=>({a, w:DATA.log.filter(p=>p.agent_id===a.id&&wk(p)).reduce((n,p)=>n+p.points,0), t:totals(a.id).total}))
+    .sort((x,y)=>y.w-x.w);
+  const total=per.reduce((n,r)=>n+r.w,0);
+  const top=per[0];
+  const pend=pendingRows().length;
+  const promos=per.filter(r=>r.w>0&&rankOf(r.t)!==rankOf(r.t-r.w));
+  const lines=[];
+  lines.push(`> T1P HEIST REPORT :: week of ${sk}`);
+  lines.push(`> compiled ${dayKey()} — the ledger doesn't lie`);
+  lines.push('');
+  lines.push(`  TOTAL TAKE ............ <span class="w">${total} PTS</span>`);
+  lines.push(`  OPERATIVE OF THE WEEK . <span class="w">${top&&top.w>0?top.a.name.toUpperCase()+' ('+top.w+' pts)':'UNCLAIMED'}</span>`);
+  lines.push(`  CLAIMS AWAITING JUDGE . ${pend}`);
+  if(promos.length) lines.push(`  PROMOTIONS ............ ${promos.map(r=>r.a.name.toUpperCase()+' → '+rankOf(r.t).name.toUpperCase()).join(', ')}`);
+  lines.push('');
+  lines.push('  THE WEEK, BY OPERATIVE');
+  per.forEach((r,i)=>{
+    const bar='█'.repeat(Math.min(30,Math.round(r.w/((top&&top.w)||1)*30)))||'·';
+    lines.push(`  ${String(i+1).padStart(2,'0')}. ${r.a.name.padEnd(10)} ${bar} ${r.w}`);
+  });
+  lines.push('');
+  lines.push('> run your lane.');
+  el.innerHTML=lines.join('\n');
+}
+
 /* ================= REVEALS ================= */
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let io=null;
@@ -1622,13 +1858,17 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s]=await Promise.all([
+  const [a,p,s,c,sc]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
+    db.from('config').select('*'),
+    db.from('scripts').select('*').order('sort'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
-  DATA={agents:a.data,log:p.data,skills:s.data};
+  DATA={agents:a.data,log:p.data,skills:s.data,
+    config:Object.fromEntries(((c&&c.data)||[]).map(r=>[r.key,r.value])),
+    scripts:(sc&&sc.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){
@@ -1647,9 +1887,21 @@ async function init(){
       .subscribe();
   }catch(err){
     demo=true; DATA=demoData(); setLive(false);
+    try{ diffData(); }catch(e){}
     setInterval(async()=>{
       try{ await loadAll(); if(DATA.agents.length){demo=false;setLive(true);rerender();} }catch(e){}
     },30000);
+  }
+  // TV mode: ?tv=1 — read-only big-screen rotation, no login
+  if(new URLSearchParams(location.search).has('tv')){
+    SPECTATE=true;
+    document.body.classList.add('tv');
+    document.body.classList.remove('locked');
+    route();
+    const ROT=['board','war','tree','report'];
+    let ri=0;
+    setInterval(()=>{ ri=(ri+1)%ROT.length; location.hash='#/'+ROT[ri]; }, 15000);
+    return;
   }
   fillGate();
   const s=loadSession();
@@ -1765,6 +2017,56 @@ function runBreach(name, done){
     }
   },50);
 })();
+
+/* ================= NOTIFICATIONS ================= */
+function canNotify(){ return 'Notification' in window && Notification.permission==='granted'; }
+function notify(title, body){
+  if(!canNotify()) return;
+  try{ new Notification(title,{body, tag:'t1p-'+title, silent:!sndEnabled()}); }catch(e){}
+}
+(function(){
+  const b=$('#bellBtn'); if(!b) return;
+  if(!('Notification' in window)){ b.style.display='none'; return; }
+  const paint=()=>{ b.textContent=canNotify()?'◉':'◎'; b.classList.toggle('off',!canNotify()); };
+  b.addEventListener('click',async()=>{ try{ await Notification.requestPermission(); }catch(e){} paint();
+    if(canNotify()) notify('T1P','Alerts armed. You will feel it when the floor scores.'); });
+  paint();
+})();
+
+/* ================= CODE STORM (goal celebration) ================= */
+function codeStorm(msg){
+  if(reduceMotion){ notify('T1P — TARGET HIT', msg); return; }
+  const wrap=$('#storm'), cv=$('#stormCv'); if(!wrap||!cv) return;
+  wrap.classList.add('on'); document.body.classList.add('storming');
+  const ctx=cv.getContext('2d');
+  const W=cv.width=innerWidth, H=cv.height=innerHeight;
+  const G='アイウエオカキクケコ0123456789$%#&+=*';
+  const cols=Math.floor(W/14);
+  const drops=Array.from({length:cols},()=>Math.random()*-H/14);
+  const t0=Date.now();
+  const t=setInterval(()=>{
+    ctx.fillStyle='rgba(2,5,3,.16)'; ctx.fillRect(0,0,W,H);
+    ctx.font='13px monospace';
+    for(let i=0;i<cols;i++){
+      ctx.fillStyle=Math.random()<.12?'#EAFFF4':'#00E676';
+      ctx.fillText(G[Math.floor(Math.random()*G.length)], i*14, drops[i]*14);
+      drops[i]+=2.4;
+      if(drops[i]*14>H&&Math.random()>.9) drops[i]=0;
+    }
+    if(Date.now()-t0>3800){
+      clearInterval(t);
+      ctx.clearRect(0,0,W,H);
+      wrap.classList.remove('on'); document.body.classList.remove('storming');
+    }
+  },33);
+  $('#promoName').textContent='TARGET SMASHED';
+  $('#promoRank').textContent=msg.toUpperCase();
+  document.querySelector('#promo .promo-k').textContent='// DAILY GOAL';
+  $('#promo').classList.add('on');
+  sPromo(); setTimeout(sPromo,500);
+  setTimeout(()=>$('#promo').classList.remove('on'), 3200);
+  notify('T1P — DAILY TARGET SMASHED', msg);
+}
 
 /* ================= GHOST TRANSMISSIONS ================= */
 (function(){
