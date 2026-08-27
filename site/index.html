@@ -1423,11 +1423,23 @@ function runBreach(name, done){
 })();
 
 init();
-// When served from Supabase, ping the sync endpoint so the hosted copy
-// refreshes itself from the repo. Harmless no-op anywhere else.
-if(location.hostname.endsWith('.supabase.co')){
-  fetch('/functions/v1/vault?sync=1').catch(()=>{});
-}
+// Stale-build guard: rawcdn URLs are pinned to one commit. If this copy is
+// behind main, hop to the front door which always serves the latest build.
+(function(){
+  const m=location.pathname.match(/\/T1P-bot-\/([0-9a-f]{40})\//i);
+  if(!m) return;
+  if(sessionStorage.getItem('t1p-hopped')===m[1]) return; // no loops
+  fetch('https://api.github.com/repos/derekbroschinskyins-web/T1P-bot-/commits/main',
+    {headers:{Accept:'application/vnd.github.sha'}})
+    .then(r=>r.ok?r.text():'')
+    .then(sha=>{
+      sha=sha.trim();
+      if(/^[0-9a-f]{40}$/.test(sha)&&sha!==m[1]){
+        sessionStorage.setItem('t1p-hopped',sha);
+        location.replace('https://obtlrivpgdrxgydcpnqo.supabase.co/functions/v1/vault');
+      }
+    }).catch(()=>{});
+})();
 </script>
 </body>
 </html>
