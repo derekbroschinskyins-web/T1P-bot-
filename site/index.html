@@ -629,6 +629,14 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
   color:var(--neon);white-space:pre-wrap;text-shadow:0 0 6px rgba(0,230,118,.3);
 }
 .report-pre .w{color:#EAFFF4;font-weight:700}
+/* ---------- commands manual ---------- */
+.cmd-row{display:grid;grid-template-columns:minmax(180px,340px) 1fr;gap:16px;padding:9px 0;border-bottom:1px solid rgba(0,230,118,.1);align-items:baseline}
+.cmd-row:last-child{border-bottom:none}
+.cmd-row code{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--neon);text-shadow:0 0 6px rgba(0,230,118,.35);word-break:break-word}
+.cmd-row span{font-size:13px;color:var(--ink-2)}
+.cmd-row span code{font-size:11.5px}
+.cmd-row em{color:var(--ink-3);font-style:normal;font-size:11px}
+@media(max-width:640px){.cmd-row{grid-template-columns:1fr;gap:2px}}
 /* ---------- tv mode ---------- */
 body.tv .topbar, body.tv footer, body.tv #ticker{display:none}
 body.tv main{max-width:none;padding:40px 60px}
@@ -690,6 +698,7 @@ body.tv .page-h{font-size:64px}
       <a href="#/war" data-v="war">War Room</a>
       <a href="#/scripts" data-v="scripts">Scripts</a>
       <a href="#/report" data-v="report">Report</a>
+      <a href="#/cmds" data-v="cmds">Commands</a>
       <a href="#/approvals" data-v="approvals" id="tabApprovals" class="hidden">Approvals</a>
     </nav>
     <span class="top-right">
@@ -843,6 +852,14 @@ body.tv .page-h{font-size:64px}
     <h1 class="page-h">Heist Report</h1>
     <p class="page-sub">The week's take, straight from the ledger.</p></div>
     <div class="panel rv"><pre id="reportBody" class="report-pre"></pre></div>
+  </section>
+
+  <!-- COMMANDS -->
+  <section class="view" id="v-cmds">
+    <div class="rv"><div class="kicker">Operator Manual</div>
+    <h1 class="page-h">Commands</h1>
+    <p class="page-sub">Every code the system answers to. Learn these and you never touch the mouse.</p></div>
+    <div id="cmdList"></div>
   </section>
 
   <!-- APPROVALS (admin) -->
@@ -1447,7 +1464,7 @@ function renderApprovals(){
 }
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','cmds','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -1473,6 +1490,7 @@ function renderCurrent(name){
   else if(name==='war') renderWar();
   else if(name==='scripts') renderScripts();
   else if(name==='report') renderReport();
+  else if(name==='cmds') renderCmds();
   else if(name==='approvals') renderApprovals();
   if(isAdmin()) renderApprovals(); // keep tab count fresh
   enhance();
@@ -1664,7 +1682,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
@@ -1802,6 +1820,58 @@ document.addEventListener('click',e=>{
   i.addEventListener('input',()=>{ scriptQ=i.value; renderScripts(); });
   i.addEventListener('keydown',e=>e.stopPropagation());
 })();
+
+/* ================= COMMANDS MANUAL ================= */
+function renderCmds(){
+  const el=$('#cmdList'); if(!el) return;
+  const row=(c,d)=>`<div class="cmd-row"><code>${c}</code><span>${d}</span></div>`;
+  const sec=(t,rows)=>`<div class="script-cat">${t}</div><div class="panel rv" style="padding:18px 22px">${rows.join('')}</div>`;
+  const consoleRows=[
+    row('/','open the console from anywhere on the site'),
+    row('goto board · ranks · me · building · tree · rewards · skills · war · scripts · report','jump straight to any tab'),
+    row('stats &lt;name&gt;','pull an operative\'s file — e.g. <code>stats alex</code>'+(isAdmin()?'':' <em>(your own file only)</em>')),
+    row('pending','jump to the approvals queue'),
+    row('qr','show a scannable QR of the vault link for recruiting'),
+    row('logout','seal the vault behind you'),
+    row('help','list commands in the console'),
+    row('esc','close the console'),
+  ];
+  const gateRows=[
+    row('0–9 · backspace · enter','type your passcode straight from the keyboard at the door'),
+    row('tap / click during the breach','skip the entry sequence'),
+  ];
+  const toggleRows=[
+    row('▶))','sound on/off — keypad ticks, fanfares, denial buzzes (remembered per device)'),
+    row('◎ / ◉','desktop alerts — get notified on target smashes and promotions even in another tab'),
+  ];
+  const urlRows=[
+    row('?tv=1','TV mode — no login, giant type, auto-rotates board → war room → tree → report; for the office screen'),
+  ];
+  const waRows=[
+    row('name Derek B','register on the WhatsApp line'),
+    row('dials 25 · 25 dials · d 25','log dials'),
+    row('pres 3 · 3 appts','log presentations'),
+    row('deals 1 · 1 sale','log deals'),
+    row('60','bare number counts as dials'),
+    row('me','your numbers today'),
+    row('board · week','standings, today or this week'),
+    row('undo','remove your last entry today'),
+  ];
+  const adminRows=[
+    row('goal 500','set the floor\'s daily points target — the code storm fires when it\'s hit'),
+    row('stats &lt;anyone&gt;','open any operative\'s file'),
+    row('announce &lt;text&gt;','(WhatsApp) blast a message to the whole roster'),
+    row('roster','(WhatsApp) list registered agents'),
+  ];
+  el.innerHTML=
+    sec('The Console — press <code>/</code>', consoleRows)+
+    sec('At The Door', gateRows)+
+    sec('Switches', toggleRows)+
+    sec('Special URLs', urlRows)+
+    sec('WhatsApp Line — text the business number', waRows)+
+    (isAdmin()?sec('Command Authority — admin only', adminRows):'');
+  observeReveals();
+}
 
 /* ================= HEIST REPORT ================= */
 function renderReport(){
