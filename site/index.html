@@ -422,7 +422,17 @@ select.agent-pick[disabled]{opacity:.7}
 .step.done::before{background:var(--gold-deep)}
 .step .cnt{font-family:'General Sans','Instrument Sans',sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
 
-/* ---------- tree ---------- */
+/* ---------- tree (network graph) ---------- */
+.tl{fill:none;stroke:rgba(0,230,118,.35);stroke-width:1.5}
+.tc{fill:#04120a;stroke-width:2}
+.tc-halo{fill:none;stroke-width:1;opacity:.35;animation:halo 3s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.15;r:20}50%{opacity:.5;r:24}}
+.tn{cursor:pointer}
+.tn:hover .tc{filter:drop-shadow(0 0 8px rgba(0,230,118,.7))}
+.ti{font-family:'Clash Display','General Sans',sans-serif;font-size:14px;font-weight:700;text-anchor:middle}
+.tname{font-family:'General Sans',sans-serif;font-size:13px;font-weight:600;fill:var(--ink);text-anchor:middle}
+.tmeta{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:var(--neon-dim);text-anchor:middle}
+@media (prefers-reduced-motion: reduce){.tc-halo{animation:none}}
 .tree{padding:8px 0}
 .tnode{position:relative;padding-left:26px}
 .tree>.tnode{padding-left:0}
@@ -486,7 +496,91 @@ select.agent-pick[disabled]{opacity:.7}
 .claim .acts{display:flex;gap:8px}
 .claim .pv{font-family:'General Sans','Instrument Sans',sans-serif;font-weight:600;color:var(--gold-bright)}
 
-footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20px;text-align:center;color:var(--neon-dim);font-size:11px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase}
+footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20px 56px;text-align:center;color:var(--neon-dim);font-size:11px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase}
+
+/* ---------- live wire ticker ---------- */
+#ticker{
+  position:fixed;left:0;right:0;bottom:0;z-index:55;display:none;align-items:center;gap:10px;
+  padding:7px 16px;background:rgba(2,8,4,.92);border-top:1px solid rgba(0,230,118,.25);
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon);
+  text-shadow:0 0 6px rgba(0,230,118,.35);white-space:nowrap;overflow:hidden;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+body:not(.locked) #ticker{display:flex}
+.tk-led{width:7px;height:7px;border-radius:50%;background:var(--neon);flex:none;animation:pulse 1.6s infinite;box-shadow:0 0 8px rgba(0,230,118,.8)}
+#tickerTxt{overflow:hidden;text-overflow:ellipsis}
+#tickerTxt .dim{color:var(--neon-dim)}
+
+/* ---------- promotion ceremony ---------- */
+#promo{
+  position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
+  background:rgba(2,5,3,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+#promo.on{display:flex;animation:promoIn .25s ease}
+@keyframes promoIn{from{opacity:0}}
+.promo-inner{text-align:center;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;animation:rgbTear .5s steps(2,end) infinite}
+.promo-k{font-size:13px;letter-spacing:.3em;color:var(--neon-dim);text-transform:uppercase}
+.promo-name{
+  font-family:'Clash Display','General Sans',sans-serif;font-weight:700;
+  font-size:clamp(44px,9vw,96px);line-height:1.1;color:#EAFFF4;
+  text-shadow:0 0 40px rgba(0,230,118,.6);margin:8px 0 4px;
+}
+.promo-rank{font-size:clamp(16px,3vw,24px);letter-spacing:.2em;color:var(--neon-bright);text-transform:uppercase;text-shadow:0 0 16px rgba(0,230,118,.6)}
+
+/* ---------- command palette ---------- */
+#palette{
+  position:fixed;inset:0;z-index:95;display:none;align-items:flex-start;justify-content:center;
+  padding-top:16vh;background:rgba(2,5,3,.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+#palette.on{display:flex}
+.pal-box{
+  width:min(560px,92vw);background:rgba(2,10,5,.96);border:1px solid rgba(0,230,118,.35);
+  border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,.7), 0 0 30px rgba(0,230,118,.12);
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;overflow:hidden;
+}
+.pal-row{display:flex;align-items:center;gap:10px;padding:14px 16px}
+.pal-ps{color:var(--neon-bright);flex:none}
+#palInput{
+  flex:1;background:transparent;border:none;outline:none;color:var(--neon);
+  font:inherit;font-size:14px;text-shadow:0 0 6px rgba(0,230,118,.35);caret-color:var(--neon);
+}
+#palInput::placeholder{color:var(--ink-3)}
+#palHint{border-top:1px solid rgba(0,230,118,.14);padding:8px 16px 12px;font-size:12px;color:var(--neon-dim);line-height:2}
+#palHint .hit{color:var(--neon)}
+#palHint .err{color:#FF4D4D}
+
+/* ---------- heatmap ---------- */
+.heatmap{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,12px);gap:3px;overflow-x:auto;padding-bottom:6px}
+.heatmap i{width:12px;height:12px;border-radius:2px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.08)}
+.heatmap i.h1{background:rgba(0,230,118,.22)}
+.heatmap i.h2{background:rgba(0,230,118,.45)}
+.heatmap i.h3{background:rgba(0,230,118,.7);box-shadow:0 0 6px rgba(0,230,118,.35)}
+.heatmap i.h4{background:var(--neon-bright);box-shadow:0 0 8px rgba(0,230,118,.6)}
+
+/* ---------- war room ---------- */
+.war-range{display:flex;gap:8px}
+.war-r.on{background:var(--neon);color:#02120a;text-shadow:none;border-color:var(--neon)}
+.war-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.war-card{padding:18px 20px}
+.war-card .nm{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:18px;margin-bottom:10px}
+.war-card .nums{display:flex;gap:18px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
+.war-card .nums b{display:block;font-size:26px;font-weight:700;color:var(--neon-bright);text-shadow:0 0 10px rgba(0,230,118,.4)}
+.war-card .nums span{font-size:9px;letter-spacing:.14em;color:var(--neon-dim);text-transform:uppercase}
+.war-card .nums .deals b{color:#EAFFF4}
+.war-empty{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--neon-dim);line-height:2}
+
+/* ---------- sound toggle ---------- */
+.snd-btn{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--neon-dim);
+  border:1px solid rgba(0,230,118,.2);padding:4px 8px;border-radius:3px;letter-spacing:.05em;
+}
+.snd-btn:hover{color:var(--neon);border-color:rgba(0,230,118,.5)}
+.snd-btn.off{color:var(--ink-3);text-decoration:line-through}
+
+@media (prefers-reduced-motion: reduce){
+  .promo-inner{animation:none}
+  .tk-led{animation:none}
+}
 </style>
 </head>
 <body class="locked">
@@ -528,11 +622,13 @@ footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20p
       <a href="#/tree" data-v="tree">Duplication Tree</a>
       <a href="#/rewards" data-v="rewards">Rewards</a>
       <a href="#/skills" data-v="skills">Skills</a>
+      <a href="#/war" data-v="war">War Room</a>
       <a href="#/approvals" data-v="approvals" id="tabApprovals" class="hidden">Approvals</a>
     </nav>
     <span class="top-right">
       <span class="whoami" id="whoami"></span>
       <span class="live-dot" id="liveDot"><i></i><span id="liveTxt">Live</span></span>
+      <button class="snd-btn" id="sndBtn" title="Sound on/off" aria-label="Toggle sound">▶))</button>
       <button class="logout-btn" id="logoutBtn" style="display:none">Log out</button>
     </span>
   </div>
@@ -583,6 +679,12 @@ footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20p
       <select class="agent-pick" id="agentPick" aria-label="Select agent"></select>
     </div>
     <div class="stat-tiles rv" id="meStats"></div>
+    <div class="panel rv">
+      <h3 class="disp" style="font-size:18px">Activity Log</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim)">points earned per day — deeper green, bigger day</div>
+      <div class="rule"></div>
+      <div id="heatmap" class="heatmap"></div>
+    </div>
     <div class="panel rv">
       <h3 class="disp" style="font-size:18px">The $20K Ladder</h3>
       <div class="hint" style="font-size:12px;color:var(--ink-3)">Nine steps from licensed to duplicating yourself. Submit a step when you hit it — Derek approves, points land.</div>
@@ -642,6 +744,21 @@ footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20p
     </div>
   </section>
 
+  <!-- WAR ROOM -->
+  <section class="view" id="v-war">
+    <div class="rv"><div class="kicker">Comms Intercept</div>
+    <h1 class="page-h">War Room</h1>
+    <p class="page-sub">Live wire from the phones — every dial, presentation, and deal your agents text in, straight off the WhatsApp line.</p></div>
+    <div class="me-head rv" style="margin-bottom:14px">
+      <div class="war-range">
+        <button class="btn ghost war-r on" data-days="1">Today</button>
+        <button class="btn ghost war-r" data-days="7">7 Days</button>
+        <button class="btn ghost war-r" data-days="30">30 Days</button>
+      </div>
+    </div>
+    <div id="warBoard"></div>
+  </section>
+
   <!-- APPROVALS (admin) -->
   <section class="view" id="v-approvals">
     <div class="rv"><div class="kicker">Command Center</div>
@@ -654,6 +771,23 @@ footer{border-top:1px solid rgba(0,230,118,.14);margin-top:80px;padding:26px 20p
 </main>
 
 <footer>T1P · Top One Percent · Run Your Lane</footer>
+
+<div id="ticker" aria-live="polite"><span class="tk-led"></span><span id="tickerTxt"></span></div>
+
+<div id="promo" aria-hidden="true">
+  <div class="promo-inner">
+    <div class="promo-k">// PROMOTION DETECTED</div>
+    <div class="promo-name" id="promoName"></div>
+    <div class="promo-rank" id="promoRank"></div>
+  </div>
+</div>
+
+<div id="palette">
+  <div class="pal-box">
+    <div class="pal-row"><span class="pal-ps">t1p&gt;</span><input id="palInput" autocomplete="off" spellcheck="false" placeholder="type a command — try: goto tree · stats alex · pending · help"></div>
+    <div id="palHint"></div>
+  </div>
+</div>
 
 <script>
 'use strict';
@@ -812,6 +946,7 @@ async function crackVault(){
       AUTH={id, pin:gatePinBuf, admin:!!(a&&a.is_admin)};
       saveSession();
       setStatus('ACCESS GRANTED','ok');
+      sGrant();
       if(!MOTION_OFF){
         runBreach(a?a.name:id, ()=>{ unlock(); resetGateFx(); gateBusy=false; });
       } else {
@@ -820,6 +955,7 @@ async function crackVault(){
       }
     } else {
       card.classList.add('deny');
+      sDeny();
       setStatus(err?('LINK FAILURE :: '+(err.message||'retry')):'ACCESS DENIED :: INTRUSION LOGGED','no');
       setTimeout(()=>{
         card.classList.remove('deny');
@@ -830,6 +966,7 @@ async function crackVault(){
 }
 $('#keypad').addEventListener('click',e=>{
   const k=e.target.closest('.key'); if(!k||gateBusy) return;
+  sKey();
   const v=k.dataset.k;
   if(v==='go') return void crackVault();
   if(v==='del'){ gatePinBuf=gatePinBuf.slice(0,-1); }
@@ -875,9 +1012,11 @@ async function awardDirect(agentId, track, action, points){
 }
 async function decideClaim(id, approve){
   if(!isAdmin()) return;
+  if(approve) sApprove(); else sDeny();
   try{
     if(demo){
       const c=DATA.log.find(p=>p.id===id); if(c) c.status=approve?'approved':'rejected';
+      try{ diffData(); }catch(e){}
     } else {
       const {error}=await db.rpc('decide_claim',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_claim_id:id,p_approve:approve});
       if(error) throw error;
@@ -977,6 +1116,7 @@ function renderMe(){
     ${t.pend?`<div class="stat"><div class="v dim">${t.pend}</div><div class="l">Pending Approval</div></div>`:''}
     <div class="stat"><div class="v" style="color:${r.c}">${esc(r.name)}</div><div class="l">Current Rank</div></div>
     <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>`;
+  renderHeat(a.id);
   $('#meSteps').innerHTML=LADDER_STEPS.map((s,i)=>{
     const done=doneActions.has(s.action);
     const pend=!done&&pendActions.has(s.action);
@@ -1026,26 +1166,56 @@ function renderBuilding(){
   }).join('');
 }
 
-/* ================= RENDER: TREE ================= */
+/* ================= RENDER: TREE (network graph) ================= */
 function renderTree(){
+  const el=$('#tree');
   const kids=id=>DATA.agents.filter(a=>a.recruiter_id===id).sort((a,b)=>new Date(a.date_joined)-new Date(b.date_joined));
   const downline=id=>kids(id).reduce((n,k)=>n+1+downline(k.id),0);
-  const node=(a,gen)=>{
-    const t=totals(a.id), ks=kids(a.id), dl=downline(a.id);
-    return `<div class="tnode">
-      <div class="tcard" ${ks.length?`data-tog="${esc(a.id)}" role="button" tabindex="0" aria-expanded="true"`:''}>
-        ${ks.length?`<span class="tog">−</span>`:''}
-        <div style="min-width:0">
-          <div class="nm">${esc(a.name)} ${badge(t.total)} ${gen>1?`<span class="gen-tag">Gen ${gen}</span>`:''}</div>
-          <div class="meta">${t.total} pts${dl?` · ${dl} in downline`:''} · joined ${a.date_joined}</div>
-        </div>
-      </div>
-      ${ks.length?`<div class="tkids" data-kids="${esc(a.id)}">${ks.map(k=>node(k,gen+1)).join('')}</div>`:''}
-    </div>`;
-  };
   const roots=DATA.agents.filter(a=>!a.recruiter_id);
-  $('#tree').innerHTML=roots.map(r=>node(r,1)).join('') || '<p style="color:var(--ink-3)">No agents yet.</p>';
+  if(!roots.length){ el.innerHTML='<p class="war-empty">&gt; no agents yet.</p>'; return; }
+  const NW=150, NH=100;
+  let leafX=0;
+  const pos=new Map();
+  function place(a,depth){
+    const ks=kids(a.id);
+    let x;
+    if(!ks.length){ x=leafX; leafX+=1; }
+    else{
+      const xs=ks.map(k=>place(k,depth+1));
+      x=(Math.min(...xs)+Math.max(...xs))/2;
+    }
+    pos.set(a.id,{x,y:depth});
+    return x;
+  }
+  roots.forEach((r,i)=>{ place(r,0); if(i<roots.length-1) leafX+=0.5; });
+  const ps=[...pos.values()];
+  const W=(Math.max(...ps.map(p=>p.x))+1)*NW+40;
+  const H=(Math.max(...ps.map(p=>p.y))+1)*NH+40;
+  const X=p=>20+p.x*NW+NW/2, Y=p=>34+p.y*NH;
+  let lines='', nodes='';
+  for(const a of DATA.agents){
+    const p=pos.get(a.id); if(!p) continue;
+    if(a.recruiter_id&&pos.has(a.recruiter_id)){
+      const q=pos.get(a.recruiter_id);
+      lines+=`<path class="tl" d="M${X(q)},${Y(q)+17} C ${X(q)},${Y(q)+58} ${X(p)},${Y(p)-52} ${X(p)},${Y(p)-17}"/>`;
+    }
+    const t=totals(a.id), r=rankOf(t.total), dl=downline(a.id);
+    nodes+=`<g class="tn" data-nav="${esc(a.id)}" transform="translate(${X(p)},${Y(p)})">
+      <circle class="tc-halo" r="22" style="stroke:${r.c}"/>
+      <circle class="tc" r="15" style="stroke:${r.c}"/>
+      <text class="ti" y="4.5" style="fill:${r.c}">${esc(a.name[0].toUpperCase())}</text>
+      <text class="tname" y="36">${esc(a.name)}</text>
+      <text class="tmeta" y="50">${t.total} pts${dl?` · ${dl} in downline`:''}</text>
+    </g>`;
+  }
+  el.innerHTML=`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;min-width:${Math.min(W,700)}px;height:auto;display:block;margin:0 auto">${lines}${nodes}</svg></div>
+    <p class="war-empty" style="margin-top:10px;font-size:11px">&gt; tap a node to open that operative's file</p>`;
 }
+document.addEventListener('click',e=>{
+  const n=e.target.closest('.tn'); if(!n) return;
+  const id=n.dataset.nav;
+  if(isAdmin()||(AUTH&&AUTH.id===id)){ viewAgent=id; location.hash='#/me'; fillAgentPicks(); rerenderView(); }
+});
 document.addEventListener('click',e=>{
   const c=e.target.closest('[data-tog]'); if(!c) return;
   const kids=document.querySelector(`[data-kids="${CSS.escape(c.dataset.tog)}"]`);
@@ -1133,7 +1303,7 @@ function renderApprovals(){
 }
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','approvals'];
 function route(){
   if(!AUTH) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -1156,6 +1326,7 @@ function renderCurrent(name){
   else if(name==='tree') renderTree();
   else if(name==='rewards') renderRewards();
   else if(name==='skills') renderSkills();
+  else if(name==='war') renderWar();
   else if(name==='approvals') renderApprovals();
   if(isAdmin()) renderApprovals(); // keep tab count fresh
   enhance();
@@ -1220,6 +1391,206 @@ function rerenderView(){
 }
 window.addEventListener('hashchange',route);
 
+/* ================= AUDIO ================= */
+let AC=null;
+const sndEnabled=()=>{ try{return localStorage.getItem('t1p-mute')!=='1';}catch(e){return true;} };
+function beep(f,dur,type,gain,slide){
+  if(!sndEnabled()||reduceMotion) return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended') AC.resume();
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type=type||'square'; o.frequency.value=f;
+    if(slide) o.frequency.linearRampToValueAtTime(f+slide, AC.currentTime+dur);
+    g.gain.value=gain||.05;
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime+dur);
+    o.connect(g); g.connect(AC.destination);
+    o.start(); o.stop(AC.currentTime+dur);
+  }catch(e){}
+}
+const sKey=()=>beep(880,.045,'square',.035);
+const sDeny=()=>beep(130,.28,'sawtooth',.09);
+const sGrant=()=>{beep(520,.09,'square',.05,300); setTimeout(()=>beep(780,.13,'square',.05,240),90);};
+const sApprove=()=>beep(660,.09,'triangle',.08,260);
+const sPromo=()=>[440,554,659,880].forEach((f,i)=>setTimeout(()=>beep(f,.16,'triangle',.07),i*110));
+(function(){
+  const b=$('#sndBtn'); if(!b) return;
+  const paint=()=>{ b.classList.toggle('off',!sndEnabled()); b.textContent=sndEnabled()?'▶))':'▶'; };
+  b.addEventListener('click',()=>{ try{localStorage.setItem('t1p-mute',sndEnabled()?'1':'0');}catch(e){} paint(); if(sndEnabled()) sKey(); });
+  paint();
+})();
+
+/* ================= LIVE WIRE TICKER ================= */
+function tickerPush(html){
+  const el=$('#tickerTxt'); if(!el) return;
+  el.innerHTML=html;
+}
+function fmtEv(p,kind){
+  const t=new Date(p.earned_at||Date.now());
+  const hh=String(t.getHours()).padStart(2,'0'), mm=String(t.getMinutes()).padStart(2,'0');
+  const a=agentById(p.agent_id);
+  const who=(a?a.name:p.agent_id||'?').toUpperCase();
+  const what=(ACTION_LABEL[p.action]||p.action||'').toUpperCase();
+  const k=kind==='pending'?'CLAIM PENDING':kind==='approved'?`+${p.points} APPROVED`:kind==='rejected'?'CLAIM REJECTED':'ON RECORD';
+  return `<span class="dim">[${hh}:${mm}]</span> ▸ ${esc(who)} :: ${k} :: ${esc(what)}`;
+}
+
+/* ================= DIFF ENGINE / CEREMONIES ================= */
+let PREV=null;
+function snapData(){
+  return {
+    rows:new Map(DATA.log.filter(p=>p.id!=null).map(p=>[p.id, p.status||'approved'])),
+    totals:new Map(DATA.agents.map(a=>[a.id, totals(a.id).total])),
+  };
+}
+function diffData(){
+  if(!PREV){
+    const recent=DATA.log.filter(approved).slice(-1);
+    if(recent.length) tickerPush(fmtEv(recent[0],'log'));
+    PREV=snapData(); return;
+  }
+  for(const p of DATA.log){
+    if(p.id==null) continue;
+    const old=PREV.rows.get(p.id);
+    if(old===undefined){
+      if(p.status==='pending') tickerPush(fmtEv(p,'pending'));
+      else if(approved(p)) tickerPush(fmtEv(p,'approved'));
+    } else if(old==='pending'&&p.status==='approved'){
+      tickerPush(fmtEv(p,'approved'));
+      if(AUTH&&p.agent_id===AUTH.id) celebrate(p);
+      else sApprove();
+    } else if(old==='pending'&&p.status==='rejected'&&AUTH&&p.agent_id===AUTH.id){
+      tickerPush(fmtEv(p,'rejected')); sDeny();
+    }
+  }
+  for(const a of DATA.agents){
+    const ot=PREV.totals.get(a.id);
+    if(ot===undefined) continue;
+    const nr=RANKS.indexOf(rankOf(totals(a.id).total)), or_=RANKS.indexOf(rankOf(ot));
+    if(nr>or_) queuePromo(a.name, RANKS[nr].name);
+  }
+  PREV=snapData();
+}
+const promoQ=[];
+let promoBusy=false;
+function queuePromo(name, rank){ promoQ.push({name,rank}); pumpPromo(); }
+function pumpPromo(){
+  if(promoBusy||!promoQ.length||!AUTH) return;
+  promoBusy=true;
+  const {name,rank}=promoQ.shift();
+  $('#promoName').textContent=name.toUpperCase();
+  $('#promoRank').textContent='RANK ACHIEVED :: '+rank.toUpperCase();
+  document.querySelector('#promo .promo-k').textContent='// PROMOTION DETECTED';
+  $('#promo').classList.add('on');
+  sPromo();
+  if(!reduceMotion) decodeEl($('#promoName'));
+  setTimeout(()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); }, 3000);
+}
+function celebrate(p){
+  $('#promoName').textContent='+'+p.points;
+  $('#promoRank').textContent=(ACTION_LABEL[p.action]||p.action).toUpperCase();
+  document.querySelector('#promo .promo-k').textContent='// CLAIM APPROVED';
+  $('#promo').classList.add('on');
+  sApprove();
+  setTimeout(()=>$('#promo').classList.remove('on'), 1700);
+}
+document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
+
+/* ================= COMMAND PALETTE ================= */
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',approvals:'approvals',pending:'approvals'};
+function palOpen(){
+  if(!AUTH) return;
+  $('#palette').classList.add('on');
+  const i=$('#palInput'); i.value='';
+  $('#palHint').innerHTML='<span class="hit">goto</span> board·ranks·me·building·tree·rewards·skills·war &nbsp;·&nbsp; <span class="hit">stats</span> &lt;name&gt; &nbsp;·&nbsp; <span class="hit">pending</span> &nbsp;·&nbsp; <span class="hit">logout</span>';
+  setTimeout(()=>i.focus(),0);
+}
+function palClose(){ $('#palette').classList.remove('on'); }
+function palExec(raw){
+  const hint=$('#palHint');
+  const parts=raw.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if(!parts.length) return palClose();
+  const [c,arg]=parts;
+  if(c==='help'){ hint.innerHTML='<span class="hit">goto</span> &lt;tab&gt; · <span class="hit">stats</span> &lt;name&gt; · <span class="hit">pending</span> · <span class="hit">logout</span>'; return; }
+  if(c==='logout'){ palClose(); lock(); return; }
+  if(c==='goto'&&PAL_TABS[arg]){ location.hash='#/'+PAL_TABS[arg]; sKey(); return palClose(); }
+  if(PAL_TABS[c]){ location.hash='#/'+PAL_TABS[c]; sKey(); return palClose(); }
+  if(c==='stats'&&arg){
+    const a=DATA.agents.find(x=>x.name.toLowerCase().startsWith(arg)||x.id.toLowerCase().startsWith(arg));
+    if(!a){ hint.innerHTML='<span class="err">no such operative</span>'; sDeny(); return; }
+    if(!isAdmin()&&AUTH.id!==a.id){ hint.innerHTML='<span class="err">clearance denied :: admin only</span>'; sDeny(); return; }
+    viewAgent=a.id; location.hash='#/me'; fillAgentPicks(); rerenderView(); sKey();
+    return palClose();
+  }
+  hint.innerHTML='<span class="err">unknown command</span> — try <span class="hit">help</span>';
+  sDeny();
+}
+document.addEventListener('keydown',e=>{
+  if(document.body.classList.contains('locked')) return;
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(e.key==='/'&&!$('#palette').classList.contains('on')&&tag!=='input'&&tag!=='select'&&tag!=='textarea'){
+    e.preventDefault(); palOpen();
+  } else if(e.key==='Escape') palClose();
+});
+$('#palInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') palExec(e.target.value);
+  e.stopPropagation();
+});
+$('#palette').addEventListener('click',e=>{ if(e.target.id==='palette') palClose(); });
+
+/* ================= HEATMAP ================= */
+function renderHeat(agentId){
+  const el=$('#heatmap'); if(!el) return;
+  const byDay=new Map();
+  for(const p of DATA.log){
+    if(p.agent_id!==agentId||!approved(p)) continue;
+    const d=String(p.earned_at).slice(0,10);
+    byDay.set(d,(byDay.get(d)||0)+p.points);
+  }
+  const DAYS=140, cells=[];
+  const today=new Date();
+  const start=new Date(today); start.setDate(start.getDate()-(DAYS-1));
+  const pad=start.getDay(); // align first column to week
+  for(let i=0;i<pad;i++) cells.push('<i style="visibility:hidden"></i>');
+  for(let i=0;i<DAYS;i++){
+    const d=new Date(start); d.setDate(start.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const v=byDay.get(key)||0;
+    const cls=v>=150?'h4':v>=75?'h3':v>=25?'h2':v>0?'h1':'';
+    cells.push(`<i class="${cls}" title="${key} · ${v} pts"></i>`);
+  }
+  el.innerHTML=cells.join('');
+}
+
+/* ================= WAR ROOM ================= */
+let warDays=1;
+async function renderWar(){
+  const el=$('#warBoard'); if(!el) return;
+  const offline=`<p class="war-empty">&gt; no comms traffic in range.<br>&gt; whatsapp line status: <span style="color:#FF4D4D">OFFLINE</span> — the bot isn't deployed yet.<br>&gt; the second it goes live, every dial your agents text in lands here in real time.</p>`;
+  if(demo||!db){ el.innerHTML=offline; return; }
+  try{
+    const {data,error}=await db.rpc('wa_board',{p_days:warDays});
+    if(error) throw error;
+    if(!data||!data.length){ el.innerHTML=offline; return; }
+    el.innerHTML='<div class="war-grid">'+data.map(r=>`
+      <div class="panel war-card rv">
+        <div class="nm">${esc(r.agent)}</div>
+        <div class="nums">
+          <div><b>${r.dials}</b><span>dials</span></div>
+          <div><b>${r.presentations}</b><span>pres</span></div>
+          <div class="deals"><b>${r.deals}</b><span>deals</span></div>
+        </div>
+      </div>`).join('')+'</div>';
+    observeReveals(); enhance();
+  }catch(e){ el.innerHTML=offline; }
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.war-r'); if(!b) return;
+  warDays=Number(b.dataset.days)||1;
+  document.querySelectorAll('.war-r').forEach(x=>x.classList.toggle('on',x===b));
+  sKey(); renderWar();
+});
+
 /* ================= REVEALS ================= */
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let io=null;
@@ -1250,6 +1621,7 @@ async function loadAll(){
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data};
+  try{ diffData(); }catch(e){}
 }
 function rerender(){
   fillAgentPicks();
