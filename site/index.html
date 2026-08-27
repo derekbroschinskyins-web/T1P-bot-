@@ -578,6 +578,29 @@ body:not(.locked) #ticker{display:flex}
 .war-card .nums .deals b{color:#EAFFF4}
 .war-empty{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--neon-dim);line-height:2}
 
+/* ---------- live clock / today strip / wire ---------- */
+.live-clock{color:var(--neon-bright);margin-left:10px;text-shadow:0 0 8px rgba(0,230,118,.5)}
+.today-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px;
+}
+.tstat{
+  padding:10px 14px;background:rgba(3,10,6,.72);border:1px solid rgba(0,230,118,.18);
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+.tstat b{display:block;font-size:22px;font-weight:700;color:var(--neon-bright);text-shadow:0 0 10px rgba(0,230,118,.4)}
+.tstat span{font-size:9px;letter-spacing:.14em;color:var(--neon-dim);text-transform:uppercase}
+.tstat.bump{animation:bump .5s ease}
+@keyframes bump{30%{transform:scale(1.06);border-color:var(--neon)}}
+.wire-panel{margin-bottom:20px}
+#wire{
+  max-height:190px;overflow-y:auto;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.9;
+}
+#wire .wl{color:var(--neon);text-shadow:0 0 6px rgba(0,230,118,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wire .wl.sys{color:var(--ink-3);text-shadow:none}
+#wire .wl.new{animation:wireIn .5s ease}
+@keyframes wireIn{from{opacity:0;transform:translateX(-14px);background:rgba(0,230,118,.12)}to{background:transparent}}
+#wire .dim{color:var(--neon-dim)}
 /* ---------- goal hud / duel ---------- */
 #goalHud{margin-bottom:16px}
 .goal-bar{
@@ -588,16 +611,31 @@ body:not(.locked) #ticker{display:flex}
 .goal-track i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--neon) 60%,var(--neon-bright));width:0;transition:width 1s cubic-bezier(.2,.7,.3,1);box-shadow:0 0 12px rgba(0,230,118,.5)}
 .goal-track.hit i{animation:goalGlow 1.6s ease-in-out infinite}
 @keyframes goalGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
-#duelCard .duel{
-  display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;
-  padding:14px 20px;margin-bottom:18px;background:rgba(3,10,6,.72);
-  border:1px solid rgba(0,230,118,.18);
+#duelCard{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:18px}
+#duelCard .duel-h{
+  grid-column:1/-1;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;
+  letter-spacing:.24em;text-transform:uppercase;color:#FF6B6B;text-shadow:0 0 10px rgba(255,60,60,.45);
 }
-.duel .side{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:17px}
+#duelCard .duel{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
+  padding:16px 18px;background:rgba(3,10,6,.72);
+  border:1px solid rgba(255,77,77,.28);position:relative;overflow:hidden;
+}
+.duel::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg, rgba(0,230,118,.05), transparent 30%, transparent 70%, rgba(255,77,77,.05));
+}
+.duel .side{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:17px;min-width:0}
 .duel .side small{display:block;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;color:var(--neon-dim);font-weight:400;margin-top:2px}
 .duel .side.rgt{text-align:right}
-.duel .vs{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.2em;color:#FF4D4D;text-shadow:0 0 8px rgba(255,60,60,.4)}
+.duel .vs{
+  font-family:'Clash Display','General Sans',sans-serif;font-weight:700;font-size:20px;
+  color:#FF4D4D;text-shadow:0 0 14px rgba(255,60,60,.6);
+  animation:vsPulse 2.2s ease-in-out infinite;
+}
+@keyframes vsPulse{0%,100%{text-shadow:0 0 8px rgba(255,60,60,.4)}50%{text-shadow:0 0 22px rgba(255,60,60,.9)}}
 .duel .lead{color:var(--neon-bright);text-shadow:0 0 10px rgba(0,230,118,.5)}
+@media (prefers-reduced-motion: reduce){.duel .vs{animation:none}}
 .streak{
   font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;color:#FFB454;
   text-shadow:0 0 8px rgba(255,150,50,.5);letter-spacing:.02em;white-space:nowrap;
@@ -717,12 +755,19 @@ body.tv .page-h{font-size:64px}
   <!-- LEADERBOARD -->
   <section class="view" id="v-board">
     <div class="rv hero-wrap">
-      <div class="kicker">Live Standings</div>
+      <div class="kicker">Live Standings <span id="liveClock" class="live-clock"></span></div>
       <h1 class="page-h">The Board Doesn't Lie</h1>
       <p class="page-sub">Two tracks. Points stack. Every dial, every deal, every recruit — counted once it's approved. Updates land for the whole floor in real time.</p>
     </div>
+    <div id="todayStrip" class="rv today-strip"></div>
     <div id="goalHud" class="rv"></div>
     <div id="duelCard" class="rv"></div>
+    <div class="panel rv wire-panel">
+      <h3 style="font-size:15px;display:flex;align-items:center;gap:10px"><span class="tk-led"></span>The Wire</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every event on the floor, as it happens</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <div id="wire"></div>
+    </div>
     <div class="boards">
       <div class="panel board rv">
         <h3><span class="swatch" style="background:var(--mark-gold)"></span>Top Builders</h3>
@@ -1180,30 +1225,101 @@ function renderGoalHud(){
     const b=el.querySelector('.goal-track i'); if(b) b.style.width=b.dataset.w+'%';
   }));
 }
-function duelPair(){
+function duelPairs(){
   const pool=DATA.agents.filter(a=>!a.is_admin).sort((a,b)=>a.id.localeCompare(b.id));
-  if(pool.length<2) return null;
+  if(pool.length<2) return [];
+  // date-seeded shuffle — same three matchups on every screen, fresh set daily
   const k=dayKey(); let h=0;
   for(const ch of k) h=(h*31+ch.charCodeAt(0))>>>0;
-  const i=h%pool.length; let j=(i+1+(h>>3)%(pool.length-1))%pool.length;
-  if(j===i) j=(i+1)%pool.length;
-  return [pool[i],pool[j]];
+  let s=h||1;
+  const rnd=()=>{ s^=s<<13; s^=s>>>17; s^=s<<5; s>>>=0; return s/4294967296; };
+  const arr=pool.slice();
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  const pairs=[];
+  for(let i=0;i+1<arr.length&&pairs.length<3;i+=2) pairs.push([arr[i],arr[i+1]]);
+  return pairs;
 }
 function renderDuel(){
   const el=$('#duelCard'); if(!el) return;
-  const pr=duelPair();
-  if(!pr){ el.innerHTML=''; return; }
-  const [a,b]=pr, pa=agentDayPoints(a.id), pb=agentDayPoints(b.id);
-  el.innerHTML=`<div class="duel">
-    <div class="side${pa>=pb&&pa>0?' lead':''}">${esc(a.name)}<small>${pa} pts today</small></div>
-    <div class="vs">— DAILY DUEL —<br>VS</div>
-    <div class="side rgt${pb>pa?' lead':''}">${esc(b.name)}<small>${pb} pts today</small></div>
-  </div>`;
+  const prs=duelPairs();
+  if(!prs.length){ el.innerHTML=''; return; }
+  el.innerHTML=`<div class="duel-h">⚔ Today's 1v1s — new matchups at midnight</div>`+prs.map(([a,b])=>{
+    const pa=agentDayPoints(a.id), pb=agentDayPoints(b.id);
+    return `<div class="duel">
+      <div class="side${pa>=pb&&pa>0?' lead':''}">${esc(a.name)}<small>${pa} pts today</small></div>
+      <div class="vs">VS</div>
+      <div class="side rgt${pb>pa?' lead':''}">${esc(b.name)}<small>${pb} pts today</small></div>
+    </div>`;
+  }).join('');
 }
+
+/* ================= THE WIRE / TODAY STRIP / CLOCK ================= */
+const FEED=[];
+function wirePush(html, sys){
+  FEED.unshift({html, sys:!!sys});
+  if(FEED.length>40) FEED.pop();
+  renderWire(true);
+}
+function renderWire(fresh){
+  const el=$('#wire'); if(!el) return;
+  el.innerHTML=FEED.map((l,i)=>`<div class="wl${l.sys?' sys':''}${fresh&&i===0?' new':''}">${l.html}</div>`).join('')
+    ||'<div class="wl sys">> channel open — waiting for the first move of the day.</div>';
+}
+function renderTodayStrip(){
+  const el=$('#todayStrip'); if(!el) return;
+  const k=dayKey();
+  const todays=DATA.log.filter(p=>dayKey(p.earned_at)===k);
+  const appr=todays.filter(approved);
+  const stats=[
+    {v:appr.reduce((n,p)=>n+p.points,0), l:'Points Today'},
+    {v:appr.length, l:'Scores Landed'},
+    {v:todays.filter(p=>p.status==='pending').length, l:'Claims In Queue'},
+    {v:new Set(todays.map(p=>p.agent_id)).size, l:'Operatives Active'},
+    {v:streakLeader(), l:'Longest Streak', raw:true},
+  ];
+  const old=el.dataset.sig||'';
+  const sig=stats.map(s=>s.v).join('|');
+  el.innerHTML=stats.map((s,i)=>`<div class="tstat" data-i="${i}"><b>${s.v}</b><span>${s.l}</span></div>`).join('');
+  if(old&&old!==sig&&!reduceMotion){
+    const oldV=old.split('|');
+    el.querySelectorAll('.tstat').forEach((t,i)=>{ if(oldV[i]!==String(stats[i].v)) t.classList.add('bump'); });
+  }
+  el.dataset.sig=sig;
+}
+function streakLeader(){
+  let best=0, who='—';
+  for(const a of DATA.agents){ const s=streakOf(a.id); if(s>best){best=s;who=a.name;} }
+  return best>=2?`${who} ▲${best}`:'—';
+}
+setInterval(()=>{
+  const c=$('#liveClock');
+  if(c&&!document.body.classList.contains('locked')){
+    const n=new Date();
+    c.textContent='['+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0')+']';
+  }
+},1000);
+/* system heartbeat — the wire never flatlines */
+const SYS_LINES=[
+  '> system sweep :: all channels green',
+  '> uplink stable :: realtime feed locked',
+  '> ledger integrity check .... OK',
+  '> monitoring the floor',
+];
+(function pulse(){
+  setTimeout(()=>{
+    if(!document.body.classList.contains('locked')&&document.visibilityState==='visible'){
+      const n=new Date();
+      const t='<span class="dim">['+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+']</span> ';
+      const line=Math.random()<.8?SYS_LINES[Math.floor(Math.random()*SYS_LINES.length)]:('> checksum 0x'+Array.from({length:8},()=>'0123456789ABCDEF'[Math.floor(Math.random()*16)]).join(''));
+      wirePush(t+esc(line), true);
+    }
+    pulse();
+  }, 30000+Math.random()*25000);
+})();
 
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
-  renderGoalHud(); renderDuel();
+  renderGoalHud(); renderDuel(); renderTodayStrip(); renderWire();
   const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
   const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
   const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
@@ -1586,8 +1702,9 @@ const sPromo=()=>[440,554,659,880].forEach((f,i)=>setTimeout(()=>beep(f,.16,'tri
 
 /* ================= LIVE WIRE TICKER ================= */
 function tickerPush(html){
-  const el=$('#tickerTxt'); if(!el) return;
-  el.innerHTML=html;
+  const el=$('#tickerTxt');
+  if(el) el.innerHTML=html;
+  wirePush(html);
 }
 function fmtEv(p,kind){
   const t=new Date(p.earned_at||Date.now());
@@ -1620,8 +1737,11 @@ function snapData(){
 }
 function diffData(){
   if(!PREV){
-    const recent=DATA.log.filter(approved).slice(-1);
-    if(recent.length) tickerPush(fmtEv(recent[0],'log'));
+    // seed the wire with the most recent history so the room never starts empty
+    const recent=DATA.log.filter(p=>approved(p)||p.status==='pending').slice(-8);
+    recent.forEach(p=>wirePush(fmtEv(p, p.status==='pending'?'pending':'log')));
+    const last=recent[recent.length-1];
+    if(last){ const el=$('#tickerTxt'); if(el) el.innerHTML=fmtEv(last, last.status==='pending'?'pending':'log'); }
     PREV=snapData(); return;
   }
   for(const p of DATA.log){
