@@ -125,7 +125,6 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   animation:railGlow 5s ease-in-out infinite;
 }
 @keyframes railGlow{0%,100%{opacity:.35}50%{opacity:.85}}
-.logo .crest{width:36px;height:36px;flex:none;align-self:center;mix-blend-mode:screen;filter:drop-shadow(0 0 9px rgba(0,230,118,.55))}
 .topbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:22px;height:60px}
 .logo{display:flex;align-items:baseline;gap:10px;flex:none}
 .logo .mark{font-family:'Clash Display','General Sans',sans-serif;font-weight:900;font-size:24px;color:var(--gold);letter-spacing:.02em}
@@ -315,15 +314,25 @@ select#gateAgent option{background:#04120a;color:var(--neon)}
 .chk.on{box-shadow:0 0 8px rgba(0,230,118,.5)}
 .badge.r4{animation:r4glow 2.6s ease-in-out infinite}
 @keyframes r4glow{0%,100%{box-shadow:0 0 12px rgba(0,230,118,.25)}50%{box-shadow:0 0 20px rgba(154,255,200,.5)}}
-/* hero seal watermark */
+/* ghost transmissions — brand fragments that appear like code, then vanish */
 .hero-wrap{position:relative}
-.hero-wrap .seal{
-  position:absolute;right:-30px;top:-40px;width:520px;height:auto;pointer-events:none;
-  mix-blend-mode:screen;opacity:.30;
-  -webkit-mask-image:radial-gradient(closest-side at 50% 50%, #000 40%, transparent 98%);
-  mask-image:radial-gradient(closest-side at 50% 50%, #000 40%, transparent 98%);
+.gx{
+  position:fixed;z-index:0;pointer-events:none;white-space:nowrap;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  color:rgba(0,230,118,.5);text-shadow:0 0 8px rgba(0,230,118,.35);
+  animation:ghostLife var(--life,5s) linear forwards;
 }
-@media(max-width:900px){.hero-wrap .seal{width:300px;opacity:.18;top:-10px;right:-40px}}
+@keyframes ghostLife{
+  0%{opacity:0;transform:translateX(0)}
+  8%{opacity:.6}
+  14%{opacity:.25}
+  20%{opacity:.6}
+  72%{opacity:.5;transform:translateX(0)}
+  82%{opacity:.2;transform:translateX(4px) skewX(9deg)}
+  88%{opacity:.5;transform:translateX(-3px)}
+  100%{opacity:0;transform:translateX(6px) skewX(-6deg)}
+}
+@media (prefers-reduced-motion: reduce){.gx{display:none}}
 
 /* ---------- reveal animation ---------- */
 .rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
@@ -613,7 +622,7 @@ body:not(.locked) #ticker{display:flex}
 
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="logo" href="#/board"><img class="crest" src="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/mark-neon.svg" alt="" onerror="this.style.display='none'"><span class="mark">T1P</span><span class="sub">Top One Percent</span></a>
+    <a class="logo" href="#/board"><span class="mark">T1P</span><span class="sub">Top One Percent</span></a>
     <nav class="tabs" id="tabs">
       <a href="#/board" data-v="board">Leaderboard</a>
       <a href="#/ranks" data-v="ranks">Ranks</a>
@@ -640,7 +649,6 @@ body:not(.locked) #ticker{display:flex}
   <!-- LEADERBOARD -->
   <section class="view" id="v-board">
     <div class="rv hero-wrap">
-      <img class="seal" src="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/wordmark-neon.svg" alt="" onerror="this.style.display='none'">
       <div class="kicker">Live Standings</div>
       <h1 class="page-h">The Board Doesn't Lie</h1>
       <p class="page-sub">Two tracks. Points stack. Every dial, every deal, every recruit — counted once it's approved. Updates land for the whole floor in real time.</p>
@@ -1756,6 +1764,38 @@ function runBreach(name, done){
       drops[i]++;
     }
   },50);
+})();
+
+/* ================= GHOST TRANSMISSIONS ================= */
+(function(){
+  if(reduceMotion) return;
+  const PHRASES=[
+    'TOP ONE PERCENT','T1P://VAULT-01','> RUN YOUR LANE','SELECT * FROM winners;',
+    'ACCESS: PERMANENT','0x1PC7','01110100 00110001 01110000','// the board doesn\'t lie',
+    'TOP ONE PERCENT','> dial. recruit. sell. train.',
+  ];
+  const hex=n=>Array.from({length:n},()=>'0123456789ABCDEF'[Math.floor(Math.random()*16)]).join('');
+  function spawn(){
+    if(!document.body.classList.contains('locked')&&document.visibilityState==='visible'){
+      const g=document.createElement('span');
+      g.className='gx';
+      const ph=Math.random()<.72?PHRASES[Math.floor(Math.random()*PHRASES.length)]:('0x'+hex(10));
+      g.textContent=ph;
+      g.style.fontSize=(9+Math.random()*4).toFixed(1)+'px';
+      // hug the edges — never sit on the content column
+      const edge=Math.floor(Math.random()*4);
+      if(edge===0){ g.style.left=(2+Math.random()*16)+'vw'; g.style.top=(10+Math.random()*80)+'vh'; }
+      else if(edge===1){ g.style.right=(2+Math.random()*14)+'vw'; g.style.top=(10+Math.random()*80)+'vh'; }
+      else if(edge===2){ g.style.left=(5+Math.random()*85)+'vw'; g.style.top=(9+Math.random()*9)+'vh'; }
+      else { g.style.left=(5+Math.random()*85)+'vw'; g.style.bottom=(6+Math.random()*10)+'vh'; }
+      const life=(3.5+Math.random()*3).toFixed(1);
+      g.style.setProperty('--life', life+'s');
+      document.body.appendChild(g);
+      setTimeout(()=>g.remove(), life*1000+200);
+    }
+    setTimeout(spawn, 2500+Math.random()*4500);
+  }
+  setTimeout(spawn, 3000);
 })();
 
 /* ================= GOLD DUST ================= */
