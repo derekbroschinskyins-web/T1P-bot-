@@ -259,7 +259,7 @@ body.locked main, body.locked footer{display:none}
 #bootLines .okx{color:var(--neon-bright)}
 .term-row{display:flex;align-items:center;gap:8px;margin-top:2px}
 .term-row .lbl{color:var(--neon-dim);flex:none}
-select#gateAgent{
+select#gateAgent, select#regRec{
   appearance:none;-webkit-appearance:none;background:transparent;color:var(--neon);
   border:none;border-bottom:1px dashed rgba(0,255,102,.4);border-radius:0;
   font-family:inherit;font-size:13px;letter-spacing:.04em;padding:2px 22px 2px 4px;cursor:pointer;
@@ -267,8 +267,8 @@ select#gateAgent{
   background-image:linear-gradient(45deg,transparent 50%,var(--neon-dim) 50%),linear-gradient(135deg,var(--neon-dim) 50%,transparent 50%);
   background-position:calc(100% - 12px) 55%, calc(100% - 7px) 55%;background-size:5px 5px;background-repeat:no-repeat;
 }
-select#gateAgent:focus{outline:none;border-bottom-color:var(--neon)}
-select#gateAgent option{background:#04120a;color:var(--neon)}
+select#gateAgent:focus, select#regRec:focus{outline:none;border-bottom-color:var(--neon)}
+select#gateAgent option, select#regRec option{background:#04120a;color:var(--neon)}
 #pinEcho{letter-spacing:.35em;min-width:2px}
 .cursor{display:inline-block;width:.6em;animation:blink 1.06s steps(1) infinite;color:var(--neon)}
 @keyframes blink{50%{opacity:0}}
@@ -814,6 +814,20 @@ body.tv .page-h{font-size:64px}
 .log-msg{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim)}
 .log-msg.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
 .log-msg.err{color:#FF4D4D}
+/* ---------- account / registration ---------- */
+.gate-alt{
+  display:block;margin:14px auto 0;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:11px;color:var(--neon-dim);letter-spacing:.08em;background:none;border:none;cursor:pointer;
+}
+.gate-alt:hover{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
+.reg-in{
+  flex:1;background:rgba(3,10,6,.8);color:var(--neon);border:1px solid rgba(0,230,118,.35);border-radius:3px;
+  padding:9px 12px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;outline:none;min-width:0;
+}
+.reg-in:focus{border-color:var(--neon)}
+.reg-in::placeholder{color:var(--ink-3)}
+.reg-go{width:100%;margin-top:12px;padding:12px}
+.acct-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 /* ---------- sound toggle ---------- */
 .snd-btn{
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--neon-dim);
@@ -838,19 +852,39 @@ body.tv .page-h{font-size:64px}
     <div class="term-bar"><i></i><i></i><i></i><span>t1p://vault-01 — secure shell</span></div>
     <div class="term-body">
       <div id="bootLines"></div>
-      <div class="term-row"><span class="lbl">&gt; operative:</span>
-        <select id="gateAgent" aria-label="Select your name"></select>
+      <div id="loginBlock">
+        <div class="term-row"><span class="lbl">&gt; operative:</span>
+          <select id="gateAgent" aria-label="Select your name"></select>
+        </div>
+        <div class="term-row"><span class="lbl">&gt; passcode:</span>
+          <span id="pinEcho" aria-label="PIN entry"></span><span class="cursor">▮</span>
+        </div>
+        <div class="keypad" id="keypad">
+          <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+          <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+          <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+          <button class="key" data-k="del" aria-label="Delete">DEL</button><button class="key" data-k="0">0</button><button class="key go" data-k="go" aria-label="Execute">EXEC</button>
+        </div>
+        <div class="gate-status" id="gateStatus"></div>
+        <button class="gate-alt" id="regOpen" type="button">&gt; new operative? create your account_</button>
       </div>
-      <div class="term-row"><span class="lbl">&gt; passcode:</span>
-        <span id="pinEcho" aria-label="PIN entry"></span><span class="cursor">▮</span>
+      <div id="regBlock" style="display:none">
+        <div class="term-row"><span class="lbl">&gt; name:</span>
+          <input id="regName" class="reg-in" maxlength="40" placeholder="first name + last initial" autocomplete="off">
+        </div>
+        <div class="term-row"><span class="lbl">&gt; recruited by:</span>
+          <select id="regRec" aria-label="Who recruited you"></select>
+        </div>
+        <div class="term-row"><span class="lbl">&gt; choose pin:</span>
+          <input id="regPin" class="reg-in" type="password" inputmode="numeric" maxlength="8" placeholder="4-8 digits" autocomplete="new-password">
+        </div>
+        <div class="term-row"><span class="lbl">&gt; confirm pin:</span>
+          <input id="regPin2" class="reg-in" type="password" inputmode="numeric" maxlength="8" placeholder="same digits" autocomplete="new-password">
+        </div>
+        <button class="key go reg-go" id="regGo" type="button">CREATE ACCOUNT</button>
+        <div class="gate-status" id="regStatus"></div>
+        <button class="gate-alt" id="regBack" type="button">&gt; back to login_</button>
       </div>
-      <div class="keypad" id="keypad">
-        <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
-        <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
-        <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
-        <button class="key" data-k="del" aria-label="Delete">DEL</button><button class="key" data-k="0">0</button><button class="key go" data-k="go" aria-label="Execute">EXEC</button>
-      </div>
-      <div class="gate-status" id="gateStatus"></div>
     </div>
   </div>
   <pre id="dbDump" aria-hidden="true"></pre>
@@ -970,6 +1004,17 @@ body.tv .page-h{font-size:64px}
       <div class="hint" style="font-size:12px;color:var(--ink-3)">Nine steps from licensed to duplicating yourself. Submit a step when you hit it — Derek approves, points land.</div>
       <div class="rule"></div>
       <div class="steps" id="meSteps"></div>
+    </div>
+    <div class="panel rv" id="acctPanel" style="display:none">
+      <h3 class="disp" style="font-size:18px">My Account</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">your login is yours alone — change your pin any time; forget it and Derek or Austin can reset it to 1234</div>
+      <div class="rule"></div>
+      <div class="acct-row" style="margin-top:12px">
+        <input id="pinNew" class="sale-in" style="max-width:180px;flex:0 1 auto" type="password" inputmode="numeric" maxlength="8" placeholder="new pin (4-8 digits)" autocomplete="new-password">
+        <input id="pinNew2" class="sale-in" style="max-width:150px;flex:0 1 auto" type="password" inputmode="numeric" maxlength="8" placeholder="confirm" autocomplete="new-password">
+        <button class="btn" id="pinGo">Change PIN</button>
+        <span id="pinMsg" class="log-msg"></span>
+      </div>
     </div>
   </section>
 
@@ -1142,6 +1187,12 @@ body.tv .page-h{font-size:64px}
     <p class="page-sub">Every claim the team submits lands here — from the site, or texted to you and logged from here. Approve it and the points hit the board instantly for everyone.</p></div>
     <div class="panel rv">
       <div id="claimList"></div>
+    </div>
+    <div class="panel rv" style="margin-top:16px">
+      <h3 class="disp" style="font-size:15px">Roster</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every account on the system — new agents create their own at the door; reset a forgotten pin back to 1234 here</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <div id="rosterList"></div>
     </div>
   </section>
 </main>
@@ -1356,12 +1407,51 @@ $('#keypad').addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{
   if(!document.body.classList.contains('locked')||gateBusy) return;
+  if($('#regBlock').style.display!=='none') return; // typing in the registration form
   if(e.target && e.target.id==='gateAgent') { if(e.key!=='Enter') return; }
   if(/^[0-9]$/.test(e.key)&&gatePinBuf.length<8){ gatePinBuf+=e.key; drawDots(); }
   else if(e.key==='Backspace'){ gatePinBuf=gatePinBuf.slice(0,-1); drawDots(); }
   else if(e.key==='Enter'){ crackVault(); }
 });
 $('#logoutBtn').addEventListener('click',lock);
+
+/* --- new operative registration --- */
+function setRegStatus(m,cls){ const el=$('#regStatus'); el.textContent=m; el.className='gate-status'+(cls?' '+cls:''); }
+$('#regOpen').addEventListener('click',()=>{
+  $('#regRec').innerHTML='<option value="">— pick your recruiter —</option>'+
+    DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
+      .map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+  $('#loginBlock').style.display='none'; $('#regBlock').style.display='';
+  sKey(); setTimeout(()=>$('#regName').focus(),0);
+});
+$('#regBack').addEventListener('click',()=>{
+  $('#regBlock').style.display='none'; $('#loginBlock').style.display=''; setRegStatus(''); sKey();
+});
+$('#regGo').addEventListener('click',async()=>{
+  const name=$('#regName').value.trim(), rec=$('#regRec').value,
+        pin=$('#regPin').value, pin2=$('#regPin2').value;
+  if(name.length<2) return setRegStatus('> enter your name','no');
+  if(!/^\d{4,8}$/.test(pin)) return setRegStatus('> pin must be 4-8 digits','no');
+  if(pin!==pin2) return setRegStatus('> pins do not match','no');
+  if(demo) return setRegStatus('> database offline — try again in a minute','no');
+  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,24);
+  if(id.length<2) return setRegStatus('> name needs letters or numbers','no');
+  setRegStatus('> creating your account ...');
+  try{
+    const {error}=await db.rpc('register_agent',{p_id:id,p_name:name,p_pin:pin,p_recruiter_id:rec||null});
+    if(error) throw error;
+    await loadAll();
+    AUTH={id, pin, admin:false}; saveSession();
+    setRegStatus('ACCOUNT CREATED :: ACCESS GRANTED','ok'); sGrant();
+    const done=()=>{
+      unlock(); resetGateFx();
+      $('#regBlock').style.display='none'; $('#loginBlock').style.display='';
+      ['regName','regPin','regPin2'].forEach(i=>{$('#'+i).value='';}); setRegStatus('');
+    };
+    if(!MOTION_OFF) runBreach(name, done);
+    else { $('#loginGate').classList.add('granted'); setTimeout(done,250); }
+  }catch(err){ setRegStatus('> '+(err.message||'failed'),'no'); sDeny(); }
+});
 
 /* ================= ACTIONS (claims) ================= */
 async function submitClaim(track, action, points){
@@ -1622,6 +1712,7 @@ function renderMe(){
     ${t.pend?`<div class="stat"><div class="v dim">${t.pend}</div><div class="l">Pending Approval</div></div>`:''}
     <div class="stat"><div class="v" style="color:${r.c}">${esc(r.name)}</div><div class="l">Current Rank</div></div>
     <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>`;
+  const acct=$('#acctPanel'); if(acct) acct.style.display=(AUTH&&viewAgent===AUTH.id)?'':'none';
   renderHeat(a.id);
   $('#meSteps').innerHTML=LADDER_STEPS.map((s,i)=>{
     const done=doneActions.has(s.action);
@@ -1788,7 +1879,42 @@ function renderApprovals(){
   }).join('') : '<p style="color:var(--ink-3)">Queue is clear. Nothing waiting on you.</p>';
   const n=pendingRows().length;
   $('#tabApprovals').textContent = n?`Approvals (${n})`:'Approvals';
+  const rl=$('#rosterList');
+  if(rl) rl.innerHTML=DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
+    const rec=a.recruiter_id?(agentById(a.recruiter_id)||{name:a.recruiter_id}).name:null;
+    return `<div class="sale-row">
+      <div class="sale-main"><b>${esc(a.name)}</b>
+        <span class="sale-meta">${a.is_admin?'ADMIN · ':''}joined ${esc(a.date_joined||'—')}${rec?' · recruited by '+esc(rec):''}</span></div>
+      <button class="sale-del pin-reset" data-aid="${esc(a.id)}" style="color:var(--neon-dim);border-color:rgba(0,230,118,.3)">RESET PIN</button>
+    </div>`;
+  }).join('');
 }
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('.pin-reset'); if(!b||!isAdmin()) return;
+  const a=agentById(b.dataset.aid);
+  if(!confirm(`Reset ${a?a.name:b.dataset.aid}'s PIN back to 1234?`)) return;
+  try{
+    if(demo) throw new Error('offline — demo mode');
+    const {error}=await db.rpc('reset_pin',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_agent_id:b.dataset.aid});
+    if(error) throw error;
+    b.textContent='RESET ✓'; sApprove();
+  }catch(err){ b.textContent='FAILED'; sDeny(); }
+});
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('#pinGo')||!AUTH) return;
+  const p1=$('#pinNew').value, p2=$('#pinNew2').value, msg=$('#pinMsg');
+  if(!/^\d{4,8}$/.test(p1)){ msg.className='log-msg err'; msg.textContent='> pin must be 4-8 digits'; sDeny(); return; }
+  if(p1!==p2){ msg.className='log-msg err'; msg.textContent='> pins do not match'; sDeny(); return; }
+  if(demo){ msg.className='log-msg err'; msg.textContent='> offline — demo mode'; return; }
+  msg.className='log-msg'; msg.textContent='> re-keying the vault ...';
+  try{
+    const {error}=await db.rpc('change_pin',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_new_pin:p1});
+    if(error) throw error;
+    AUTH.pin=p1; saveSession();
+    msg.className='log-msg ok'; msg.textContent='> PIN CHANGED :: memorize it'; sApprove();
+    $('#pinNew').value=''; $('#pinNew2').value='';
+  }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+});
 
 /* ================= ROUTER ================= */
 const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','report','cmds','game','approvals'];
@@ -2087,6 +2213,19 @@ function palExec(raw){
         if(!demo){ const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'remind_times',p_value:times.join(',')}); if(error) throw error; await loadAll(); }
         else DATA.config.remind_times=times.join(',');
         hint.innerHTML='reminders set :: <span class="hit">'+esc(times.join(' + '))+'</span> daily'; sKey();
+      }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
+    })();
+    return;
+  }
+  if(c==='pin'){
+    if(!/^\d{4,8}$/.test(arg||'')){ hint.innerHTML='<span class="err">usage: pin 5678 — new pin, 4-8 digits</span>'; return; }
+    (async()=>{
+      try{
+        if(demo) throw new Error('offline — demo mode');
+        const {error}=await db.rpc('change_pin',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_new_pin:arg});
+        if(error) throw error;
+        AUTH.pin=arg; saveSession();
+        hint.innerHTML='pin changed :: <span class="hit">memorize it</span>'; sKey();
       }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
     })();
     return;
@@ -2407,7 +2546,13 @@ function renderCmds(){
   ];
   const gateRows=[
     row('0–9 · backspace · enter','type your passcode straight from the keyboard at the door'),
+    row('&gt; new operative?','no account yet? create your own at the door — name, recruiter, and a pin only you know'),
     row('tap / click during the breach','skip the entry sequence'),
+  ];
+  const acctRows=[
+    row('pin 5678','console: change your own pin (4-8 digits) — takes effect immediately'),
+    row('My Progress → My Account','change your pin with a form instead'),
+    row('forgot your pin?','Derek or Austin resets it to 1234 from Approvals → Roster; log in and set a new one'),
   ];
   const toggleRows=[
     row('▶))','sound on/off — keypad ticks, fanfares, denial buzzes (remembered per device)'),
@@ -2441,6 +2586,7 @@ function renderCmds(){
   el.innerHTML=
     sec('The Console — press <code>/</code>', consoleRows)+
     sec('At The Door', gateRows)+
+    sec('Your Account', acctRows)+
     sec('Switches', toggleRows)+
     sec('Special URLs', urlRows)+
     sec('The Firewall — training sim', gameRows)+
