@@ -814,6 +814,81 @@ body.tv .page-h{font-size:64px}
 .log-msg{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim)}
 .log-msg.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
 .log-msg.err{color:#FF4D4D}
+/* ---------- gauntlet ---------- */
+.gnt-cols{display:flex;gap:22px;align-items:center;overflow-x:auto;padding:8px 2px 16px}
+.gnt-col{display:flex;flex-direction:column;gap:14px;min-width:190px;flex:none}
+.gnt-round{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.22em;color:var(--neon-dim);text-transform:uppercase;text-align:center}
+.gnt-match{border:1px solid rgba(0,230,118,.25);border-radius:6px;background:rgba(3,10,6,.7);overflow:hidden}
+.gnt-p{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;font-size:13px;color:var(--ink-2)}
+.gnt-p+.gnt-p{border-top:1px solid rgba(0,230,118,.12)}
+.gnt-p .sc{font-family:'SF Mono',ui-monospace,Menlo,monospace;color:var(--neon-dim)}
+.gnt-p.win{color:var(--neon-bright);background:rgba(0,230,118,.07)}
+.gnt-p.win .sc{color:var(--neon)}
+.gnt-p.out{opacity:.45;text-decoration:line-through}
+.gnt-champ{border-color:rgba(255,200,60,.5);box-shadow:0 0 18px rgba(255,200,60,.15)}
+.gnt-champ .gnt-p{color:#FFD966;font-family:'Clash Display',sans-serif;font-weight:600}
+.belt{font-size:12px}
+/* ---------- records ---------- */
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.rec{border:1px solid rgba(0,230,118,.25);border-radius:6px;background:rgba(3,10,6,.7);padding:16px 18px}
+.rec .k{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.2em;color:var(--neon-dim);text-transform:uppercase}
+.rec .v{font-family:'Clash Display',sans-serif;font-weight:700;font-size:26px;color:#EAFFF4;margin:6px 0 2px;text-shadow:0 0 14px rgba(0,230,118,.25)}
+.rec .who{font-size:12.5px;color:var(--neon)}
+.rec .when{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;color:var(--ink-3);margin-top:4px}
+.rec.unset .v{color:var(--ink-3);text-shadow:none;font-size:18px}
+/* ---------- recruiting ---------- */
+.lockwall{text-align:center;padding:60px 20px;border:1px dashed rgba(0,230,118,.3);border-radius:8px}
+.lockwall .big{font-family:'Clash Display',sans-serif;font-weight:700;font-size:clamp(22px,4vw,34px);color:#EAFFF4}
+.lockwall .mono{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--neon-dim);letter-spacing:.12em;line-height:2;margin-top:10px}
+.funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.fstage{border:1px solid rgba(0,230,118,.22);border-radius:6px;padding:12px;text-align:center;background:rgba(3,10,6,.6)}
+.fstage .n{font-family:'Clash Display',sans-serif;font-weight:700;font-size:24px;color:var(--neon-bright)}
+.fstage .l{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.14em;color:var(--neon-dim);text-transform:uppercase;margin-top:3px}
+@media(max-width:560px){.funnel{grid-template-columns:repeat(2,1fr)}}
+/* ---------- academy ---------- */
+.acad-mod{margin-bottom:12px;padding:16px 20px}
+.acad-mod .mh{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.acad-mod .num{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;color:var(--neon-dim)}
+.acad-mod h4{font-family:'Clash Display',sans-serif;font-weight:600;font-size:16px;flex:1}
+.acad-mod.locked{opacity:.55}
+.acad-mod .tag-pass{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.14em;color:var(--neon-bright);border:1px solid rgba(0,230,118,.5);border-radius:20px;padding:3px 10px}
+.acad-mod .study{white-space:pre-wrap;color:var(--ink-2);font-size:13.5px;line-height:1.7;margin-top:10px;display:none}
+.acad-mod.open .study{display:block}
+.acad-grid{overflow-x:auto}
+.acad-grid table{border-collapse:collapse;width:100%;font-size:12px}
+.acad-grid th,.acad-grid td{border-bottom:1px solid rgba(0,230,118,.12);padding:7px 10px;text-align:center}
+.acad-grid td:first-child,.acad-grid th:first-child{text-align:left}
+/* ---------- call vault ---------- */
+.call{margin-bottom:12px;padding:16px 20px}
+.call .ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.call h4{font-family:'Clash Display',sans-serif;font-weight:600;font-size:15.5px;flex:1}
+.call .cmeta{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--ink-3)}
+.call .cnotes{margin-top:10px}
+.call .cn{display:flex;gap:10px;padding:6px 0;border-top:1px solid rgba(0,230,118,.1);font-size:13px;color:var(--ink-2)}
+.call .cn .ts{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px;color:var(--neon);flex:none;min-width:44px}
+.call .cn .by{color:var(--ink-3);font-size:11px;flex:none}
+.cotw-star{color:#FFD966;font-size:14px}
+/* ---------- contracts / pace ---------- */
+.pace-line{display:flex;gap:14px;flex-wrap:wrap;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--ink-2);border:1px solid rgba(0,230,118,.2);border-radius:6px;padding:10px 14px;background:rgba(3,10,6,.55);margin-bottom:16px}
+.pace-line .on{color:var(--neon-bright)}
+.pace-line .off{color:#FF7A7A}
+.ct-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.ct-item{flex:1;min-width:150px}
+.ct-item .cl{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:.16em;color:var(--neon-dim);text-transform:uppercase}
+.ct-item .cv{font-family:'Clash Display',sans-serif;font-weight:600;font-size:19px;color:#EAFFF4;margin:4px 0}
+.ct-item .cbar{height:5px;background:var(--panel-3);border-radius:3px;overflow:hidden}
+.ct-item .cbar i{display:block;height:100%;background:var(--mark-gold);width:0;transition:width .8s}
+.ct-item .cbar i.over{background:var(--neon-bright)}
+/* ---------- drill overlay ---------- */
+#drillOv{position:fixed;inset:0;z-index:340;display:none;align-items:center;justify-content:center;background:rgba(1,4,2,.9);backdrop-filter:blur(4px);padding:18px}
+#drillOv.on{display:flex}
+.drill-box{max-width:680px;width:100%;max-height:92vh;overflow:auto;border:1px solid rgba(0,230,118,.4);border-radius:8px;background:#04120a;padding:22px 26px;box-shadow:0 0 60px rgba(0,230,118,.15)}
+.drill-head{display:flex;align-items:center;gap:10px;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.18em;color:var(--neon);margin-bottom:14px}
+#drillClock{margin-left:auto;font-size:20px;color:var(--neon-bright);text-shadow:0 0 10px rgba(0,230,118,.5)}
+#drillClock.low{color:#FF4D4D;text-shadow:0 0 10px rgba(255,77,77,.6)}
+#drillBoard{margin-top:14px}
+#drillBoard .dr{display:flex;gap:12px;padding:6px 0;border-top:1px solid rgba(0,230,118,.12);font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink-2)}
+#drillBoard .dr .ok{color:var(--neon-bright)} #drillBoard .dr .no{color:#FF7A7A}
 /* ---------- account / registration ---------- */
 .gate-alt{
   display:block;margin:14px auto 0;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
@@ -912,6 +987,9 @@ body.tv .page-h{font-size:64px}
         <div class="ndrop">
           <a href="#/tree" data-v="tree">Duplication Tree</a>
           <a href="#/ranks" data-v="ranks">Ranks</a>
+          <a href="#/gauntlet" data-v="gauntlet">The Gauntlet</a>
+          <a href="#/records" data-v="records">Records</a>
+          <a href="#/recruiting" data-v="recruiting">Recruiting</a>
         </div>
       </div>
       <div class="ngrp">
@@ -919,6 +997,8 @@ body.tv .page-h{font-size:64px}
         <div class="ndrop">
           <a href="#/scripts" data-v="scripts">Scripts</a>
           <a href="#/game" data-v="game">The Firewall</a>
+          <a href="#/academy" data-v="academy">Academy</a>
+          <a href="#/calls" data-v="calls">Call Vault</a>
           <a href="#/cmds" data-v="cmds">Commands</a>
         </div>
       </div>
@@ -946,7 +1026,9 @@ body.tv .page-h{font-size:64px}
     </div>
     <div id="todayStrip" class="rv today-strip"></div>
     <div id="goalHud" class="rv"></div>
+    <div id="paceHud" class="rv"></div>
     <div id="duelCard" class="rv"></div>
+    <div id="cotw" class="rv"></div>
     <div class="panel rv wire-panel">
       <h3 style="font-size:15px;display:flex;align-items:center;gap:10px"><span class="tk-led"></span>The Wire</h3>
       <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every event on the floor, as it happens</div>
@@ -1015,6 +1097,12 @@ body.tv .page-h{font-size:64px}
         <button class="btn" id="pinGo">Change PIN</button>
         <span id="pinMsg" class="log-msg"></span>
       </div>
+    </div>
+    <div class="panel rv" id="contractPanel" style="display:none">
+      <h3 class="disp" style="font-size:18px">Monthly Contract</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">the deal you make with yourself for this month — the board tracks whether you're on pace</div>
+      <div class="rule"></div>
+      <div id="contractBody" style="margin-top:12px"></div>
     </div>
   </section>
 
@@ -1094,6 +1182,7 @@ body.tv .page-h{font-size:64px}
         <button class="btn ghost war-r on" data-days="1">Today</button>
         <button class="btn ghost war-r" data-days="7">7 Days</button>
         <button class="btn ghost war-r" data-days="30">30 Days</button>
+        <button class="btn" id="drillStart" style="display:none">⚡ LIVE DRILL</button>
       </div>
     </div>
     <div id="warBoard"></div>
@@ -1172,6 +1261,57 @@ body.tv .page-h{font-size:64px}
     <div class="panel rv fw-wrap fw-panel" id="gameBox"></div>
   </section>
 
+  <!-- THE GAUNTLET -->
+  <section class="view" id="v-gauntlet">
+    <div class="rv"><div class="kicker">Weekly Tournament</div>
+    <h1 class="page-h">The Gauntlet</h1>
+    <p class="page-sub">Every Monday the top performers are seeded into a bracket by last week's points. Head-to-head, points decide, losers go home. Survive to Friday and take the belt — it sits next to your name until somebody rips it off you.</p></div>
+    <div id="gauntletBox"></div>
+  </section>
+
+  <!-- VAULT RECORDS -->
+  <section class="view" id="v-records">
+    <div class="rv"><div class="kicker">Hall of Fame</div>
+    <h1 class="page-h">Vault Records</h1>
+    <p class="page-sub">The all-time marks. Records don't reset, don't expire, and don't care about excuses — they wait to be broken.</p></div>
+    <div id="recordsBox"></div>
+  </section>
+
+  <!-- RECRUITING (earned) -->
+  <section class="view" id="v-recruiting">
+    <div class="rv"><div class="kicker">Earned Access</div>
+    <h1 class="page-h">Recruiting</h1>
+    <p class="page-sub">Track prospects from first contact to producing agent. This wing of the vault opens when you post a $20K month.</p></div>
+    <div id="recruitBox"></div>
+  </section>
+
+  <!-- ACADEMY -->
+  <section class="view" id="v-academy">
+    <div class="rv"><div class="kicker">Training Ladder</div>
+    <h1 class="page-h">The Academy</h1>
+    <p class="page-sub">Six modules, in order, from first hello to signed application. Study the material, pass the exam, unlock the next door. Leadership sees everyone's progress.</p></div>
+    <div id="academyBox"></div>
+  </section>
+
+  <!-- CALL VAULT -->
+  <section class="view" id="v-calls">
+    <div class="rv"><div class="kicker">Game Film</div>
+    <h1 class="page-h">Call Vault</h1>
+    <p class="page-sub">Drop your recorded calls here — leadership breaks them down with timestamped notes, and the best one becomes Call of the Week on the home page.</p></div>
+    <div class="panel rv" style="margin-bottom:16px">
+      <h3 class="disp" style="font-size:15px">Submit a Call</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">paste a link to the recording — google drive, dropbox, wherever it lives</div>
+      <div class="rule" style="margin:10px 0 14px"></div>
+      <div class="log-row">
+        <input id="callTitle" class="sale-in" placeholder="Call title — e.g. 'Widow lead, full payoff close'" maxlength="140">
+        <input id="callUrl" class="sale-in" placeholder="https:// link to recording" maxlength="500">
+        <button class="btn" id="callGo">Submit Call</button>
+        <span id="callMsg" class="log-msg"></span>
+      </div>
+    </div>
+    <div id="callList"></div>
+  </section>
+
   <!-- COMMANDS -->
   <section class="view" id="v-cmds">
     <div class="rv"><div class="kicker">Operator Manual</div>
@@ -1207,6 +1347,18 @@ body.tv .page-h{font-size:64px}
     <div class="promo-k">// PROMOTION DETECTED</div>
     <div class="promo-name" id="promoName"></div>
     <div class="promo-rank" id="promoRank"></div>
+  </div>
+</div>
+
+<div id="drillOv" aria-hidden="true">
+  <div class="drill-box fw-panel">
+    <div class="drill-head"><span class="tk-led"></span>LIVE DRILL :: OBJECTION ROULETTE <span id="drillClock">20</span></div>
+    <div class="fw-cat" id="drillCat"></div>
+    <div class="fw-q" id="drillQ"></div>
+    <div class="fw-opts" id="drillOpts"></div>
+    <div class="fw-line" id="drillLine"></div>
+    <div id="drillBoard"></div>
+    <button class="btn ghost" id="drillClose" style="margin-top:14px">CLOSE</button>
   </div>
 </div>
 
@@ -1266,7 +1418,7 @@ function demoData(){
   ];
   return {agents, log:[], skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
-  ], sales:[]};
+  ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[]};
 }
 
 /* ================= STATE ================= */
@@ -1520,15 +1672,36 @@ function agentDayPoints(id){
   const k=dayKey();
   return DATA.log.reduce((n,p)=>n+((p.agent_id===id&&approved(p)&&dayKey(p.earned_at)===k)?p.points:0),0);
 }
+function actDaySet(id){
+  // any logged activity counts: web/whatsapp dials + approved points
+  const days=new Set((DATA.actDays||[]).filter(r=>r.agent_id===id).map(r=>String(r.day).slice(0,10)));
+  DATA.log.filter(p=>p.agent_id===id&&approved(p)).forEach(p=>days.add(dayKey(p.earned_at)));
+  return days;
+}
 function streakOf(id){
-  const days=new Set(DATA.log.filter(p=>p.agent_id===id&&approved(p)).map(p=>dayKey(p.earned_at)));
+  const days=actDaySet(id);
   if(!days.size) return 0;
   let n=0; const d=new Date();
   if(!days.has(dayKey(d))) d.setDate(d.getDate()-1); // today not logged yet — count from yesterday
   while(days.has(dayKey(d))){ n++; d.setDate(d.getDate()-1); }
   return n;
 }
-const flame=id=>{ const s=streakOf(id); return s>=2?` <span class="streak" title="${s}-day streak">▲${s}</span>`:''; };
+function longestStreakOf(id){
+  const days=[...actDaySet(id)].sort();
+  let best=0,run=0,prev=null;
+  for(const k of days){
+    const t=new Date(k+'T12:00:00').getTime();
+    run=(prev!==null&&t-prev===86400000)?run+1:1;
+    prev=t; if(run>best) best=run;
+  }
+  return best;
+}
+const flame=id=>{
+  const s=streakOf(id);
+  if(s<3) return '';
+  const f=s>=30?'🔥🔥🔥':s>=7?'🔥🔥':'🔥';
+  return ` <span class="streak" title="${s}-day streak — log something every day or it resets">${f}${s}</span>`;
+};
 function renderGoalHud(){
   const el=$('#goalHud'); if(!el) return;
   const target=goalTarget();
@@ -1634,7 +1807,8 @@ const SYS_LINES=[
 
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
-  renderGoalHud(); renderDuel(); renderTodayStrip(); renderWire();
+  _belt=undefined;
+  renderGoalHud(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip(); renderWire();
   const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
   const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
   const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
@@ -1644,7 +1818,7 @@ function renderBoard(){
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
-        <div class="name">${esc(r.a.name)}${flame(r.a.id)} ${badge(r.total)}</div>
+        <div class="name">${esc(r.a.name)}${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
       <div class="pts">${val}<small>pts</small></div>
@@ -1708,8 +1882,10 @@ function renderMe(){
     <div class="stat"><div class="v">${t.rec}</div><div class="l">Builder Track</div></div>
     ${t.pend?`<div class="stat"><div class="v dim">${t.pend}</div><div class="l">Pending Approval</div></div>`:''}
     <div class="stat"><div class="v" style="color:${r.c}">${esc(r.name)}</div><div class="l">Current Rank</div></div>
-    <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>`;
+    <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>
+    <div class="stat"><div class="v">${streakOf(a.id)}${streakOf(a.id)>=3?' 🔥':''}</div><div class="l">Day Streak</div></div>`;
   const acct=$('#acctPanel'); if(acct) acct.style.display=(AUTH&&viewAgent===AUTH.id)?'':'none';
+  renderContract(a);
   renderHeat(a.id);
   $('#meSteps').innerHTML=LADDER_STEPS.map((s,i)=>{
     const done=doneActions.has(s.action);
@@ -1914,7 +2090,7 @@ document.addEventListener('click',async e=>{
 });
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','report','cmds','game','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','report','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -1947,10 +2123,24 @@ function renderCurrent(name){
   else if(name==='report') renderReport();
   else if(name==='cmds') renderCmds();
   else if(name==='game') renderGame();
+  else if(name==='gauntlet') renderGauntlet();
+  else if(name==='records') renderRecords();
+  else if(name==='recruiting') renderRecruiting();
+  else if(name==='academy') renderAcademy();
+  else if(name==='calls') renderCalls();
   else if(name==='approvals') renderApprovals();
   if(isAdmin()) renderApprovals(); // keep tab count fresh
+  const ds=$('#drillStart'); if(ds) ds.style.display=(isAdmin()&&!demo)?'':'none';
   enhance();
 }
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('#drillStart')) return;
+  const b=$('#drillStart');
+  b.disabled=true; b.textContent='⚡ LAUNCHING...';
+  try{ await startDrill(); b.textContent='⚡ DRILL LIVE'; sPromo(); }
+  catch(err){ b.textContent='⚡ FAILED'; sDeny(); }
+  setTimeout(()=>{ b.textContent='⚡ LIVE DRILL'; b.disabled=false; }, 4000);
+});
 
 /* ================= EYE CANDY ================= */
 function countUp(el){
@@ -2143,6 +2333,7 @@ function diffData(){
     tickerPush(`<span class="dim">[GOAL]</span> ▸ DAILY TARGET SMASHED :: ${todaysPoints()}/${target} PTS`);
   }
   PREV=snapData();
+  try{ checkDrill(); }catch(e){}
 }
 const promoQ=[];
 let promoBusy=false;
@@ -2170,7 +2361,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',gauntlet:'gauntlet',records:'records',recruiting:'recruiting',academy:'academy',calls:'calls',callvault:'calls',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
@@ -2224,6 +2415,14 @@ function palExec(raw){
         AUTH.pin=arg; saveSession();
         hint.innerHTML='pin changed :: <span class="hit">memorize it</span>'; sKey();
       }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
+    })();
+    return;
+  }
+  if(c==='drill'){
+    if(!isAdmin()){ hint.innerHTML='<span class="err">clearance denied :: admin only</span>'; sDeny(); return; }
+    (async()=>{
+      try{ await startDrill(); hint.innerHTML='drill launched :: <span class="hit">every open screen just got hit</span>'; }
+      catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
     })();
     return;
   }
@@ -2500,6 +2699,575 @@ document.addEventListener('click',async e=>{
   }catch(err){ sDeny(); }
 });
 
+/* ================= THE GAUNTLET (weekly bracket) ================= */
+function ptsIn(id, from, to){
+  let n=0;
+  for(const p of DATA.log){
+    if(p.agent_id!==id||!approved(p)) continue;
+    const t=new Date(p.earned_at);
+    if(t>=from&&t<to) n+=p.points;
+  }
+  return n;
+}
+function mondayOf(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }
+function addD(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function gauntletFor(mon){
+  const prevMon=addD(mon,-7);
+  const seeds=DATA.agents.map(a=>({a,pts:ptsIn(a.id,prevMon,mon)}))
+    .sort((x,y)=>y.pts-x.pts||x.a.id.localeCompare(y.a.id));
+  const size=seeds.length>=8?8:seeds.length>=4?4:0;
+  if(!size) return null;
+  let cur=seeds.slice(0,size).map((s,i)=>({...s,seed:i+1}));
+  const spans=size===8?[[0,2],[2,4],[4,6]]:[[0,3],[3,6]];
+  const names=size===8?['Quarterfinals · Mon–Tue','Semifinals · Wed–Thu','The Final · Fri–Sat']:['Semifinals · Mon–Wed','The Final · Thu–Sat'];
+  const pair=arr=>{const o=[];for(let i=0;i<arr.length/2;i++)o.push([arr[i],arr[arr.length-1-i]]);return o;};
+  const rounds=[];
+  for(let r=0;r<spans.length;r++){
+    const from=addD(mon,spans[r][0]), to=addD(mon,spans[r][1]);
+    const decided=new Date()>=to;
+    const ms=pair(cur).map(([A,B])=>{
+      const sa=A?ptsIn(A.a.id,from,to):0, sb=B?ptsIn(B.a.id,from,to):0;
+      let winner=null;
+      if(decided&&A&&B) winner=sb>sa?B:(sa>sb?A:(A.seed<B.seed?A:B));
+      return {A,B,sa,sb,winner,live:new Date()>=from&&!decided};
+    });
+    rounds.push({name:names[r],ms,decided});
+    cur=ms.map(m=>m.winner);
+  }
+  return {rounds, champion:rounds[rounds.length-1].ms[0]?rounds[rounds.length-1].ms[0].winner:null};
+}
+let _belt;
+function beltHolder(){
+  if(_belt!==undefined) return _belt;
+  _belt=null;
+  let mon=mondayOf(new Date());
+  for(let k=0;k<3;k++){
+    const g=gauntletFor(mon);
+    if(g&&g.champion){ _belt=g.champion.a.id; break; }
+    mon=addD(mon,-7);
+  }
+  return _belt;
+}
+function beltMark(id){ return beltHolder()===id?' <span class="belt" title="Reigning Gauntlet champion">🏆</span>':''; }
+function renderGauntlet(){
+  const el=$('#gauntletBox'); if(!el) return;
+  _belt=undefined;
+  const mon=mondayOf(new Date());
+  const g=gauntletFor(mon);
+  const holder=beltHolder();
+  const beltLine=holder?`<div class="panel rv" style="margin-bottom:16px"><span class="belt">🏆</span> <b style="font-family:'Clash Display',sans-serif">${esc((agentById(holder)||{name:holder}).name)}</b> <span class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">holds the belt — it travels with their name on every board until someone takes it</span></div>`:'';
+  if(!g){
+    el.innerHTML=beltLine+`<div class="lockwall rv"><div class="big">BRACKET FORMING</div>
+      <div class="mono">THE GAUNTLET NEEDS AT LEAST 4 OPERATIVES ON THE ROSTER<br>RECRUIT · REGISTER · THE BRACKET SEEDS ITSELF EVERY MONDAY FROM LAST WEEK'S POINTS</div></div>`;
+    return;
+  }
+  const cell=(p,score,m)=>{
+    if(!p) return `<div class="gnt-p"><span style="color:var(--ink-3)">TBD</span></div>`;
+    const w=m.winner&&m.winner.a.id===p.a.id, out=m.winner&&m.winner.a.id!==p.a.id;
+    return `<div class="gnt-p${w?' win':''}${out?' out':''}"><span>#${p.seed} ${esc(p.a.name)}</span><span class="sc">${m.live||m.winner?score+'pts':''}</span></div>`;
+  };
+  el.innerHTML=beltLine+`<div class="panel rv"><div class="gnt-cols">`+
+    g.rounds.map(r=>`<div class="gnt-col"><div class="gnt-round">${r.name}</div>`+
+      r.ms.map(m=>`<div class="gnt-match">${cell(m.A,m.sa,m)}${cell(m.B,m.sb,m)}</div>`).join('')+`</div>`).join('')+
+    `<div class="gnt-col"><div class="gnt-round">Champion</div><div class="gnt-match gnt-champ"><div class="gnt-p">${g.champion?'🏆 '+esc(g.champion.a.name):'<span style="color:var(--ink-3)">SURVIVE TO FRIDAY</span>'}</div></div></div>`+
+  `</div><div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">seeded by last week's approved points · each round decided by points scored in its window · ties go to the higher seed</div></div>`;
+  observeReveals();
+}
+
+/* ================= VAULT RECORDS ================= */
+function renderRecords(){
+  const el=$('#recordsBox'); if(!el) return;
+  const nameOf=id=>(agentById(id)||{name:id}).name;
+  // biggest single day (points)
+  let bd={v:0,who:null,when:null};
+  const dayMap=new Map();
+  for(const p of DATA.log){
+    if(!approved(p)) continue;
+    const k=p.agent_id+'|'+String(p.earned_at).slice(0,10);
+    dayMap.set(k,(dayMap.get(k)||0)+p.points);
+  }
+  for(const [k,v] of dayMap){ if(v>bd.v){ const [id,day]=k.split('|'); bd={v,who:id,when:day}; } }
+  // longest streak
+  let ls={v:0,who:null};
+  for(const a of DATA.agents){ const s=longestStreakOf(a.id); if(s>ls.v) ls={v:s,who:a.id}; }
+  // best AP month / most policies month
+  let bm={v:0,who:null,when:null}, mp={v:0,who:null,when:null};
+  for(const r of (DATA.salesMonths||[])){
+    if(+r.ap>bm.v) bm={v:+r.ap,who:r.agent_id,when:r.ym};
+    if(+r.n>mp.v) mp={v:+r.n,who:r.agent_id,when:r.ym};
+  }
+  // career AP
+  let ca={v:0,who:null};
+  for(const r of salesBoardRows()){ if(+r.ap_all>ca.v) ca={v:+r.ap_all,who:r.agent_id}; }
+  // fastest to Closer (300 pts)
+  let fc={v:Infinity,who:null};
+  for(const a of DATA.agents){
+    const rows=DATA.log.filter(p=>p.agent_id===a.id&&approved(p))
+      .sort((x,y)=>new Date(x.earned_at)-new Date(y.earned_at));
+    let sum=0;
+    for(const p of rows){
+      sum+=p.points;
+      if(sum>=300){
+        const days=Math.max(0,Math.round((new Date(p.earned_at)-new Date(a.date_joined))/86400000));
+        if(days<fc.v) fc={v:days,who:a.id};
+        break;
+      }
+    }
+  }
+  const rec=(k,val,who,when)=>who
+    ?`<div class="rec rv"><div class="k">${k}</div><div class="v">${val}</div><div class="who">${esc(nameOf(who))}</div><div class="when">${when?esc(when):'standing'}</div></div>`
+    :`<div class="rec rv unset"><div class="k">${k}</div><div class="v">UNCLAIMED</div><div class="who" style="color:var(--ink-3)">be the first name carved in</div></div>`;
+  el.innerHTML=`<div class="rec-grid">`+
+    rec('Biggest Single Day', bd.v?bd.v+' pts':'', bd.who, bd.when)+
+    rec('Longest Streak', ls.v?ls.v+' days':'', ls.v>=2?ls.who:null)+
+    rec('Best AP Month', bm.v?fmtAP(bm.v):'', bm.who, bm.when)+
+    rec('Most Policies · Month', mp.v?mp.v:'', mp.who, mp.when)+
+    rec('Career AP', ca.v?fmtAP(ca.v):'', ca.who)+
+    rec('Fastest To Closer', fc.who?fc.v+' days':'', fc.who)+
+  `</div><p class="rules-note rv" style="margin-top:18px">Records are computed from the full ledger — they never reset. Break one and it re-engraves itself with your name the moment the data lands.</p>`;
+  observeReveals();
+}
+
+/* ================= MONTHLY CONTRACTS ================= */
+function contractOf(id){
+  const ym=new Date().toISOString().slice(0,7);
+  return (DATA.contracts||[]).find(c=>c.agent_id===id&&c.ym===ym)||null;
+}
+function actualsOf(id){
+  const ma=(DATA.monthAct||[]).find(r=>r.agent_id===id)||{dials:0,appts:0};
+  const sb=salesBoardRows().find(r=>r.agent_id===id)||{ap_month:0};
+  return {dials:+ma.dials||0, appts:+ma.appts||0, ap:+sb.ap_month||0};
+}
+function monthElapsed(){
+  const now=new Date();
+  return now.getDate()/new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+}
+function renderContract(a){
+  const el=$('#contractBody'), panel=$('#contractPanel'); if(!el||!panel) return;
+  panel.style.display='';
+  const c=contractOf(a.id), act=actualsOf(a.id);
+  const canEdit=AUTH&&(isAdmin()||AUTH.id===a.id);
+  const item=(l,v,t,money)=>{
+    const pct=t>0?Math.min(100,v/t*100):0;
+    return `<div class="ct-item"><div class="cl">${l}</div><div class="cv">${money?fmtAP(v):v} <span style="color:var(--ink-3);font-size:13px">/ ${t?(money?fmtAP(t):t):'—'}</span></div><div class="cbar"><i class="${t&&v>=t?'over':''}" style="width:${pct}%"></i></div></div>`;
+  };
+  let pace='';
+  if(c){
+    const e=monthElapsed(), parts=[];
+    if(+c.ap>0) parts.push(act.ap>=+c.ap*e?'<span class="on">AP ON PACE</span>':'<span class="off">AP BEHIND</span>');
+    if(c.dials>0) parts.push(act.dials>=c.dials*e?'<span class="on">DIALS ON PACE</span>':'<span class="off">DIALS BEHIND</span>');
+    if(c.appts>0) parts.push(act.appts>=c.appts*e?'<span class="on">APPTS ON PACE</span>':'<span class="off">APPTS BEHIND</span>');
+    pace=`<div class="pace-line" style="margin-top:4px">${Math.round(e*100)}% OF MONTH GONE ${parts.length?'· '+parts.join(' · '):''}</div>`;
+  }
+  el.innerHTML=(c
+    ?`<div class="ct-row">${item('Dials',act.dials,c.dials)}${item('Appointments',act.appts,c.appts)}${item('AP',act.ap,+c.ap,true)}</div>${pace}`
+    :'<p style="color:var(--ink-3)">No contract on file for this month. Sign one with yourself below.</p>')+
+    (canEdit?`<div class="log-row" style="margin-top:12px">
+      <input id="ctD" class="log-qty" type="number" min="0" placeholder="dials" value="${c?c.dials:''}" aria-label="Dial target">
+      <input id="ctA" class="log-qty" type="number" min="0" placeholder="appts" value="${c?c.appts:''}" aria-label="Appointment target">
+      <input id="ctP" class="log-qty" style="width:120px" type="number" min="0" placeholder="AP $" value="${c?Math.round(+c.ap):''}" aria-label="AP target">
+      <button class="btn" id="ctGo" data-aid="${esc(a.id)}">Set Contract</button>
+      <span id="ctMsg" class="log-msg"></span>
+    </div>`:'');
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('#ctGo'); if(!b||!AUTH) return;
+  const msg=$('#ctMsg');
+  const dv=parseInt($('#ctD').value,10)||0, av=parseInt($('#ctA').value,10)||0, pv=parseFloat($('#ctP').value)||0;
+  if(!dv&&!av&&!pv){ msg.className='log-msg err'; msg.textContent='> set at least one target'; sDeny(); return; }
+  try{
+    if(!demo){
+      const {error}=await db.rpc('set_contract',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_target:b.dataset.aid,p_dials:dv,p_appts:av,p_ap:pv});
+      if(error) throw error;
+      await loadAll();
+    } else {
+      DATA.contracts=DATA.contracts.filter(c=>!(c.agent_id===b.dataset.aid&&c.ym===new Date().toISOString().slice(0,7)));
+      DATA.contracts.push({agent_id:b.dataset.aid,ym:new Date().toISOString().slice(0,7),dials:dv,appts:av,ap:pv});
+    }
+    renderContract(agentById(b.dataset.aid));
+    const m2=$('#ctMsg'); if(m2){ m2.className='log-msg ok'; m2.textContent='> CONTRACT SIGNED'; }
+    sApprove();
+  }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+});
+function renderPace(){
+  const el=$('#paceHud'); if(!el) return;
+  const e=monthElapsed();
+  const rows=DATA.agents.map(a=>({a,c:contractOf(a.id)})).filter(x=>x.c&&(+x.c.ap>0||x.c.dials>0));
+  if(!rows.length){ el.innerHTML=''; return; }
+  el.innerHTML=`<div class="pace-line">CONTRACTS :: `+rows.map(x=>{
+    const act=actualsOf(x.a.id);
+    const on=(+x.c.ap>0?act.ap>=+x.c.ap*e:true)&&(x.c.dials>0?act.dials>=x.c.dials*e:true);
+    return `<span class="${on?'on':'off'}">${esc(x.a.name).toUpperCase()} ${on?'ON PACE':'BEHIND'}</span>`;
+  }).join(' · ')+`</div>`;
+}
+
+/* ================= THE ACADEMY ================= */
+const ACADEMY=[
+ {m:1,t:'The Opener',cat:'The Opener',study:
+`The first ten seconds decide the call. "Hey NAME, this is ___ with COMPANY. I know you were probably expecting my call — I saw you just threw in the request for the mortgage protection. Do you remember that?"
+
+Then posture: you're a senior underwriter licensed through the state with access to about 20-30 approved mortgage protection companies. You are not a salesperson — you're the professional they requested. Confirm who it's for: "Was this for you, or for a spouse as well?"`},
+ {m:2,t:'Discovery',cat:'Discovery',study:
+`Health first: smoker or nonsmoker, major issues in the last 5 years, blood thinners (Plavix, Eliquis, Warfarin — they signal heart issues, strokes, clots).
+
+Mortgage: WHO IS ON THE LOAN, balance, years left, payment. Equity means protection: "Anytime a homeowner has equity, we always recommend protecting at least that amount." The critical period: after a passing, the bank gives the family only 90 days on payments before foreclosure is on the table.
+
+Income last: whatever's left over, plans must stay below 30% of it — nothing that takes food off the table.`},
+ {m:3,t:'The Pitch',cat:'The Pitch',study:
+`Equity Protection vs Full Payoff — about 95% choose the permanent payment-style plan. Anchor the budget: "most people look at 5-600 a month..." then drop to the 1-200 range and MAKE THEM PICK a number.
+
+Credibility: the carrier holds an A+ rating (only 15 companies in the country do) and has been around over 100 years. Whole life value bullets: Never expires. Locked-in rates. Living benefits. Grows over time.`},
+ {m:4,t:'The Close',cat:'The Close',study:
+`Three options, pitched low to high. Then: "Of the three, which one would you cross off — too expensive, or not enough coverage?" Have them circle the one they keep.
+
+No doctor visit — no needles, no cups; everything verifies virtually, so you need a good social. Banking: wait until they FIND the routing number and are LOOKING at it. NO GUESSING. Full-payoff rebuttal: "Do you want them to have zero payment on paper, or zero stress?"`},
+ {m:5,t:'The Blueprint',cat:'The Blueprint',study:
+`The Metro formula: Agree, Acknowledge, and Redirect with 2-3 Confirm & Control questions. Ask only yes-or-yes questions: "What time is better, ___ or ___?"
+
+Confirm: mortgage amount, lender, address, age, smoker status, beneficiary. Control: "Co-borrower or spouse on the loan?" "Working or retired?" You are the doctor; they are the patient. Objections are requests for clarification, not obstacles — nobody asks about financial protection unless they want it.`},
+ {m:6,t:'Objections',cat:'Objections',study:
+`Every rebuttal ends the same way: back to the script, book it, lock it down.
+
+"Call me back later" → the Quick Set: pencil them in at 6:00 or 7:30. "How much?" → "I just handle scheduling for the underwriters." "Already taken care of" → the system shows it's NOT — quality review call. "Can't afford it" → new low-cost state-approved plans; never been unable to help. "Don't think I'll qualify" → we can help anyone under 89, even active cancer. "Take me off your list" → "I don't make cold calls, and I don't have a list."`},
+];
+function acadPassed(id){ return new Set((DATA.academy||[]).filter(r=>r.agent_id===id).map(r=>r.module)); }
+let ACAD=null; // running exam {m,qs,idx,right}
+function renderAcademy(){
+  const el=$('#academyBox'); if(!el) return;
+  if(!AUTH){ el.innerHTML=''; return; }
+  const passed=acadPassed(AUTH.id);
+  el.innerHTML=ACADEMY.map(mod=>{
+    const done=passed.has(mod.m);
+    const open=mod.m===1||passed.has(mod.m-1);
+    const running=ACAD&&ACAD.m===mod.m;
+    return `<div class="panel acad-mod rv${open?'':' locked'}${running?' open':''}" data-mod="${mod.m}">
+      <div class="mh">
+        <span class="num">MODULE 0${mod.m}</span>
+        <h4>${done?'✓ ':''}${!open?'🔒 ':''}${esc(mod.t)}</h4>
+        ${done?'<span class="tag-pass">CLEARED</span>':''}
+        ${open?`<button class="btn ghost acad-study" data-mod="${mod.m}">Study</button>`:''}
+        ${open&&!done?`<button class="btn acad-exam" data-mod="${mod.m}">Take Exam</button>`:''}
+      </div>
+      <div class="study">${esc(mod.study)}</div>
+      ${running?`<div id="examBox" style="margin-top:14px"></div>`:''}
+    </div>`;
+  }).join('')+(isAdmin()?acadGrid():'');
+  if(ACAD) paintExam();
+  observeReveals();
+}
+function acadGrid(){
+  return `<div class="panel rv acad-grid" style="margin-top:18px"><h3 class="disp" style="font-size:15px">Floor Progress</h3><div class="rule" style="margin:10px 0 12px"></div>
+  <table><tr><th>Agent</th>${ACADEMY.map(m=>`<th>0${m.m}</th>`).join('')}</tr>`+
+  DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
+    const ps=acadPassed(a.id);
+    return `<tr><td>${esc(a.name)}</td>${ACADEMY.map(m=>`<td>${ps.has(m.m)?'<span style="color:var(--neon-bright)">✓</span>':'<span style="color:var(--ink-3)">·</span>'}</td>`).join('')}</tr>`;
+  }).join('')+`</table></div>`;
+}
+document.addEventListener('click',e=>{
+  const st=e.target.closest('.acad-study');
+  if(st){ st.closest('.acad-mod').classList.toggle('open'); sKey(); return; }
+  const ex=e.target.closest('.acad-exam');
+  if(ex){
+    const m=parseInt(ex.dataset.mod,10);
+    const mod=ACADEMY.find(x=>x.m===m); if(!mod) return;
+    ACAD={m, qs:fwShuffle(FW_BANK.filter(q=>q.c===mod.cat)), idx:0, right:0};
+    sGrant(); renderAcademy();
+  }
+});
+function paintExam(){
+  const box=$('#examBox'); if(!box||!ACAD) return;
+  const {qs,idx}=ACAD;
+  if(idx>=qs.length){ finishExam(); return; }
+  const q=qs[idx];
+  const opts=fwShuffle(q.a.map((t,i)=>({t,ok:i===0})));
+  const K=['A','B','C','D'];
+  box.innerHTML=`<div class="fw-line" style="margin:0 0 8px">> question ${idx+1}/${qs.length} :: ${ACAD.right} correct so far</div>
+    <div class="fw-q" style="font-size:16px">${esc(q.q)}</div>
+    <div class="fw-opts">${opts.map((o,i)=>`<button class="fw-opt exam-opt" data-ok="${o.ok?1:0}" data-k="${K[i]}">${esc(o.t)}</button>`).join('')}</div>`;
+  box.querySelectorAll('.exam-opt').forEach(b=>b.addEventListener('click',()=>{
+    box.querySelectorAll('.exam-opt').forEach(x=>x.disabled=true);
+    const ok=b.dataset.ok==='1';
+    b.classList.add(ok?'good':'bad');
+    if(!ok) box.querySelector('.exam-opt[data-ok="1"]').classList.add('good');
+    ok?(ACAD.right++,sGrant()):sDeny();
+    setTimeout(()=>{ ACAD.idx++; paintExam(); }, ok?600:1800);
+  }));
+}
+async function finishExam(){
+  const need=Math.ceil(ACAD.qs.length*0.8);
+  const box=$('#examBox');
+  if(ACAD.right>=need){
+    try{
+      if(!demo){
+        const {error}=await db.rpc('pass_module',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_module:ACAD.m});
+        if(error) throw error;
+        await loadAll();
+      } else DATA.academy.push({agent_id:AUTH.id,module:ACAD.m});
+      sPromo();
+      const m=ACAD.m; ACAD=null;
+      renderAcademy();
+      tickerPush(`<span class="dim">[ACADEMY]</span> ▸ ${esc((agentById(AUTH.id)||{name:''}).name.toUpperCase())} :: MODULE 0${m} CLEARED`);
+    }catch(err){ if(box) box.innerHTML=`<div class="fw-line err">> ${esc(err.message||'failed to record')}</div>`; ACAD=null; }
+  } else {
+    if(box) box.innerHTML=`<div class="fw-line err">> ${ACAD.right}/${ACAD.qs.length} — need ${need}. study the material and run it back.</div>`;
+    ACAD=null;
+    setTimeout(renderAcademy, 2500);
+  }
+}
+
+/* ================= CALL VAULT ================= */
+function renderCalls(){
+  const el=$('#callList'); if(!el) return;
+  const cotwId=parseInt(DATA.config.call_of_week||'0',10);
+  const calls=[...(DATA.calls||[])].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  el.innerHTML=calls.map(c=>{
+    const a=agentById(c.agent_id);
+    const notes=(DATA.callNotes||[]).filter(n=>n.call_id===c.id)
+      .sort((x,y)=>new Date(x.created_at)-new Date(y.created_at));
+    const canDel=AUTH&&(isAdmin()||AUTH.id===c.agent_id);
+    return `<div class="panel call rv">
+      <div class="ch">${c.id===cotwId?'<span class="cotw-star" title="Call of the Week">★</span>':''}
+        <h4>${esc(c.title)}</h4>
+        <span class="cmeta">${esc(a?a.name:c.agent_id)} · ${new Date(c.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>
+        <a class="btn ghost" href="${esc(c.url)}" target="_blank" rel="noopener">▶ LISTEN</a>
+        ${isAdmin()?`<button class="btn ghost cotw-btn" data-cid="${c.id}">${c.id===cotwId?'★ featured':'☆ feature'}</button>`:''}
+        ${canDel?`<button class="sale-del call-del" data-cid="${c.id}" title="Remove">✕</button>`:''}
+      </div>
+      <div class="cnotes">${notes.map(n=>`<div class="cn"><span class="ts">${esc(n.ts_label||'—')}</span><span>${esc(n.body)}</span><span class="by">— ${esc((agentById(n.author_id)||{name:n.author_id}).name)}</span></div>`).join('')}</div>
+      ${AUTH?`<div class="log-row" style="margin-top:10px">
+        <input class="sale-in cn-ts" style="max-width:90px;flex:0 1 auto" placeholder="12:40" maxlength="16" aria-label="Timestamp">
+        <input class="sale-in cn-body" placeholder="note — what happened at this moment" maxlength="500" aria-label="Note">
+        <button class="btn ghost cn-go" data-cid="${c.id}">Add Note</button>
+      </div>`:''}
+    </div>`;
+  }).join('')||'<p class="war-empty">&gt; no calls in the vault yet. drop the first one and set the bar.</p>';
+  observeReveals();
+}
+function renderCotw(){
+  const el=$('#cotw'); if(!el) return;
+  const id=parseInt(DATA.config.call_of_week||'0',10);
+  const c=(DATA.calls||[]).find(x=>x.id===id);
+  if(!c){ el.innerHTML=''; return; }
+  const a=agentById(c.agent_id);
+  el.innerHTML=`<div class="pace-line" style="border-color:rgba(255,217,102,.35)"><span class="cotw-star">★</span> CALL OF THE WEEK :: <b style="color:#EAFFF4">${esc(c.title)}</b> — ${esc(a?a.name:c.agent_id).toUpperCase()} <a href="${esc(c.url)}" target="_blank" rel="noopener" style="color:var(--neon-bright);margin-left:auto">▶ LISTEN</a></div>`;
+}
+document.addEventListener('click',async e=>{
+  if(e.target.closest('#callGo')){
+    const msg=$('#callMsg');
+    if(!AUTH){ msg.className='log-msg err'; msg.textContent='log in first'; return; }
+    const title=$('#callTitle').value.trim(), url=$('#callUrl').value.trim();
+    if(title.length<3){ msg.className='log-msg err'; msg.textContent='> title required'; sDeny(); return; }
+    if(!/^https?:\/\//.test(url)){ msg.className='log-msg err'; msg.textContent='> paste a real link (https://...)'; sDeny(); return; }
+    try{
+      if(demo) throw new Error('offline — demo mode');
+      const {error}=await db.rpc('add_call',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_title:title,p_url:url});
+      if(error) throw error;
+      await loadAll();
+      msg.className='log-msg ok'; msg.textContent='> CALL IN THE VAULT'; sApprove();
+      $('#callTitle').value=''; $('#callUrl').value='';
+      renderCalls();
+    }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+    return;
+  }
+  const cn=e.target.closest('.cn-go');
+  if(cn&&AUTH){
+    const row=cn.closest('.log-row');
+    const ts=row.querySelector('.cn-ts').value.trim(), body=row.querySelector('.cn-body').value.trim();
+    if(body.length<2){ sDeny(); return; }
+    try{
+      if(demo) throw new Error('offline');
+      const {error}=await db.rpc('add_call_note',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_call_id:Number(cn.dataset.cid),p_ts:ts||null,p_body:body});
+      if(error) throw error;
+      await loadAll(); sKey(); renderCalls();
+    }catch(err){ sDeny(); }
+    return;
+  }
+  const del=e.target.closest('.call-del');
+  if(del&&AUTH){
+    if(!confirm('Remove this call from the vault?')) return;
+    try{
+      if(demo) throw new Error('offline');
+      const {error}=await db.rpc('delete_call',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_call_id:Number(del.dataset.cid)});
+      if(error) throw error;
+      await loadAll(); sKey(); renderCalls();
+    }catch(err){ sDeny(); }
+    return;
+  }
+  const ft=e.target.closest('.cotw-btn');
+  if(ft&&isAdmin()){
+    const id=Number(ft.dataset.cid);
+    const cur=parseInt(DATA.config.call_of_week||'0',10);
+    try{
+      if(demo) throw new Error('offline');
+      const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'call_of_week',p_value:String(cur===id?0:id)});
+      if(error) throw error;
+      await loadAll(); sApprove(); renderCalls();
+    }catch(err){ sDeny(); }
+  }
+});
+
+/* ================= RECRUITING (earned at $20K) ================= */
+const REC_STAGES=[['reached_out','Reached Out'],['interviewed','Interviewed'],['licensed','Licensed'],['producing','Producing']];
+function canRecruit(id){
+  const a=agentById(id);
+  return !!(a&&a.is_admin)||DATA.log.some(p=>p.agent_id===id&&p.action==='month_20k'&&approved(p));
+}
+function renderRecruiting(){
+  const el=$('#recruitBox'); if(!el) return;
+  if(!AUTH){ el.innerHTML=''; return; }
+  if(!canRecruit(AUTH.id)){
+    el.innerHTML=`<div class="lockwall rv"><div class="big">🔒 SEALED WING</div>
+      <div class="mono">RECRUITING UNLOCKS AT A $20K MONTH<br>POST THE MONTH · GET IT APPROVED ON THE LADDER · THE DOOR OPENS ITSELF<br><br>UNTIL THEN: SELL.</div></div>`;
+    return;
+  }
+  const counts=Object.fromEntries(REC_STAGES.map(([k])=>[k,(DATA.recruits||[]).filter(r=>r.stage===k).length]));
+  const mine=[...(DATA.recruits||[])].filter(r=>isAdmin()||r.agent_id===AUTH.id)
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  el.innerHTML=`
+    <div class="funnel rv">${REC_STAGES.map(([k,l])=>`<div class="fstage"><div class="n">${counts[k]}</div><div class="l">${l}</div></div>`).join('')}</div>
+    <div class="panel rv" style="margin-bottom:16px">
+      <h3 class="disp" style="font-size:15px">Log a Prospect</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">when they get licensed, send them to the vault door — they create their own account under you as upline</div>
+      <div class="rule" style="margin:10px 0 14px"></div>
+      <div class="log-row">
+        <input id="recName" class="sale-in" placeholder="Prospect name" maxlength="120">
+        <input id="recSrc" class="sale-in" placeholder="Source — referral, warm market, IG..." maxlength="120">
+        <button class="btn" id="recGo">Add Prospect</button>
+        <span id="recMsg" class="log-msg"></span>
+      </div>
+    </div>
+    <div class="panel rv">
+      <h3 class="disp" style="font-size:15px">${isAdmin()?'Floor Pipeline':'My Pipeline'}</h3>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      ${mine.map(r=>{
+        const owner=agentById(r.agent_id);
+        return `<div class="sale-row">
+          <div class="sale-main"><b>${esc(r.name)}</b>
+            <span class="sale-meta">${isAdmin()?esc(owner?owner.name:r.agent_id)+' · ':''}${r.source?esc(r.source)+' · ':''}${new Date(r.created_at).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span></div>
+          <select class="agent-pick rec-st sale-st" data-rid="${r.id}" aria-label="Stage">${REC_STAGES.map(([v,l])=>`<option value="${v}"${r.stage===v?' selected':''}>${l}</option>`).join('')}</select>
+          <button class="sale-del rec-del" data-rid="${r.id}" title="Remove">✕</button>
+        </div>`;
+      }).join('')||'<p style="color:var(--ink-3)">Empty pipeline. Who are you bringing in?</p>'}
+    </div>`;
+  observeReveals();
+}
+document.addEventListener('click',async e=>{
+  if(e.target.closest('#recGo')&&AUTH){
+    const msg=$('#recMsg');
+    const name=$('#recName').value.trim(), src=$('#recSrc').value.trim();
+    if(name.length<2){ msg.className='log-msg err'; msg.textContent='> name required'; sDeny(); return; }
+    try{
+      if(demo) throw new Error('offline — demo mode');
+      const {error}=await db.rpc('submit_recruit',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_name:name,p_source:src||null});
+      if(error) throw error;
+      await loadAll();
+      msg.className='log-msg ok'; msg.textContent='> PROSPECT LOGGED'; sApprove();
+      $('#recName').value=''; $('#recSrc').value='';
+      renderRecruiting();
+    }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+    return;
+  }
+  const del=e.target.closest('.rec-del');
+  if(del&&AUTH){
+    if(!confirm('Remove this prospect?')) return;
+    try{
+      if(demo) throw new Error('offline');
+      const {error}=await db.rpc('delete_recruit',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_recruit_id:Number(del.dataset.rid)});
+      if(error) throw error;
+      await loadAll(); sKey(); renderRecruiting();
+    }catch(err){ sDeny(); }
+  }
+});
+document.addEventListener('change',async e=>{
+  const sel=e.target.closest('.rec-st'); if(!sel||!AUTH) return;
+  try{
+    if(demo) throw new Error('offline');
+    const {error}=await db.rpc('set_recruit_stage',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_recruit_id:Number(sel.dataset.rid),p_stage:sel.value});
+    if(error) throw error;
+    await loadAll(); sKey(); renderRecruiting();
+  }catch(err){ sDeny(); renderRecruiting(); }
+});
+
+/* ================= OBJECTION ROULETTE (live drill) ================= */
+let drillTimer=null;
+function checkDrill(){
+  try{
+    const raw=DATA.config&&DATA.config.drill;
+    if(!raw||!AUTH||document.body.classList.contains('locked')) return;
+    const d=JSON.parse(raw);
+    if(!d||!d.d||Date.now()-d.t>60000) return; // stale drill
+    if(sessionStorage.getItem('t1p-drill')===d.d) return;
+    sessionStorage.setItem('t1p-drill',d.d);
+    openDrill(d);
+  }catch(e){}
+}
+function openDrill(d){
+  const q=FW_BANK[Math.abs(d.i)%FW_BANK.length];
+  const ov=$('#drillOv'); ov.classList.add('on');
+  $('#drillCat').textContent=q.c;
+  $('#drillQ').textContent=q.q;
+  $('#drillBoard').innerHTML='';
+  const line=$('#drillLine');
+  line.textContent='> 20 seconds :: the whole floor is answering right now_';
+  line.className='fw-line';
+  const opts=fwShuffle(q.a.map((t,i)=>({t,ok:i===0})));
+  const K=['A','B','C','D'];
+  const box=$('#drillOpts');
+  box.innerHTML=opts.map((o,i)=>`<button class="fw-opt" data-ok="${o.ok?1:0}" data-k="${K[i]}">${esc(o.t)}</button>`).join('');
+  const t0=Date.now(); let done=false, left=20;
+  const clock=$('#drillClock'); clock.textContent='20'; clock.classList.remove('low');
+  clearInterval(drillTimer);
+  const lock=()=>box.querySelectorAll('.fw-opt').forEach(b=>b.disabled=true);
+  const submit=async(correct,ms)=>{
+    try{ if(!demo) await db.rpc('answer_drill',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_drill_id:d.d,p_correct:correct,p_ms:ms}); }catch(e){}
+    paintDrillBoard(d.d);
+  };
+  drillTimer=setInterval(()=>{
+    left--; clock.textContent=String(Math.max(0,left));
+    if(left<=5) clock.classList.add('low');
+    if(left<=0){
+      clearInterval(drillTimer);
+      if(!done){ done=true; lock(); line.textContent='> TIME :: the objection won this round'; line.className='fw-line err'; sDeny(); submit(false,20000); }
+    }
+  },1000);
+  box.querySelectorAll('.fw-opt').forEach(b=>b.addEventListener('click',()=>{
+    if(done) return;
+    done=true; clearInterval(drillTimer); lock();
+    const ok=b.dataset.ok==='1';
+    b.classList.add(ok?'good':'bad');
+    if(!ok) box.querySelector('.fw-opt[data-ok="1"]').classList.add('good');
+    line.textContent=ok?'> HIT :: answer locked in':'> MISS :: the right line is lit';
+    line.className='fw-line '+(ok?'ok':'err');
+    ok?sGrant():sDeny();
+    submit(ok, Date.now()-t0);
+  }));
+  paintDrillBoard(d.d);
+}
+async function paintDrillBoard(id){
+  if(demo) return;
+  try{
+    const {data}=await db.from('drill_answers').select('*').eq('drill_id',id).order('ms');
+    $('#drillBoard').innerHTML=(data||[]).map(r=>{
+      const a=agentById(r.agent_id);
+      return `<div class="dr"><span class="${r.correct?'ok':'no'}">${r.correct?'✓':'✗'}</span><span>${esc(a?a.name:r.agent_id)}</span><span style="margin-left:auto">${(r.ms/1000).toFixed(1)}s</span></div>`;
+    }).join('');
+  }catch(e){}
+}
+$('#drillClose').addEventListener('click',()=>{ $('#drillOv').classList.remove('on'); clearInterval(drillTimer); });
+setInterval(()=>{
+  if(!$('#drillOv').classList.contains('on')) return;
+  try{ const d=JSON.parse(DATA.config.drill||'{}'); if(d.d) paintDrillBoard(d.d); }catch(e){}
+},3000);
+async function startDrill(){
+  if(!isAdmin()||demo) { sDeny(); return false; }
+  const i=Math.floor(Math.random()*FW_BANK.length);
+  const payload=JSON.stringify({d:Math.random().toString(36).slice(2,10),i,t:Date.now()});
+  const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'drill',p_value:payload});
+  if(error) throw error;
+  await loadAll(); // own screen gets it immediately; the floor's realtime picks it up
+  return true;
+}
+
 /* ================= SCRIPTS ================= */
 let scriptQ='';
 function renderScripts(){
@@ -2533,7 +3301,7 @@ function renderCmds(){
   const sec=(t,rows)=>`<div class="script-cat">${t}</div><div class="panel rv" style="padding:18px 22px">${rows.join('')}</div>`;
   const consoleRows=[
     row('/','open the console from anywhere on the site'),
-    row('goto board · ranks · me · building · tree · rewards · skills · war · sales · scripts · report · firewall','jump straight to any tab'),
+    row('goto board · ranks · me · building · tree · rewards · skills · war · sales · scripts · report · firewall · academy · calls · gauntlet · records · recruiting','jump straight to any tab'),
     row('stats &lt;name&gt;','pull an operative\'s file — e.g. <code>stats alex</code>'+(isAdmin()?'':' <em>(your own file only)</em>')),
     row('pending','jump to the approvals queue'),
     row('qr','show a scannable QR of the vault link for recruiting'),
@@ -2562,6 +3330,16 @@ function renderCmds(){
     row('The Firewall','Intel → The Firewall — objection training sim built off the Locked Mortgage script'),
     row('10 correct','cracks all ten nodes — the firewall falls and the storm fires'),
     row('3 wrong','the trace completes and the system locks you out — run it back'),
+    row('The Academy','Intel → Academy — six modules in order; pass each exam (80%+) to unlock the next'),
+    row('Live Drill','the screen takes over with one objection, 20 seconds, whole floor at once — live scoreboard by speed'),
+  ];
+  const grindRows=[
+    row('🔥 streaks','log anything (dials, points, sales) every day — 3 days earns the flame, 7 doubles it, 30 triples it; miss a day and it resets'),
+    row('🏆 The Gauntlet','The Org → Gauntlet — weekly bracket seeded Monday from last week\'s points; champion wears the belt all week'),
+    row('Records','The Org → Records — all-time marks: biggest day, longest streak, best AP month; they never reset'),
+    row('Monthly Contract','My Progress → set your dials / appts / AP targets; the home page shows who\'s ON PACE and who\'s BEHIND'),
+    row('Call Vault','Intel → Call Vault — drop call recordings, leadership adds timestamped notes, best one becomes ★ Call of the Week'),
+    row('Recruiting','The Org → Recruiting — 🔒 sealed until you post an approved $20K month; then track prospects to producing'),
   ];
   const waRows=[
     row('name Derek B','register on the WhatsApp line'),
@@ -2574,6 +3352,7 @@ function renderCmds(){
     row('undo','remove your last entry today'),
   ];
   const adminRows=[
+    row('drill','launch a live objection drill — every open screen gets the same question, 20 seconds, scoreboard by speed'),
     row('goal 500','set the floor\'s daily points target — the code storm fires when it\'s hit'),
     row('remind 10:30 15:30','set the twice-daily log reminder times (up to 4)'),
     row('stats &lt;anyone&gt;','open any operative\'s file'),
@@ -2586,7 +3365,8 @@ function renderCmds(){
     sec('Your Account', acctRows)+
     sec('Switches', toggleRows)+
     sec('Special URLs', urlRows)+
-    sec('The Firewall — training sim', gameRows)+
+    sec('Training &amp; Games', gameRows)+
+    sec('The Grind — streaks, belts, contracts', grindRows)+
     sec('WhatsApp Line — text the business number', waRows)+
     (isAdmin()?sec('Command Authority — admin only', adminRows):'');
   observeReveals();
@@ -2955,19 +3735,35 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc,sl]=await Promise.all([
+  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
     db.from('config').select('*'),
     db.from('scripts').select('*').order('sort'),
     db.rpc('sales_board'),
+    db.rpc('activity_days'),
+    db.from('recruits').select('*'),
+    db.from('contracts').select('*'),
+    db.from('academy_progress').select('*'),
+    db.from('calls').select('*'),
+    db.from('call_notes').select('*'),
+    db.rpc('sales_month_totals'),
+    db.rpc('month_activity'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
     config:Object.fromEntries(((c&&c.data)||[]).map(r=>[r.key,r.value])),
     scripts:(sc&&sc.data)||[],
-    salesBoard:(sl&&sl.data)||[]};
+    salesBoard:(sl&&sl.data)||[],
+    actDays:(ad&&ad.data)||[],
+    recruits:(rc&&rc.data)||[],
+    contracts:(ct&&ct.data)||[],
+    academy:(ac&&ac.data)||[],
+    calls:(cl&&cl.data)||[],
+    callNotes:(cn&&cn.data)||[],
+    salesMonths:(sm&&sm.data)||[],
+    monthAct:(ma&&ma.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){

@@ -4,7 +4,7 @@ import { config, assertConfig } from './config.js';
 import { createHandler, fmtBoard } from './commands.js';
 import { sendText, sendSmart, markRead } from './whatsapp.js';
 import * as db from './db.js';
-import { businessDay } from './util.js';
+import { businessDay, weekStart } from './util.js';
 
 const handleMessage = createHandler(db);
 
@@ -125,6 +125,39 @@ function partsInTz(date = new Date()) {
   return { hour: Number(get('hour')) % 24, minute: Number(get('minute')), weekday: get('weekday') };
 }
 
+/** The Sunday-evening weekly wrap. Pure so tests can check the formatting. */
+export function buildHeistMessage(start, rows) {
+  return [
+    '*THE HEIST REPORT*',
+    `Week of ${start}`,
+    '',
+    fmtBoard(`Week of ${start}`, rows),
+    '',
+    `Take of the week goes to *${rows[0].name}*.`,
+    'New week starts at midnight. Set your contract, log your dials.',
+    `The Vault: ${config.siteUrl}`,
+  ].join('\n');
+}
+
+let lastHeistWeek = null;
+async function heistTick() {
+  try {
+    if (!config.heistEnabled) return;
+    const { hour, weekday } = partsInTz();
+    if (weekday !== 'Sun' || hour < config.heistHour) return;
+    const day = businessDay();
+    const start = weekStart(day);
+    if (start === lastHeistWeek) return;
+    lastHeistWeek = start;
+    const rows = await db.standings(start, day);
+    if (!rows.length) return;
+    await broadcast(buildHeistMessage(start, rows));
+    console.log('[heist] weekly report sent');
+  } catch (e) {
+    console.error('[heist error]', e);
+  }
+}
+
 let lastVerdictDay = null;
 async function verdictTick() {
   try {
@@ -150,4 +183,5 @@ if (process.env.NODE_ENV !== 'test') {
     console.log(`T1P WhatsApp bot on :${config.port} | tz ${config.timezone} | verdict ${config.verdictHour}:${String(config.verdictMinute).padStart(2,'0')}`);
   });
   setInterval(verdictTick, 60_000);
+  setInterval(heistTick, 60_000);
 }

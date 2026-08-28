@@ -30,6 +30,9 @@ export const config = {
   verdictMinute:Number(process.env.VERDICT_MINUTE ?? 0),
   verdictWeekdaysOnly: process.env.VERDICT_WEEKDAYS_ONLY !== '0',
   standingsTemplate: process.env.STANDINGS_TEMPLATE || '',
+  heistHour:    Number(process.env.HEIST_HOUR ?? 18),
+  heistEnabled:      process.env.HEIST_ENABLED !== '0',
+  siteUrl:           process.env.SITE_URL || 'https://obtlrivpgdrxgydcpnqo.supabase.co/functions/v1/vault',
   port:         Number(process.env.PORT || 3000),
   dryRun:            process.env.DRY_RUN === '1',
 };
