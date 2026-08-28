@@ -1909,6 +1909,19 @@ function palExec(raw){
     })();
     return;
   }
+  if(c==='remind'){
+    if(!isAdmin()){ hint.innerHTML='<span class="err">clearance denied :: admin only</span>'; sDeny(); return; }
+    const times=parts.slice(1).filter(s=>/^\d{1,2}:\d{2}$/.test(s));
+    if(!times.length){ hint.innerHTML='<span class="err">usage: remind 10:30 15:30</span> — current: <span class="hit">'+esc(remindTimes().join(', '))+'</span>'; return; }
+    (async()=>{
+      try{
+        if(!demo){ const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'remind_times',p_value:times.join(',')}); if(error) throw error; await loadAll(); }
+        else DATA.config.remind_times=times.join(',');
+        hint.innerHTML='reminders set :: <span class="hit">'+esc(times.join(' + '))+'</span> daily'; sKey();
+      }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
+    })();
+    return;
+  }
   if(c==='qr'){
     const u='https://obtlrivpgdrxgydcpnqo.supabase.co/functions/v1/vault';
     hint.innerHTML=`<div style="text-align:center;padding:8px"><img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&color=00E676&bgcolor=020503&data=${encodeURIComponent(u)}" width="180" height="180" style="border:1px solid rgba(0,230,118,.3)"><br><span class="dim" style="font-size:10px">${u}</span></div>`;
@@ -2080,6 +2093,7 @@ function renderCmds(){
   ];
   const adminRows=[
     row('goal 500','set the floor\'s daily points target — the code storm fires when it\'s hit'),
+    row('remind 10:30 15:30','set the twice-daily log reminder times (up to 4)'),
     row('stats &lt;anyone&gt;','open any operative\'s file'),
     row('announce &lt;text&gt;','(WhatsApp) blast a message to the whole roster'),
     row('roster','(WhatsApp) list registered agents'),
@@ -2125,6 +2139,53 @@ function renderReport(){
   lines.push('> run your lane.');
   el.innerHTML=lines.join('\n');
 }
+
+/* ================= TWICE-DAILY LOG REMINDERS ================= */
+let myLoggedToday=null; // null = unknown, true/false once checked
+async function checkMyLogged(){
+  if(!AUTH||demo){ myLoggedToday=null; return; }
+  try{
+    const a=agentById(AUTH.id);
+    const {data}=await db.rpc('wa_board',{p_days:1});
+    myLoggedToday=!!(data||[]).find(r=>a&&r.agent===a.name);
+  }catch(e){ myLoggedToday=null; }
+}
+function remindTimes(){
+  return String(DATA.config.remind_times||'10:30,15:30').split(',')
+    .map(s=>s.trim()).filter(s=>/^\d{1,2}:\d{2}$/.test(s)).slice(0,4);
+}
+function fireReminder(idx){
+  $('#promoName').textContent='LOG YOUR NUMBERS';
+  $('#promoRank').textContent='DIALS · PRESENTATIONS · DEALS — THE BOARD IS WAITING';
+  document.querySelector('#promo .promo-k').textContent='// FLOOR REMINDER';
+  $('#promo').classList.add('on');
+  beep(520,.12,'triangle',.06,180); setTimeout(()=>beep(660,.14,'triangle',.06,180),160);
+  notify('T1P — log your numbers','Twice a day, every day. Tap Log Activity in the War Room.');
+  tickerPush('<span class="dim">[REMINDER]</span> ▸ LOG YOUR NUMBERS :: WAR ROOM → LOG ACTIVITY');
+  const off=()=>{ $('#promo').classList.remove('on'); location.hash='#/war'; };
+  $('#promo').addEventListener('click',off,{once:true});
+  setTimeout(()=>$('#promo').classList.remove('on'), 5000);
+}
+setInterval(async()=>{
+  if(!AUTH||demo||SPECTATE) return;
+  const times=remindTimes();
+  const now=new Date();
+  const mins=now.getHours()*60+now.getMinutes();
+  for(let i=0;i<times.length;i++){
+    const [h,m]=times[i].split(':').map(Number);
+    const t=h*60+m;
+    if(mins>=t && mins<t+90){ // 90-minute window after each reminder time
+      const key='t1p-rem-'+dayKey()+'-'+i;
+      let done=null; try{ done=localStorage.getItem(key); }catch(e){}
+      if(done) continue;
+      await checkMyLogged();
+      if(myLoggedToday===true){ try{localStorage.setItem(key,'skip');}catch(e){} continue; }
+      try{ localStorage.setItem(key,'fired'); }catch(e){}
+      fireReminder(i);
+      break;
+    }
+  }
+}, 60000);
 
 /* ================= REVEALS ================= */
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
