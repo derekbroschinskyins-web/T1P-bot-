@@ -29,7 +29,7 @@
   --ink-2:#9FB8AA;
   --ink-3:#5F7A6B;
   --mark-gold:#00C868;
-  --mark-blue:#22D3EE;
+  --mark-blue:#FF4D4D;
   --good:#4CAF6E;
   --warn:#D9903F;
   --bad:#C25454;
@@ -321,7 +321,7 @@ select#gateAgent option{background:#04120a;color:var(--neon)}
 
 /* leaderboard glow bars */
 .row .bar.gold{background:linear-gradient(90deg,var(--gold-deep),var(--gold) 55%,var(--gold-bright));background-size:200% 100%;animation:barsheen 3.5s linear infinite;box-shadow:0 0 10px rgba(0,230,118,.35)}
-.row .bar.blue{background:linear-gradient(90deg,#0E7490,var(--mark-blue) 60%,#A5F3FC);background-size:200% 100%;animation:barsheen 3.5s linear infinite;box-shadow:0 0 10px rgba(34,211,238,.35)}
+.row .bar.blue{background:linear-gradient(90deg,#7F1D1D,var(--mark-blue) 60%,#FFB3A7);background-size:200% 100%;animation:barsheen 3.5s linear infinite;box-shadow:0 0 10px rgba(255,77,77,.35)}
 @keyframes barsheen{to{background-position:-200% 0}}
 .row.p1{animation:p1pulse 3s ease-in-out infinite}
 .row.p1 .name{color:var(--gold-bright)}
@@ -364,6 +364,13 @@ select#gateAgent option{background:#04120a;color:var(--neon)}
 /* ---------- leaderboard ---------- */
 .boards{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
 .boards .panel + .panel{margin-top:0}
+/* the two boards carry different colors: builders green, producers red */
+body .board-b h3{color:var(--neon);text-shadow:0 0 10px rgba(0,230,118,.35)}
+body .board-p{border-color:rgba(255,77,77,.32)}
+body .board-p:hover{border-color:rgba(255,77,77,.6);box-shadow:inset 0 1px 0 rgba(255,77,77,.08), 0 12px 38px rgba(0,0,0,.55), 0 0 26px rgba(255,77,77,.14)}
+.board-p h3{color:#FF7A7A;text-shadow:0 0 10px rgba(255,60,60,.45)}
+.board-p .hint{color:rgba(255,122,122,.55)}
+.board-p .rule{background:linear-gradient(90deg,#FF4D4D,transparent)}
 .boards .board{display:flex;flex-direction:column;height:100%}
 #boardRecruiters,#boardAgents{flex:1;min-height:130px}
 /* boards reveal in lockstep, fade-only — keeps the two panels pixel-identical */
@@ -817,18 +824,24 @@ body.tv .page-h{font-size:64px}
       <div id="wire"></div>
     </div>
     <div class="boards">
-      <div class="panel board rv">
+      <div class="panel board board-b rv">
         <h3><span class="swatch" style="background:var(--mark-gold)"></span>Top Builders</h3>
         <div class="hint">Builder points — earned by growing the org</div>
         <div class="rule"></div>
         <div id="boardRecruiters"></div>
       </div>
-      <div class="panel board rv">
-        <h3><span class="swatch" style="background:var(--mark-blue)"></span>Top New Agents</h3>
+      <div class="panel board board-p rv">
+        <h3><span class="swatch" style="background:var(--mark-blue)"></span>Top Producers</h3>
         <div class="hint">$20K-ladder points — earned by climbing</div>
         <div class="rule"></div>
         <div id="boardAgents"></div>
       </div>
+    </div>
+    <div class="panel rv" style="margin-top:20px">
+      <h3 class="disp" style="font-size:15px">Heist Report</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">this week's take — full debrief on the Report tab</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <pre id="reportHome" class="report-pre" style="font-size:12px"></pre>
     </div>
   </section>
 
@@ -1383,6 +1396,7 @@ const SYS_LINES=[
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
   renderGoalHud(); renderDuel(); renderTodayStrip(); renderWire();
+  const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
   const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
   const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
   const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
@@ -2116,6 +2130,9 @@ function renderCmds(){
 /* ================= HEIST REPORT ================= */
 function renderReport(){
   const el=$('#reportBody'); if(!el) return;
+  el.innerHTML=reportHTML();
+}
+function reportHTML(){
   const now=new Date();
   const start=new Date(now); start.setDate(start.getDate()-((start.getDay()+6)%7)); // monday
   const sk=dayKey(start);
@@ -2142,7 +2159,7 @@ function renderReport(){
   });
   lines.push('');
   lines.push('> run your lane.');
-  el.innerHTML=lines.join('\n');
+  return lines.join('\n');
 }
 
 /* ================= TWICE-DAILY LOG REMINDERS ================= */
