@@ -1092,8 +1092,12 @@ body.tv .page-h{font-size:64px}
     </div>
     <div class="panel rv">
       <h3 class="disp" style="font-size:15px">The Book</h3>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">latest policies — update the status as they move; you can edit your own, Derek can edit any</div>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every policy is logged per agent — pick a name to open their personal book; you can edit your own, Derek can edit any</div>
       <div class="rule" style="margin:10px 0 12px"></div>
+      <div class="log-row" style="margin-bottom:8px">
+        <select id="salePick" class="agent-pick" style="min-width:170px" aria-label="Whose book"></select>
+        <span id="bookStat" class="log-msg"></span>
+      </div>
       <div id="saleList"></div>
     </div>
   </section>
@@ -1955,6 +1959,7 @@ function snapData(){
   return {
     rows:new Map(DATA.log.filter(p=>p.id!=null).map(p=>[p.id, p.status||'approved'])),
     totals:new Map(DATA.agents.map(a=>[a.id, totals(a.id).total])),
+    sales:new Map((DATA.sales||[]).map(s=>[s.id, s.status])),
     today:todaysPoints(),
     goal:goalTarget(),
   };
@@ -1991,6 +1996,20 @@ function diffData(){
     if(ot===undefined) continue;
     const nr=RANKS.indexOf(rankOf(totals(a.id).total)), or_=RANKS.indexOf(rankOf(ot));
     if(nr>or_){ queuePromo(a.name, RANKS[nr].name); notify('T1P — PROMOTION', a.name+' just hit '+RANKS[nr].name.toUpperCase()); }
+  }
+  // sales hitting the book — logged to the wire for the whole floor
+  const prevSales=PREV.sales||new Map();
+  for(const s of (DATA.sales||[])){
+    const old=prevSales.get(s.id);
+    const a=agentById(s.agent_id);
+    const who=esc((a?a.name:s.agent_id||'?').toUpperCase());
+    const hh=String(new Date().getHours()).padStart(2,'0'), mm=String(new Date().getMinutes()).padStart(2,'0');
+    if(old===undefined){
+      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: SALE ON THE BOOK :: ${fmtAP(s.annual_premium)} AP`);
+      if(!AUTH||s.agent_id!==AUTH.id) sApprove();
+    } else if(old!==s.status&&s.status==='active'){
+      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: POLICY ACTIVE :: ${fmtAP(s.annual_premium)} AP LOCKED IN`);
+    }
   }
   // daily goal crossing — the code itself erupts, every open screen at once
   const target=goalTarget();
@@ -2178,7 +2197,7 @@ document.addEventListener('click',async e=>{
 });
 
 /* ================= SALES LEDGER ================= */
-let saleRange='month';
+let saleRange='month', saleWho=null;
 const SALE_STATUSES=[['submitted','Submitted'],['issued','Issued'],['active','Active'],['declined','Declined'],['cancelled','Cancelled']];
 const fmtAP=n=>'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
 const saleCounts=s=>s.status!=='declined'&&s.status!=='cancelled';
@@ -2208,7 +2227,25 @@ function renderSales(){
     document.querySelectorAll('#apBoard .bar').forEach(b=>b.style.width=b.dataset.w+'%');
   }));
   const list=$('#saleList'); if(!list) return;
-  const sales=[...(DATA.sales||[])].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,50);
+  if(saleWho===null) saleWho=AUTH?AUTH.id:'';
+  const pick=$('#salePick');
+  if(pick){
+    pick.innerHTML='<option value=""'+(saleWho===''?' selected':'')+'>Whole Floor</option>'+
+      DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
+        .map(a=>`<option value="${esc(a.id)}"${a.id===saleWho?' selected':''}>${esc(a.name)}${AUTH&&a.id===AUTH.id?"'s book (me)":"'s book"}</option>`).join('');
+  }
+  const book=[...(DATA.sales||[])].filter(s=>!saleWho||s.agent_id===saleWho)
+    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  const stat=$('#bookStat');
+  if(stat){
+    const counting=book.filter(saleCounts);
+    const apSum=counting.reduce((t,s)=>t+Number(s.annual_premium),0);
+    const act=book.filter(s=>s.status==='active').length;
+    stat.textContent=book.length
+      ? `> ${book.length} ${book.length===1?'policy':'policies'} logged :: ${fmtAP(apSum)} AP on the book :: ${act} active`
+      : '> nothing logged yet';
+  }
+  const sales=book.slice(0,200);
   list.innerHTML=sales.map(s=>{
     const a=agentById(s.agent_id);
     const canEdit=AUTH&&(isAdmin()||AUTH.id===s.agent_id);
@@ -2224,8 +2261,12 @@ function renderSales(){
           <button class="sale-del" data-sid="${s.id}" title="Remove from the book">✕</button>`
         :`<span class="pill st-${esc(s.status)}">${esc(s.status)}</span>`}
     </div>`;
-  }).join('') || '<p style="color:var(--ink-3)">The book is empty. Write something.</p>';
+  }).join('') || '<p style="color:var(--ink-3)">Nothing in this book yet. Write something.</p>';
 }
+document.addEventListener('change',e=>{
+  if(e.target.id!=='salePick') return;
+  saleWho=e.target.value; sKey(); renderSales();
+});
 document.addEventListener('click',e=>{
   const b=e.target.closest('.sale-r'); if(!b) return;
   saleRange=b.dataset.range;
@@ -2252,8 +2293,10 @@ document.addEventListener('click',async e=>{
     }
     msg.className='log-msg ok'; msg.textContent='> ON THE BOOK :: '+fmtAP(ap)+' AP';
     sApprove();
-    const a=agentById(AUTH.id);
-    tickerPush(`<span class="dim">[${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: SALE SUBMITTED :: ${fmtAP(ap)} AP`);
+    if(demo){
+      const a=agentById(AUTH.id);
+      tickerPush(`<span class="dim">[${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: SALE ON THE BOOK :: ${fmtAP(ap)} AP`);
+    } // live mode: the diff engine logs it to the wire for everyone
     $('#saleName').value=''; $('#salePhone').value=''; $('#saleAP').value='';
     renderSales();
   }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
