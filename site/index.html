@@ -129,7 +129,24 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .logo{display:flex;align-items:baseline;gap:10px;flex:none}
 .logo .mark{font-family:'Clash Display','General Sans',sans-serif;font-weight:900;font-size:24px;color:var(--gold);letter-spacing:.02em}
 .logo .sub{font-family:'General Sans','Instrument Sans',sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:var(--ink-2);text-transform:uppercase}
-nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;flex:1;min-width:0}
+nav.tabs{display:flex;gap:2px;flex-wrap:wrap;align-items:center;overflow:visible;flex:1;min-width:0}
+.ngrp{position:relative}
+.ngbtn{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-2);padding:6px 10px;border-bottom:2px solid transparent;transition:color .15s;white-space:nowrap;
+}
+.ngbtn i{font-style:normal;color:var(--neon-dim);font-size:9px}
+.ngbtn:hover{color:var(--neon);text-shadow:0 0 10px rgba(0,230,118,.5)}
+.ngrp.cur .ngbtn{color:var(--neon-bright);border-bottom-color:var(--neon)}
+.ndrop{
+  position:absolute;top:calc(100% + 10px);left:0;min-width:180px;z-index:70;display:none;
+  background:rgba(2,10,5,.97);border:1px solid rgba(0,230,118,.3);border-radius:6px;
+  box-shadow:0 18px 50px rgba(0,0,0,.7), 0 0 24px rgba(0,230,118,.08);padding:6px;
+}
+.ngrp.open .ndrop{display:block}
+.ndrop a{display:block;padding:8px 12px;border-bottom:none !important;border-radius:4px}
+.ndrop a:hover{background:rgba(0,230,118,.08)}
+.ndrop a.active{color:var(--neon-bright);background:rgba(0,230,118,.1)}
 nav.tabs::-webkit-scrollbar{display:none}
 nav.tabs a{
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
@@ -357,6 +374,7 @@ select#gateAgent option{background:#04120a;color:var(--neon)}
 .row.p2 .pos,.row.p3 .pos{color:var(--ink-2)}
 .row .who{min-width:0}
 .row .name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row .name .badge{margin-left:auto}
 .row .bar-wrap{height:6px;background:var(--panel-3);margin-top:6px;position:relative}
 .row .bar{position:relative;height:100%;width:0;transition:width .8s cubic-bezier(.2,.7,.3,1)}
 .row .bar.gold{background:var(--mark-gold)}
@@ -431,17 +449,16 @@ select.agent-pick[disabled]{opacity:.7}
 .step.done::before{background:var(--gold-deep)}
 .step .cnt{font-family:'General Sans','Instrument Sans',sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
 
-/* ---------- tree (network graph) ---------- */
-.tl{fill:none;stroke:rgba(0,230,118,.35);stroke-width:1.5}
-.tc{fill:#04120a;stroke-width:2}
-.tc-halo{fill:none;stroke-width:1;opacity:.35;animation:halo 3s ease-in-out infinite}
-@keyframes halo{0%,100%{opacity:.15;r:20}50%{opacity:.5;r:24}}
+/* ---------- tree (org chart) ---------- */
+.tl{fill:none;stroke:rgba(0,230,118,.4);stroke-width:1.5}
 .tn{cursor:pointer}
-.tn:hover .tc{filter:drop-shadow(0 0 8px rgba(0,230,118,.7))}
-.ti{font-family:'Clash Display','General Sans',sans-serif;font-size:14px;font-weight:700;text-anchor:middle}
-.tname{font-family:'General Sans',sans-serif;font-size:13px;font-weight:600;fill:var(--ink);text-anchor:middle}
-.tmeta{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;fill:var(--neon-dim);text-anchor:middle}
-@media (prefers-reduced-motion: reduce){.tc-halo{animation:none}}
+.tn rect.card{fill:rgba(4,18,10,.95);stroke-width:1.5;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.tn:hover rect.card{filter:drop-shadow(0 0 12px rgba(0,230,118,.55))}
+.tn rect.tag{fill:rgba(0,230,118,.1)}
+.tname{font-family:'General Sans',sans-serif;font-size:13.5px;font-weight:700;fill:var(--ink);text-anchor:middle}
+.tmeta{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9px;fill:var(--neon-dim);text-anchor:middle;letter-spacing:.05em}
+.trank{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:8px;text-anchor:middle;letter-spacing:.12em}
+.tgen{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9px;fill:var(--ink-3);letter-spacing:.2em}
 .tree{padding:8px 0}
 .tnode{position:relative;padding-left:26px}
 .tree>.tnode{padding-left:0}
@@ -680,6 +697,17 @@ body.tv .topbar, body.tv footer, body.tv #ticker{display:none}
 body.tv main{max-width:none;padding:40px 60px}
 body.tv{font-size:19px}
 body.tv .page-h{font-size:64px}
+/* ---------- log activity ---------- */
+.log-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.log-qty{
+  width:92px;background:rgba(3,10,6,.8);color:var(--neon);border:1px solid rgba(0,230,118,.35);
+  border-radius:3px;padding:10px 12px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:14px;outline:none;
+  text-align:center;
+}
+.log-qty:focus{border-color:var(--neon)}
+.log-msg{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim)}
+.log-msg.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
+.log-msg.err{color:#FF4D4D}
 /* ---------- sound toggle ---------- */
 .snd-btn{
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--neon-dim);
@@ -726,17 +754,32 @@ body.tv .page-h{font-size:64px}
   <div class="topbar-inner">
     <a class="logo" href="#/board"><span class="mark">T1P</span><span class="sub">Top One Percent</span></a>
     <nav class="tabs" id="tabs">
-      <a href="#/board" data-v="board">Leaderboard</a>
-      <a href="#/ranks" data-v="ranks">Ranks</a>
-      <a href="#/me" data-v="me">My Progress</a>
-      <a href="#/building" data-v="building">Building</a>
-      <a href="#/tree" data-v="tree">Duplication Tree</a>
-      <a href="#/rewards" data-v="rewards">Rewards</a>
-      <a href="#/skills" data-v="skills">Skills</a>
+      <a href="#/board" data-v="board">Board</a>
       <a href="#/war" data-v="war">War Room</a>
-      <a href="#/scripts" data-v="scripts">Scripts</a>
-      <a href="#/report" data-v="report">Report</a>
-      <a href="#/cmds" data-v="cmds">Commands</a>
+      <div class="ngrp">
+        <button class="ngbtn" type="button">My Desk <i>▾</i></button>
+        <div class="ndrop">
+          <a href="#/me" data-v="me">My Progress</a>
+          <a href="#/building" data-v="building">Building</a>
+          <a href="#/rewards" data-v="rewards">Rewards</a>
+        </div>
+      </div>
+      <div class="ngrp">
+        <button class="ngbtn" type="button">The Org <i>▾</i></button>
+        <div class="ndrop">
+          <a href="#/tree" data-v="tree">Duplication Tree</a>
+          <a href="#/ranks" data-v="ranks">Ranks</a>
+          <a href="#/skills" data-v="skills">Skills</a>
+        </div>
+      </div>
+      <div class="ngrp">
+        <button class="ngbtn" type="button">Intel <i>▾</i></button>
+        <div class="ndrop">
+          <a href="#/scripts" data-v="scripts">Scripts</a>
+          <a href="#/report" data-v="report">Report</a>
+          <a href="#/cmds" data-v="cmds">Commands</a>
+        </div>
+      </div>
       <a href="#/approvals" data-v="approvals" id="tabApprovals" class="hidden">Approvals</a>
     </nav>
     <span class="top-right">
@@ -872,6 +915,21 @@ body.tv .page-h{font-size:64px}
     <div class="rv"><div class="kicker">Comms Intercept</div>
     <h1 class="page-h">War Room</h1>
     <p class="page-sub">Live wire from the phones — every dial, presentation, and deal your agents text in, straight off the WhatsApp line.</p></div>
+    <div class="panel rv" id="logPanel" style="margin-bottom:16px">
+      <h3 class="disp" style="font-size:15px">Log Activity</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">no whatsapp needed — this hits the same ledger, live on the board below</div>
+      <div class="rule" style="margin:10px 0 14px"></div>
+      <div class="log-row">
+        <select id="logKind" class="agent-pick" style="min-width:160px">
+          <option value="dial">Dials</option>
+          <option value="presentation">Presentations</option>
+          <option value="deal">Deals</option>
+        </select>
+        <input id="logQty" type="number" min="1" max="1000" value="10" class="log-qty" aria-label="Amount">
+        <button class="btn" id="logGo">Log It</button>
+        <span id="logMsg" class="log-msg"></span>
+      </div>
+    </div>
     <div class="me-head rv" style="margin-bottom:14px">
       <div class="war-range">
         <button class="btn ghost war-r on" data-days="1">Today</button>
@@ -1236,7 +1294,7 @@ function duelPairs(){
   const arr=pool.slice();
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
   const pairs=[];
-  for(let i=0;i+1<arr.length&&pairs.length<3;i+=2) pairs.push([arr[i],arr[i+1]]);
+  for(let i=0;i+1<arr.length&&pairs.length<4;i+=2) pairs.push([arr[i],arr[i+1]]);
   return pairs;
 }
 function renderDuel(){
@@ -1450,7 +1508,7 @@ function renderTree(){
   const downline=id=>kids(id).reduce((n,k)=>n+1+downline(k.id),0);
   const roots=DATA.agents.filter(a=>!a.recruiter_id);
   if(!roots.length){ el.innerHTML='<p class="war-empty">&gt; no agents yet.</p>'; return; }
-  const NW=150, NH=100;
+  const CW=172, CH=66, NW=CW+28, NH=CH+64;
   let leafX=0;
   const pos=new Map();
   function place(a,depth){
@@ -1464,29 +1522,32 @@ function renderTree(){
     pos.set(a.id,{x,y:depth});
     return x;
   }
-  roots.forEach((r,i)=>{ place(r,0); if(i<roots.length-1) leafX+=0.5; });
+  roots.forEach((r,i)=>{ place(r,0); if(i<roots.length-1) leafX+=0.4; });
   const ps=[...pos.values()];
-  const W=(Math.max(...ps.map(p=>p.x))+1)*NW+40;
-  const H=(Math.max(...ps.map(p=>p.y))+1)*NH+40;
-  const X=p=>20+p.x*NW+NW/2, Y=p=>34+p.y*NH;
-  let lines='', nodes='';
+  const maxY=Math.max(...ps.map(p=>p.y));
+  const W=(Math.max(...ps.map(p=>p.x))+1)*NW+90;
+  const H=(maxY+1)*NH-30;
+  const X=p=>64+p.x*NW+NW/2, Y=p=>18+p.y*NH+CH/2;
+  let lines='', nodes='', gens='';
+  for(let d=0;d<=maxY;d++) gens+=`<text class="tgen" x="10" y="${18+d*NH+CH/2+3}">GEN ${d+1}</text>`;
   for(const a of DATA.agents){
     const p=pos.get(a.id); if(!p) continue;
     if(a.recruiter_id&&pos.has(a.recruiter_id)){
       const q=pos.get(a.recruiter_id);
-      lines+=`<path class="tl" d="M${X(q)},${Y(q)+17} C ${X(q)},${Y(q)+58} ${X(p)},${Y(p)-52} ${X(p)},${Y(p)-17}"/>`;
+      const my=Y(q)+CH/2+32;
+      lines+=`<path class="tl" d="M${X(q)},${Y(q)+CH/2} L${X(q)},${my} L${X(p)},${my} L${X(p)},${Y(p)-CH/2}"/>`;
     }
     const t=totals(a.id), r=rankOf(t.total), dl=downline(a.id);
     nodes+=`<g class="tn" data-nav="${esc(a.id)}" transform="translate(${X(p)},${Y(p)})">
-      <circle class="tc-halo" r="22" style="stroke:${r.c}"/>
-      <circle class="tc" r="15" style="stroke:${r.c}"/>
-      <text class="ti" y="4.5" style="fill:${r.c}">${esc(a.name[0].toUpperCase())}</text>
-      <text class="tname" y="36">${esc(a.name)}</text>
-      <text class="tmeta" y="50">${t.total} pts${dl?` · ${dl} in downline`:''}</text>
+      <rect class="card" x="${-CW/2}" y="${-CH/2}" width="${CW}" height="${CH}" rx="7" style="stroke:${r.c}"/>
+      <rect x="${-CW/2}" y="${-CH/2}" width="4" height="${CH}" rx="2" fill="${r.c}"/>
+      <text class="tname" y="-8">${esc(a.name)}</text>
+      <text class="trank" y="7" style="fill:${r.c}">${esc(rankOf(t.total).name.toUpperCase())}</text>
+      <text class="tmeta" y="22">${t.total} PTS${dl?` · ${dl} DOWNLINE`:''}</text>
     </g>`;
   }
-  el.innerHTML=`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;min-width:${Math.min(W,700)}px;height:auto;display:block;margin:0 auto">${lines}${nodes}</svg></div>
-    <p class="war-empty" style="margin-top:10px;font-size:11px">&gt; tap a node to open that operative's file</p>`;
+  el.innerHTML=`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;min-width:${Math.min(W,720)}px;height:auto;display:block;margin:0 auto">${gens}${lines}${nodes}</svg></div>
+    <p class="war-empty" style="margin-top:10px;font-size:11px">&gt; tap a card to open that operative's file</p>`;
 }
 document.addEventListener('click',e=>{
   const n=e.target.closest('.tn'); if(!n) return;
@@ -1589,6 +1650,10 @@ function route(){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
   $('#v-'+v).classList.add('on');
   document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
+  document.querySelectorAll('#tabs .ngrp').forEach(g=>{
+    g.classList.remove('open');
+    g.classList.toggle('cur', !!g.querySelector(`a[data-v="${v}"]`));
+  });
   fillAgentPicks();
   renderCurrent(v);
   decodeEl(document.querySelector('#v-'+v+' .page-h'));
@@ -1670,6 +1735,17 @@ function rerenderView(){
   renderCurrent(VIEWS.includes(v)?v:'board');
 }
 window.addEventListener('hashchange',route);
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.ngbtn');
+  if(b){
+    const g=b.parentElement;
+    const was=g.classList.contains('open');
+    document.querySelectorAll('#tabs .ngrp').forEach(x=>x.classList.remove('open'));
+    if(!was) g.classList.add('open');
+    return;
+  }
+  if(!e.target.closest('.ngrp')) document.querySelectorAll('#tabs .ngrp').forEach(x=>x.classList.remove('open'));
+});
 
 /* ================= AUDIO ================= */
 let AC=null;
@@ -1890,6 +1966,7 @@ function renderHeat(agentId){
 let warDays=1;
 async function renderWar(){
   const el=$('#warBoard'); if(!el) return;
+  const lp=$('#logPanel'); if(lp) lp.style.display=AUTH?'':'none';
   const offline=`<p class="war-empty">&gt; no comms traffic in range.<br>&gt; whatsapp line status: <span style="color:#FF4D4D">OFFLINE</span> — the bot isn't deployed yet.<br>&gt; the second it goes live, every dial your agents text in lands here in real time.</p>`;
   if(demo||!db){ el.innerHTML=offline; return; }
   try{
@@ -1913,6 +1990,30 @@ document.addEventListener('click',e=>{
   warDays=Number(b.dataset.days)||1;
   document.querySelectorAll('.war-r').forEach(x=>x.classList.toggle('on',x===b));
   sKey(); renderWar();
+});
+/* log activity from the site — same ledger as the WhatsApp line */
+const KIND_LBL={dial:'dials',presentation:'presentations',deal:'deals'};
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('#logGo')) return;
+  const msg=$('#logMsg');
+  if(!AUTH){ msg.className='log-msg err'; msg.textContent='log in first'; return; }
+  const kind=$('#logKind').value, qty=parseInt($('#logQty').value,10);
+  if(!Number.isFinite(qty)||qty<1||qty>1000){ msg.className='log-msg err'; msg.textContent='1–1000 per entry'; sDeny(); return; }
+  if(demo){ msg.className='log-msg err'; msg.textContent='offline — demo mode'; return; }
+  msg.className='log-msg'; msg.textContent='> transmitting ...';
+  try{
+    const {data,error}=await db.rpc('log_activity',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_kind:kind,p_amount:qty});
+    if(error) throw error;
+    const t=(data&&data[0])||{dials:0,presentations:0,deals:0};
+    msg.className='log-msg ok';
+    msg.textContent=`+${qty} ${KIND_LBL[kind]} :: today ${t.dials}d / ${t.presentations}p / ${t.deals}deals`;
+    sApprove();
+    const a=agentById(AUTH.id);
+    tickerPush(`<span class="dim">[${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: LOGGED ${qty} ${KIND_LBL[kind].toUpperCase()}`);
+    renderWar();
+  }catch(err){
+    msg.className='log-msg err'; msg.textContent=err.message||'failed'; sDeny();
+  }
 });
 
 /* ================= SCRIPTS ================= */
