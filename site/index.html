@@ -724,6 +724,31 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .cmd-row span code{font-size:11.5px}
 .cmd-row em{color:var(--ink-3);font-style:normal;font-size:11px}
 @media(max-width:640px){.cmd-row{grid-template-columns:1fr;gap:2px}}
+/* ---------- sales ledger ---------- */
+.row .bar.ap{background:linear-gradient(90deg,var(--gold-deep),var(--gold) 55%,var(--gold-bright));background-size:200% 100%;animation:barsheen 3.5s linear infinite;box-shadow:0 0 10px rgba(0,230,118,.35)}
+.sale-in{
+  background:rgba(3,10,6,.8);color:var(--neon);border:1px solid rgba(0,230,118,.35);border-radius:3px;
+  padding:10px 12px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;outline:none;
+  flex:1;min-width:170px;
+}
+.sale-in:focus{border-color:var(--neon)}
+.sale-in::placeholder{color:var(--ink-3)}
+.sale-n{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:var(--neon-dim);margin-left:8px}
+.sale-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,230,118,.1);flex-wrap:wrap}
+.sale-row:last-child{border-bottom:none}
+.sale-main{flex:1;min-width:180px}
+.sale-main b{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:14.5px;color:#EAFFF4}
+.sale-meta{display:block;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.sale-ap{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:14px;color:var(--neon);text-shadow:0 0 6px rgba(0,230,118,.3)}
+.pill{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border:1px solid;border-radius:20px}
+.st-submitted{color:var(--neon-dim);border-color:rgba(0,230,118,.3)}
+.st-issued{color:#6FB9FF;border-color:rgba(77,166,255,.4)}
+.st-active{color:var(--neon-bright);border-color:rgba(0,230,118,.6);text-shadow:0 0 6px rgba(0,230,118,.4)}
+.st-declined{color:#FF7A7A;border-color:rgba(255,77,77,.4)}
+.st-cancelled{color:#FF7A7A;border-color:rgba(255,77,77,.25);opacity:.7}
+.sale-st{min-width:118px;padding:6px 8px;font-size:11px}
+.sale-del{color:#FF7A7A;border:1px solid rgba(255,77,77,.3);border-radius:3px;padding:4px 9px;font-size:11px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;cursor:pointer}
+.sale-del:hover{border-color:#FF4D4D;background:rgba(255,77,77,.1)}
 /* ---------- objection firewall (minigame) ---------- */
 .fw-wrap{max-width:860px}
 .fw-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
@@ -837,6 +862,7 @@ body.tv .page-h{font-size:64px}
     <nav class="tabs" id="tabs">
       <a href="#/board" data-v="board">Board</a>
       <a href="#/war" data-v="war">War Room</a>
+      <a href="#/sales" data-v="sales">Sales</a>
       <a href="#/skills" data-v="skills">Skills</a>
       <a href="#/report" data-v="report">Report</a>
       <div class="ngrp">
@@ -1028,6 +1054,50 @@ body.tv .page-h{font-size:64px}
     <div id="warBoard"></div>
   </section>
 
+  <!-- SALES LEDGER -->
+  <section class="view" id="v-sales">
+    <div class="rv"><div class="kicker">Production Ledger</div>
+    <h1 class="page-h">Sales</h1>
+    <p class="page-sub">Every policy written goes on the book — client, annual premium, status. The AP board settles who's really producing, live for the whole floor.</p></div>
+    <div class="panel rv" style="margin-bottom:16px">
+      <h3 class="disp" style="font-size:15px">Submit a Sale</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">client · annual premium · phone · status — hits the book and the board instantly</div>
+      <div class="rule" style="margin:10px 0 14px"></div>
+      <div class="log-row">
+        <input id="saleName" class="sale-in" placeholder="Client name" maxlength="120" autocomplete="off">
+        <input id="salePhone" class="sale-in" placeholder="Client phone (optional)" maxlength="40" autocomplete="off">
+        <input id="saleAP" type="number" min="1" step="0.01" class="sale-in" style="max-width:190px" placeholder="Annual premium $" autocomplete="off">
+        <select id="saleStatus" class="agent-pick" style="min-width:140px">
+          <option value="submitted">Submitted</option>
+          <option value="issued">Issued</option>
+          <option value="active">Active</option>
+          <option value="declined">Declined</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <button class="btn" id="saleGo">Submit Sale</button>
+        <span id="saleMsg" class="log-msg"></span>
+      </div>
+    </div>
+    <div class="me-head rv" style="margin-bottom:14px">
+      <div class="war-range">
+        <button class="btn ghost sale-r on" data-range="month">This Month</button>
+        <button class="btn ghost sale-r" data-range="all">All Time</button>
+      </div>
+    </div>
+    <div class="panel board rv" style="margin-bottom:16px">
+      <h3><span class="swatch" style="background:var(--gold)"></span>AP Leaderboard</h3>
+      <div class="hint">annual premium on the book — declined &amp; cancelled don't count</div>
+      <div class="rule"></div>
+      <div id="apBoard"></div>
+    </div>
+    <div class="panel rv">
+      <h3 class="disp" style="font-size:15px">The Book</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">latest policies — update the status as they move; you can edit your own, Derek can edit any</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <div id="saleList"></div>
+    </div>
+  </section>
+
   <!-- SCRIPTS -->
   <section class="view" id="v-scripts">
     <div class="rv"><div class="kicker">Playbook</div>
@@ -1049,7 +1119,7 @@ body.tv .page-h{font-size:64px}
   <section class="view" id="v-game">
     <div class="rv"><div class="kicker">Training Sim</div>
     <h1 class="page-h">The Firewall</h1>
-    <p class="page-sub">The system runs the Locked Mortgage playbook — script lines, closes, and live objections. Answer with the right part of the script to crack a node. Ten nodes and the firewall falls. Three wrong answers and the trace catches you.</p></div>
+    <p class="page-sub">The system runs the playbook — Locked Mortgage script lines and closes, plus the Metro objection guide. Answer with the right part of the script to crack a node. Ten nodes and the firewall falls. Three wrong answers and the trace catches you.</p></div>
     <div class="panel rv fw-wrap fw-panel" id="gameBox"></div>
   </section>
 
@@ -1144,12 +1214,12 @@ function demoData(){
   ];
   return {agents, log:[], skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
-  ]};
+  ], sales:[]};
 }
 
 /* ================= STATE ================= */
 let db=null, demo=false;
-let DATA={agents:[],log:[],skills:[],config:{},scripts:[]};
+let DATA={agents:[],log:[],skills:[],config:{},scripts:[],sales:[]};
 let SPECTATE=false;
 let AUTH=null; // {id, pin, admin}
 let viewAgent=null; // whose page is displayed on me/building/rewards
@@ -1717,7 +1787,7 @@ function renderApprovals(){
 }
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','cmds','game','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','report','cmds','game','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -1745,6 +1815,7 @@ function renderCurrent(name){
   else if(name==='rewards') renderRewards();
   else if(name==='skills') renderSkills();
   else if(name==='war') renderWar();
+  else if(name==='sales') renderSales();
   else if(name==='scripts') renderScripts();
   else if(name==='report') renderReport();
   else if(name==='cmds') renderCmds();
@@ -1955,7 +2026,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
@@ -2106,6 +2177,108 @@ document.addEventListener('click',async e=>{
   }
 });
 
+/* ================= SALES LEDGER ================= */
+let saleRange='month';
+const SALE_STATUSES=[['submitted','Submitted'],['issued','Issued'],['active','Active'],['declined','Declined'],['cancelled','Cancelled']];
+const fmtAP=n=>'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
+const saleCounts=s=>s.status!=='declined'&&s.status!=='cancelled';
+function renderSales(){
+  const el=$('#apBoard'); if(!el) return;
+  const now=new Date();
+  const inRange=s=>{
+    if(saleRange==='all') return true;
+    const d=new Date(s.created_at);
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  };
+  const rows=DATA.agents.map(a=>{
+    const mine=(DATA.sales||[]).filter(s=>s.agent_id===a.id&&inRange(s)&&saleCounts(s));
+    return {a, ap:mine.reduce((t,s)=>t+Number(s.annual_premium),0), n:mine.length};
+  }).filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap).slice(0,10);
+  const max=Math.max(1,...rows.map(r=>r.ap));
+  el.innerHTML=rows.map((r,i)=>`
+    <div class="row p${i+1}">
+      <div class="pos">${i+1}</div>
+      <div class="who">
+        <div class="name">${esc(r.a.name)}<span class="sale-n">${r.n} ${r.n===1?'policy':'policies'}</span></div>
+        <div class="bar-wrap"><div class="bar ap" data-w="${(r.ap/max*100).toFixed(1)}"></div></div>
+      </div>
+      <div class="pts">${fmtAP(r.ap)}<small>AP</small></div>
+    </div>`).join('') || `<p style="color:var(--ink-3)">No AP on the board ${saleRange==='month'?'this month':'yet'}. First sale takes it.</p>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.querySelectorAll('#apBoard .bar').forEach(b=>b.style.width=b.dataset.w+'%');
+  }));
+  const list=$('#saleList'); if(!list) return;
+  const sales=[...(DATA.sales||[])].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,50);
+  list.innerHTML=sales.map(s=>{
+    const a=agentById(s.agent_id);
+    const canEdit=AUTH&&(isAdmin()||AUTH.id===s.agent_id);
+    const d=new Date(s.created_at);
+    return `<div class="sale-row">
+      <div class="sale-main">
+        <b>${esc(s.client_name)}</b>
+        <span class="sale-meta">${esc(a?a.name:s.agent_id)} · ${d.toLocaleDateString(undefined,{month:'short',day:'numeric'})}${s.client_phone?' · '+esc(s.client_phone):''}</span>
+      </div>
+      <div class="sale-ap">${fmtAP(s.annual_premium)}</div>
+      ${canEdit
+        ?`<select class="agent-pick sale-st" data-sid="${s.id}" aria-label="Policy status">${SALE_STATUSES.map(([v,l])=>`<option value="${v}"${s.status===v?' selected':''}>${l}</option>`).join('')}</select>
+          <button class="sale-del" data-sid="${s.id}" title="Remove from the book">✕</button>`
+        :`<span class="pill st-${esc(s.status)}">${esc(s.status)}</span>`}
+    </div>`;
+  }).join('') || '<p style="color:var(--ink-3)">The book is empty. Write something.</p>';
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.sale-r'); if(!b) return;
+  saleRange=b.dataset.range;
+  document.querySelectorAll('.sale-r').forEach(x=>x.classList.toggle('on',x===b));
+  sKey(); renderSales();
+});
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('#saleGo')) return;
+  const go=$('#saleGo'), msg=$('#saleMsg');
+  if(!AUTH){ msg.className='log-msg err'; msg.textContent='log in first'; return; }
+  const name=$('#saleName').value.trim(), phone=$('#salePhone').value.trim(),
+        ap=parseFloat($('#saleAP').value), st=$('#saleStatus').value;
+  if(name.length<2){ msg.className='log-msg err'; msg.textContent='> client name required'; sDeny(); return; }
+  if(!Number.isFinite(ap)||ap<1||ap>1000000){ msg.className='log-msg err'; msg.textContent='> enter the annual premium'; sDeny(); return; }
+  go.disabled=true; msg.className='log-msg'; msg.textContent='> transmitting ...';
+  try{
+    if(!demo){
+      const {error}=await db.rpc('submit_sale',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_client_name:name,p_client_phone:phone||null,p_premium:ap,p_status:st});
+      if(error) throw error;
+      await loadAll();
+    } else {
+      DATA.sales=DATA.sales||[];
+      DATA.sales.push({id:Date.now(),agent_id:AUTH.id,client_name:name,client_phone:phone||null,annual_premium:ap,status:st,created_at:new Date().toISOString()});
+    }
+    msg.className='log-msg ok'; msg.textContent='> ON THE BOOK :: '+fmtAP(ap)+' AP';
+    sApprove();
+    const a=agentById(AUTH.id);
+    tickerPush(`<span class="dim">[${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: SALE SUBMITTED :: ${fmtAP(ap)} AP`);
+    $('#saleName').value=''; $('#salePhone').value=''; $('#saleAP').value='';
+    renderSales();
+  }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+  go.disabled=false;
+});
+document.addEventListener('change',async e=>{
+  const sel=e.target.closest('.sale-st'); if(!sel||!AUTH) return;
+  const id=Number(sel.dataset.sid), st=sel.value;
+  try{
+    if(!demo){ const {error}=await db.rpc('set_sale_status',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_sale_id:id,p_status:st}); if(error) throw error; await loadAll(); }
+    else { const s=(DATA.sales||[]).find(x=>x.id===id); if(s) s.status=st; }
+    sKey(); renderSales();
+  }catch(err){ sDeny(); renderSales(); }
+});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('.sale-del'); if(!b||!AUTH) return;
+  if(!confirm('Remove this sale from the book?')) return;
+  const id=Number(b.dataset.sid);
+  try{
+    if(!demo){ const {error}=await db.rpc('delete_sale',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_sale_id:id}); if(error) throw error; await loadAll(); }
+    else DATA.sales=(DATA.sales||[]).filter(x=>x.id!==id);
+    sKey(); renderSales();
+  }catch(err){ sDeny(); }
+});
+
 /* ================= SCRIPTS ================= */
 let scriptQ='';
 function renderScripts(){
@@ -2139,7 +2312,7 @@ function renderCmds(){
   const sec=(t,rows)=>`<div class="script-cat">${t}</div><div class="panel rv" style="padding:18px 22px">${rows.join('')}</div>`;
   const consoleRows=[
     row('/','open the console from anywhere on the site'),
-    row('goto board · ranks · me · building · tree · rewards · skills · war · scripts · report · firewall','jump straight to any tab'),
+    row('goto board · ranks · me · building · tree · rewards · skills · war · sales · scripts · report · firewall','jump straight to any tab'),
     row('stats &lt;name&gt;','pull an operative\'s file — e.g. <code>stats alex</code>'+(isAdmin()?'':' <em>(your own file only)</em>')),
     row('pending','jump to the approvals queue'),
     row('qr','show a scannable QR of the vault link for recruiting'),
@@ -2278,71 +2451,96 @@ const FW_BANK=[
   '"...today" / "...tomorrow"',
   '"...in theory" / "...in practice"',
   '"...for now" / "...forever"']},
- {c:'Objections',q:'"I\'m not interested." First move:',a:[
-  '"Totally understand — at some point you did make a request, and I\'m legally obligated to get this information out to you. Do you already have something in place to protect your home?"',
-  '"No problem, I\'ll take you off the list. Have a great day."',
-  '"Can I ask why not? Most people who say that regret it."',
-  '"This will only take two minutes, I promise."']},
- {c:'Objections',q:'"I already have coverage." The script\'s counter:',a:[
-  '"When you got that policy, was it to cover funeral and final expenses, or to leave a legacy? ... Let me get your file closed — which one of our carriers did you get your coverage through?"',
-  '"Your current policy is probably overpriced — want me to beat it?"',
-  '"That coverage likely expired. Most do after five years."',
-  '"Great, then you clearly see the value. Want more?"']},
- {c:'Objections',q:'"I have coverage through work." What\'s the pickle you point out?',a:[
-  'If you\'re too ill or injured to work for more than 30 days, the work coverage is gone — and by then you can\'t qualify for outside coverage',
-  'Work policies never pay out for accidental death',
-  'HR can cancel it at any time without telling you',
-  'Work coverage doesn\'t count as real insurance legally']},
- {c:'Objections',q:'"My health is too bad to qualify."',a:[
-  '"That\'s exactly why I\'m calling — I got someone approved with stage 4 cancer a couple weeks ago. It\'s not IF I can get you approved, it\'s WHAT I can get you approved for."',
-  '"You\'re probably right — let me check and call you back."',
-  '"Don\'t worry, we don\'t check health records at all."',
-  '"We have a special guaranteed plan for the uninsurable."']},
- {c:'Objections',q:'"Just email me the info." The one-line killer:',a:[
-  '"Have you ever read an email that was better than a conversation?"',
-  '"Our compliance department doesn\'t allow email."',
-  '"Email gets marked as spam — this is faster."',
-  '"Sure — what\'s a good address?" (then keep pitching)']},
- {c:'Objections',q:'"I\'m shopping around for the best price." (before numbers)',a:[
-  '"That\'s exactly why I\'m calling — I\'m contracted by every carrier throughout the state, which means I do all the shopping around FOR you and tailor a plan to what you\'re looking for."',
-  '"We price-match any written quote."',
-  '"Shopping around usually voids your eligibility window."',
-  '"Everyone charges the same rates — it\'s regulated."']},
- {c:'Objections',q:'"I need to think about it."',a:[
-  '"Totally understand — we already agreed something is better than nothing and this is a necessity. Was it the PRICE you want to think about, or the TYPE of product you want to move forward with?"',
-  '"Take all the time you need — I\'ll call next month."',
-  '"Thinking about it is how families end up unprotected." (then hang up)',
-  '"What if I sweeten the deal right now?"']},
- {c:'Objections',q:'"Why do you need my social?"',a:[
-  'Since nobody\'s coming out to stick you with needles, it runs through the MIB — the Medical Information Bureau — to check your prescription and medical history and make sure you\'re healthy enough to qualify',
-  'It\'s how we set up the automatic payments',
-  'The government requires it for all phone sales',
-  'It\'s just to verify your identity — we don\'t actually use it']},
- {c:'Objections',q:'"Why do you need my account number?"',a:[
-  'The carrier has to validate you have an active, valid US bank account and that there\'s no fraud or money laundering — just their due diligence',
-  'So they can charge you today before rates change',
-  'We keep it on file in case a payment ever bounces',
-  'It speeds up your approval by 24 hours']},
- {c:'Objections',q:'"I\'m a veteran — the VA has me covered."',a:[
-  '"Thank you for your service — sadly they only give $700 for plot allowance and $2,000 if it was service-related. What I show you plays hand in hand with your VA benefits so EVERYTHING is covered."',
-  '"The VA doesn\'t offer any death benefits at all."',
-  '"VA coverage expires when you turn 70."',
-  '"This replaces your VA benefits with something better."']},
- {c:'Objections',q:'"I have savings, I don\'t need insurance."',a:[
-  '"Congratulations — but you have car insurance, right? Just like that, wouldn\'t you rather put the liability on the carrier than drain savings that could go to your family?"',
-  '"Savings get taxed at death — insurance doesn\'t." (leave it there)',
-  '"Most savings accounts lose to inflation anyway."',
-  '"Then buy the biggest plan — you can clearly afford it."']},
- {c:'Objections',q:'"I need to talk to my wife first." The script\'s key question:',a:[
-  '"Is it about clearing it with her — or is it really about the money? ... She\'s the reason you want to do this. Then she can\'t be the reason you don\'t."',
-  '"Put her on the phone right now."',
-  '"Wives always say no — better to surprise her."',
-  '"Okay, I\'ll call back tomorrow at the same time."']},
- {c:'Objections',q:'"Why does this have to be today?"',a:[
-  '"If money weren\'t in the equation whatsoever, would you do it, or would you still say no? ... Which is riskier — staying where you\'re at, or doing whatever it takes so next year doesn\'t look like last year?"',
-  '"The rates expire at midnight."',
-  '"My manager only approved this offer for today."',
-  '"It doesn\'t — take a few weeks if you want."']},
+ {c:'The Blueprint',q:'The METRO secret formula to overcoming ALL objections and smokescreens:',a:[
+  'Agree, Acknowledge, and Redirect with 2–3 Confirm & Control questions',
+  'Argue the objection, then discount the price',
+  'Ignore it and keep reading the script louder',
+  'Overcome, Isolate, and Hard Close']},
+ {c:'The Blueprint',q:'Outside of rhetorical questions, the only kind of question you want to ask:',a:[
+  'Yes-or-yes questions — "What time is better, ___ or ___?"',
+  'Open-ended questions so they talk more',
+  '"Why" questions that make them justify themselves',
+  'Questions they can comfortably answer "no" to']},
+ {c:'The Blueprint',q:'Which set are CONFIRM questions?',a:[
+  'Mortgage amount, lender, address, age/DOB, smoker or non-smoker, beneficiary on the lead',
+  'Credit score, social, and bank balance',
+  'Favorite carrier and current premium',
+  'How much coverage they think they need']},
+ {c:'The Blueprint',q:'Which of these is a CONTROL question from the guide?',a:[
+  '"Do you have a co-borrower or spouse on the loan?" / "Are you working or retired?"',
+  '"What\'s your budget for this?"',
+  '"Have you ever heard of our company?"',
+  '"Is now a bad time?"']},
+ {c:'The Blueprint',q:'The posture the guide tells you to take on every call:',a:[
+  'You are the doctor, they are the patient — the skilled professional in charge, an assistant buyer detached from the outcome',
+  'A friendly salesperson trying to build a friendship first',
+  'A junior rep who needs a manager\'s approval to proceed',
+  'An eager closer who needs this deal']},
+ {c:'The Blueprint',q:'How should you view the objections they throw at you?',a:[
+  'As needing clarification, not obstacles — nobody requests info on financial protection unless it\'s desired',
+  'As a sign the lead is bad — hang up and move on',
+  'As a personal rejection to push through',
+  'As a negotiation over price']},
+ {c:'The Blueprint',q:'"Before I let you go..." / "I had just enough time to get back to you..." / "before the eligibility window expires" — what are these key phrases designed to signal?',a:[
+  'You\'re very busy, you\'re doing them a favor, everybody is getting this, and it\'s urgent',
+  'That you\'re flexible and they can call whenever',
+  'That you\'re new and following a script',
+  'That the offer is negotiable']},
+ {c:'The Blueprint',q:'A dial round is complete when...',a:[
+  'The prospect answers, or you\'ve called four consecutive times and left a voicemail',
+  'You\'ve called once and texted once',
+  'The lead is marked bad after two tries',
+  'You\'ve dialed for exactly one hour']},
+ {c:'Objections',q:'"I got to go — call me back later." The Quick Set:',a:[
+  '"Okay perfect, we can\'t do it right now either. Before I let you go — does this afternoon or evening work better? ... Looks like I can pencil you in for 6:00 or 7:30 today. Which time works better?"',
+  '"No problem, I\'ll try you again tomorrow."',
+  '"It\'ll just take five minutes, I promise."',
+  '"When exactly is a good time to call you back?"']},
+ {c:'Objections',q:'"Can you tell me how much it\'s going to cost?"',a:[
+  '"I\'m not exactly sure — I just handle the scheduling for the underwriters. They have me set a time for an underwriter to see what you may be eligible for and if we can even help. I can squeeze you in at ___ or ___, which is better?"',
+  'Quote them a rough monthly number to keep them on the line',
+  '"That depends — how\'s your health?"',
+  '"Price doesn\'t matter when it\'s your family\'s protection."']},
+ {c:'Objections',q:'"We already got it taken care of."',a:[
+  '"Perfect — it\'s showing as NOT taken care of in our system, which means the system hasn\'t been updated. All I can do is have an underwriter give you a quick 10–15 minute call to do a quality review check and update your file."',
+  '"Who did you go with? I can probably beat it."',
+  '"That policy has most likely lapsed by now."',
+  '"Great, I\'ll close the file out. Have a good one."']},
+ {c:'Objections',q:'"I don\'t remember filling anything out."',a:[
+  '"This is regarding the letters sent out in the mail about the plans that pay off the mortgage if something happens to you — when you purchased or refinanced, the lender placed you into eligibility for the state-regulated plans."',
+  '"You definitely filled it out — I\'m looking at your signature."',
+  '"Maybe your spouse did it for you."',
+  '"It doesn\'t matter how you got on the list."']},
+ {c:'Objections',q:'"I don\'t have time this week — call me back next week."',a:[
+  '"I definitely understand being busy — however, the eligibility period expires in about a week or so. I know how important this is to YOU and YOUR family, so I\'ll put down notes to best accommodate you before it expires."',
+  '"Sure, same time next week works for me."',
+  '"It\'s now or never — the underwriters are booked solid."',
+  '"I\'ll just email everything instead."']},
+ {c:'Objections',q:'"I\'m no longer interested."',a:[
+  '"Okay — I know this was originally important to you, like it is for every family that responds to one of the letters. Are you no longer interested because you don\'t believe you can afford it, or you don\'t think you will qualify?"',
+  '"That\'s fine, I\'ll mark you down as not interested."',
+  '"People who say that are usually the ones who need it most."',
+  '"Can I at least send you a brochure?"']},
+ {c:'Objections',q:'"I can\'t afford it."',a:[
+  '"That\'s exactly why I was getting back to you — we have access to new low-cost state-approved plans. To be frank, we\'ve never been unable to help someone protect their family because it wasn\'t affordable. I\'ll squeeze you in at ___ or ___, which is better?"',
+  '"How much can you afford? I\'ll make it work."',
+  '"It\'s cheaper than your phone bill." (leave it there)',
+  '"Then this probably isn\'t for you."']},
+ {c:'Objections',q:'"I\'ve gotten multiple calls about mortgage protection."',a:[
+  '"Perfect — when this hits my desk it usually means one of two things: nobody ever got the information out to you, or they didn\'t get you all the possible options. It\'s just a brief 10–15 minute call with a senior underwriter."',
+  '"Those other callers are scammers — we\'re the real ones."',
+  '"I\'ll make sure nobody calls you again."',
+  '"That\'s annoying — want me to remove your number?"']},
+ {c:'Objections',q:'"I don\'t think I can qualify."',a:[
+  '"That\'s exactly why I was getting back to you — we have access to all the plans in the state. We can help anyone, even people with active cancer, as long as they\'re under 89... and I can see you\'re not 89 just yet, right?"',
+  '"You\'re probably right, but it\'s worth a shot."',
+  '"Qualifying is easy — everyone gets approved."',
+  '"What conditions do you have? Let me pre-screen you."']},
+ {c:'Objections',q:'"No, I\'m just not interested — take me off the list."',a:[
+  '"I don\'t make any cold calls, and I don\'t have a list. Again, I\'m just the scheduling coordinator, so I\'m not quite sure if we could even help just yet."',
+  '"Okay, you\'re off the list. Goodbye."',
+  '"There is no list — this is fate."',
+  '"I\'ll take you off after one quick question..."']},
 ];
 const FW_WIN=10, FW_TRACE=3;
 let FW=null;
@@ -2362,7 +2560,7 @@ function fwSplash(el, mode){
     ? `10 NODES CRACKED · YOU KNOW THE SCRIPT COLD<br>ACCURACY ${FW.right}/${FW.right+FW.wrong} · BEST STREAK ${FW.beststreak}`
     : mode==='lose'
     ? `THE SYSTEM CAUGHT YOU AT ${FW.right}/${FW_WIN} NODES<br>WRONG ANSWERS BURN — READ THE PLAYBOOK, RUN IT BACK`
-    : `LOCKED MORTGAGE · TOP ONE FRESH · LIVE OBJECTIONS<br>${FW_WIN} CORRECT = BREACH · ${FW_TRACE} WRONG = LOCKOUT${best?`<br>PERSONAL BEST STREAK: ${best}`:''}`;
+    : `LOCKED MORTGAGE · TOP ONE FRESH · METRO OBJECTION GUIDE<br>${FW_WIN} CORRECT = BREACH · ${FW_TRACE} WRONG = LOCKOUT${best?`<br>PERSONAL BEST STREAK: ${best}`:''}`;
   el.innerHTML=`<div class="fw-splash">${head}<div class="mono">${sub}</div>`+
     (mode?`<div class="fw-stat-row"><span>CORRECT <b>${FW.right}</b></span><span>WRONG <b>${FW.wrong}</b></span><span>BEST STREAK <b>${FW.beststreak}</b></span></div>`:'')+
     `<button class="btn" id="fwStart">${mode?'RUN IT BACK':'INITIATE BREACH'}</button></div>`;
@@ -2529,17 +2727,19 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc]=await Promise.all([
+  const [a,p,s,c,sc,sl]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
     db.from('config').select('*'),
     db.from('scripts').select('*').order('sort'),
+    db.from('sales').select('*'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
     config:Object.fromEntries(((c&&c.data)||[]).map(r=>[r.key,r.value])),
-    scripts:(sc&&sc.data)||[]};
+    scripts:(sc&&sc.data)||[],
+    sales:(sl&&sl.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){
