@@ -461,16 +461,31 @@ select.agent-pick[disabled]{opacity:.7}
 .step.done::before{background:var(--gold-deep)}
 .step .cnt{font-family:'General Sans','Instrument Sans',sans-serif;font-size:13px;color:var(--ink-2);border:1px solid var(--edge-dim);padding:2px 8px}
 
-/* ---------- tree (org chart) ---------- */
-.tl{fill:none;stroke:rgba(0,230,118,.4);stroke-width:1.5}
-.tn{cursor:pointer}
-.tn rect.card{fill:rgba(4,18,10,.95);stroke-width:1.5;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
-.tn:hover rect.card{filter:drop-shadow(0 0 12px rgba(0,230,118,.55))}
-.tn rect.tag{fill:rgba(0,230,118,.1)}
-.tname{font-family:'General Sans',sans-serif;font-size:13.5px;font-weight:700;fill:var(--ink);text-anchor:middle}
-.tmeta{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9px;fill:var(--neon-dim);text-anchor:middle;letter-spacing:.05em}
-.trank{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:8px;text-anchor:middle;letter-spacing:.12em}
-.tgen{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9px;fill:var(--ink-3);letter-spacing:.2em}
+/* ---------- tree (org chart, HTML cards) ---------- */
+.otree{display:flex;justify-content:flex-start;overflow-x:auto;padding:12px 6px 18px}
+.otree.fits{justify-content:center}
+.obranch{display:flex;flex-direction:column;align-items:center;position:relative;padding:26px 9px 0;flex:none}
+.otree>.obranch{padding-top:0}
+.obranch::before{content:'';position:absolute;top:0;left:50%;width:1.5px;height:26px;background:rgba(0,230,118,.45)}
+.obranch::after{content:'';position:absolute;top:0;height:1.5px;background:rgba(0,230,118,.45);left:0;right:0}
+.obranch:first-child::after{left:50%}
+.obranch:last-child::after{right:50%}
+.obranch:only-child::after{display:none}
+.otree>.obranch::before,.otree>.obranch::after{display:none}
+.okids{display:flex;align-items:flex-start;margin-top:24px}
+.ocard-wrap{position:relative}
+.ocard-wrap.haskids::after{content:'';position:absolute;left:50%;bottom:-24px;width:1.5px;height:24px;background:rgba(0,230,118,.45)}
+.ocard{
+  width:152px;background:rgba(4,18,10,.96);border:1px solid rgba(0,230,118,.22);
+  border-top:3px solid var(--rc,#00E676);border-radius:9px;padding:11px 12px 10px;text-align:center;
+  cursor:pointer;transition:box-shadow .2s, transform .2s, border-color .2s;
+  box-shadow:0 6px 16px rgba(0,0,0,.45);
+}
+.ocard:hover{box-shadow:0 8px 22px rgba(0,0,0,.5), 0 0 18px rgba(0,230,118,.3);transform:translateY(-2px);border-color:rgba(0,230,118,.5)}
+.ocard .nm{font-family:'General Sans',sans-serif;font-weight:700;font-size:14.5px;color:var(--ink);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ocard .rk{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:8.5px;letter-spacing:.16em;color:var(--rc,#00E676);margin:3px 0 5px;text-transform:uppercase}
+.ocard .mt{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:9.5px;color:var(--neon-dim);letter-spacing:.04em}
+.ocard .gen{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:8px;letter-spacing:.14em;color:var(--ink-3);margin-top:5px}
 .tree{padding:8px 0}
 .tnode{position:relative;padding-left:26px}
 .tree>.tnode{padding-left:0}
@@ -1527,49 +1542,28 @@ function renderTree(){
   const downline=id=>kids(id).reduce((n,k)=>n+1+downline(k.id),0);
   const roots=DATA.agents.filter(a=>!a.recruiter_id);
   if(!roots.length){ el.innerHTML='<p class="war-empty">&gt; no agents yet.</p>'; return; }
-  const CW=172, CH=66, NW=CW+28, NH=CH+64;
-  let leafX=0;
-  const pos=new Map();
-  function place(a,depth){
+  const branch=(a,gen)=>{
     const ks=kids(a.id);
-    let x;
-    if(!ks.length){ x=leafX; leafX+=1; }
-    else{
-      const xs=ks.map(k=>place(k,depth+1));
-      x=(Math.min(...xs)+Math.max(...xs))/2;
-    }
-    pos.set(a.id,{x,y:depth});
-    return x;
-  }
-  roots.forEach((r,i)=>{ place(r,0); if(i<roots.length-1) leafX+=0.4; });
-  const ps=[...pos.values()];
-  const maxY=Math.max(...ps.map(p=>p.y));
-  const W=(Math.max(...ps.map(p=>p.x))+1)*NW+90;
-  const H=(maxY+1)*NH-30;
-  const X=p=>64+p.x*NW+NW/2, Y=p=>18+p.y*NH+CH/2;
-  let lines='', nodes='', gens='';
-  for(let d=0;d<=maxY;d++) gens+=`<text class="tgen" x="10" y="${18+d*NH+CH/2+3}">GEN ${d+1}</text>`;
-  for(const a of DATA.agents){
-    const p=pos.get(a.id); if(!p) continue;
-    if(a.recruiter_id&&pos.has(a.recruiter_id)){
-      const q=pos.get(a.recruiter_id);
-      const my=Y(q)+CH/2+32;
-      lines+=`<path class="tl" d="M${X(q)},${Y(q)+CH/2} L${X(q)},${my} L${X(p)},${my} L${X(p)},${Y(p)-CH/2}"/>`;
-    }
     const t=totals(a.id), r=rankOf(t.total), dl=downline(a.id);
-    nodes+=`<g class="tn" data-nav="${esc(a.id)}" transform="translate(${X(p)},${Y(p)})">
-      <rect class="card" x="${-CW/2}" y="${-CH/2}" width="${CW}" height="${CH}" rx="7" style="stroke:${r.c}"/>
-      <rect x="${-CW/2}" y="${-CH/2}" width="4" height="${CH}" rx="2" fill="${r.c}"/>
-      <text class="tname" y="-8">${esc(a.name)}</text>
-      <text class="trank" y="7" style="fill:${r.c}">${esc(rankOf(t.total).name.toUpperCase())}</text>
-      <text class="tmeta" y="22">${t.total} PTS${dl?` · ${dl} DOWNLINE`:''}</text>
-    </g>`;
-  }
-  el.innerHTML=`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;min-width:${Math.min(W,720)}px;height:auto;display:block;margin:0 auto">${gens}${lines}${nodes}</svg></div>
-    <p class="war-empty" style="margin-top:10px;font-size:11px">&gt; tap a card to open that operative's file</p>`;
+    return `<div class="obranch">
+      <div class="ocard-wrap${ks.length?' haskids':''}">
+        <div class="ocard" data-nav="${esc(a.id)}" style="--rc:${r.c}">
+          <div class="nm">${esc(a.name)}</div>
+          <div class="rk">${esc(r.name)}</div>
+          <div class="mt">${t.total} PTS${dl?` &middot; ${dl} DOWN`:''}</div>
+          <div class="gen">GEN ${gen}</div>
+        </div>
+      </div>
+      ${ks.length?`<div class="okids">${ks.map(k=>branch(k,gen+1)).join('')}</div>`:''}
+    </div>`;
+  };
+  el.innerHTML=`<div class="otree">${roots.map(r=>branch(r,1)).join('')}</div>
+    <p class="war-empty" style="margin-top:8px;font-size:11px">&gt; tap a card to open that operative's file &middot; scroll sideways when the org outgrows the screen</p>`;
+  const ot=el.querySelector('.otree');
+  requestAnimationFrame(()=>{ if(ot&&ot.scrollWidth<=ot.clientWidth+4) ot.classList.add('fits'); });
 }
 document.addEventListener('click',e=>{
-  const n=e.target.closest('.tn'); if(!n) return;
+  const n=e.target.closest('.ocard'); if(!n) return;
   const id=n.dataset.nav;
   if(isAdmin()||(AUTH&&AUTH.id===id)){ viewAgent=id; location.hash='#/me'; fillAgentPicks(); rerenderView(); }
 });
