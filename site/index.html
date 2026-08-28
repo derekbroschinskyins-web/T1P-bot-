@@ -362,8 +362,13 @@ select#gateAgent option{background:#04120a;color:var(--neon)}
 }
 
 /* ---------- leaderboard ---------- */
-.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:860px){.boards{grid-template-columns:1fr}}
+.boards{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+.boards .panel + .panel{margin-top:0}
+.boards .board{display:flex;flex-direction:column;height:100%}
+#boardRecruiters,#boardAgents{flex:1;min-height:130px}
+/* boards reveal in lockstep, fade-only — keeps the two panels pixel-identical */
+.boards .panel{transition-delay:0ms !important;transform:none !important}
+@media(max-width:860px){.boards{grid-template-columns:1fr}#boardRecruiters,#boardAgents{min-height:0}}
 .board h3{font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px}
 .board h3 .swatch{width:12px;height:12px;flex:none}
 .board .hint{font-size:11px;color:var(--neon-dim);margin-top:2px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
@@ -769,14 +774,12 @@ body.tv .page-h{font-size:64px}
         <div class="ndrop">
           <a href="#/tree" data-v="tree">Duplication Tree</a>
           <a href="#/ranks" data-v="ranks">Ranks</a>
-          <a href="#/skills" data-v="skills">Skills</a>
         </div>
       </div>
       <div class="ngrp">
         <button class="ngbtn" type="button">Intel <i>▾</i></button>
         <div class="ndrop">
           <a href="#/scripts" data-v="scripts">Scripts</a>
-          <a href="#/report" data-v="report">Report</a>
           <a href="#/cmds" data-v="cmds">Commands</a>
         </div>
       </div>
