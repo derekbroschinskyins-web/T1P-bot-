@@ -872,7 +872,7 @@ body.tv .page-h{font-size:64px}
         <div class="term-row"><span class="lbl">&gt; name:</span>
           <input id="regName" class="reg-in" maxlength="40" placeholder="first name + last initial" autocomplete="off">
         </div>
-        <div class="term-row"><span class="lbl">&gt; recruited by:</span>
+        <div class="term-row"><span class="lbl">&gt; upline:</span>
           <select id="regRec" aria-label="Who recruited you"></select>
         </div>
         <div class="term-row"><span class="lbl">&gt; choose pin:</span>
@@ -1262,10 +1262,7 @@ const SKILLS = ['Inviting','Presenting','Follow-Up','Launching a New Agent','Pro
 function demoData(){
   const agents=[
     {id:'derek',name:'Derek',recruiter_id:null,date_joined:'2025-09-01',is_admin:true},
-    {id:'isaia',name:'Isaia',recruiter_id:'derek',date_joined:'2026-01-10',is_admin:false},
-    {id:'birch',name:'Birch',recruiter_id:'derek',date_joined:'2026-02-01',is_admin:false},
-    {id:'bella',name:'Bella',recruiter_id:'isaia',date_joined:'2026-05-01',is_admin:false},
-    {id:'jon',name:'Jon',recruiter_id:'birch',date_joined:'2026-06-01',is_admin:false},
+    {id:'austin',name:'Austin',recruiter_id:'derek',date_joined:'2026-08-01',is_admin:true},
   ];
   return {agents, log:[], skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
@@ -1418,7 +1415,7 @@ $('#logoutBtn').addEventListener('click',lock);
 /* --- new operative registration --- */
 function setRegStatus(m,cls){ const el=$('#regStatus'); el.textContent=m; el.className='gate-status'+(cls?' '+cls:''); }
 $('#regOpen').addEventListener('click',()=>{
-  $('#regRec').innerHTML='<option value="">— pick your recruiter —</option>'+
+  $('#regRec').innerHTML='<option value="">— pick your upline —</option>'+
     DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
       .map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
   $('#loginBlock').style.display='none'; $('#regBlock').style.display='';
@@ -1884,7 +1881,7 @@ function renderApprovals(){
     const rec=a.recruiter_id?(agentById(a.recruiter_id)||{name:a.recruiter_id}).name:null;
     return `<div class="sale-row">
       <div class="sale-main"><b>${esc(a.name)}</b>
-        <span class="sale-meta">${a.is_admin?'ADMIN · ':''}joined ${esc(a.date_joined||'—')}${rec?' · recruited by '+esc(rec):''}</span></div>
+        <span class="sale-meta">${a.is_admin?'ADMIN · ':''}joined ${esc(a.date_joined||'—')}${rec?' · upline '+esc(rec):''}</span></div>
       <button class="sale-del pin-reset" data-aid="${esc(a.id)}" style="color:var(--neon-dim);border-color:rgba(0,230,118,.3)">RESET PIN</button>
     </div>`;
   }).join('');
@@ -2546,7 +2543,7 @@ function renderCmds(){
   ];
   const gateRows=[
     row('0–9 · backspace · enter','type your passcode straight from the keyboard at the door'),
-    row('&gt; new operative?','no account yet? create your own at the door — name, recruiter, and a pin only you know'),
+    row('&gt; new operative?','no account yet? create your own at the door — name, upline, and a pin only you know'),
     row('tap / click during the breach','skip the entry sequence'),
   ];
   const acctRows=[
