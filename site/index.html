@@ -1092,7 +1092,7 @@ body.tv .page-h{font-size:64px}
     </div>
     <div class="panel rv">
       <h3 class="disp" style="font-size:15px">The Book</h3>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every policy is logged per agent — pick a name to open their personal book; you can edit your own, Derek can edit any</div>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">books are private — you see your own client log; only Derek can open anyone's. the board above shows AP totals only</div>
       <div class="rule" style="margin:10px 0 12px"></div>
       <div class="log-row" style="margin-bottom:8px">
         <select id="salePick" class="agent-pick" style="min-width:170px" aria-label="Whose book"></select>
@@ -1959,7 +1959,7 @@ function snapData(){
   return {
     rows:new Map(DATA.log.filter(p=>p.id!=null).map(p=>[p.id, p.status||'approved'])),
     totals:new Map(DATA.agents.map(a=>[a.id, totals(a.id).total])),
-    sales:new Map((DATA.sales||[]).map(s=>[s.id, s.status])),
+    salesB:new Map(salesBoardRows().map(r=>[r.agent_id,{n:+r.n_all,ap:+r.ap_all,act:+r.n_active}])),
     today:todaysPoints(),
     goal:goalTarget(),
   };
@@ -1997,18 +1997,20 @@ function diffData(){
     const nr=RANKS.indexOf(rankOf(totals(a.id).total)), or_=RANKS.indexOf(rankOf(ot));
     if(nr>or_){ queuePromo(a.name, RANKS[nr].name); notify('T1P — PROMOTION', a.name+' just hit '+RANKS[nr].name.toUpperCase()); }
   }
-  // sales hitting the book — logged to the wire for the whole floor
-  const prevSales=PREV.sales||new Map();
-  for(const s of (DATA.sales||[])){
-    const old=prevSales.get(s.id);
-    const a=agentById(s.agent_id);
-    const who=esc((a?a.name:s.agent_id||'?').toUpperCase());
+  // sales hitting the book — logged to the wire from the public aggregates,
+  // so the floor sees agent + AP without any private client details
+  const prevB=PREV.salesB||new Map();
+  for(const r of salesBoardRows()){
+    const o=prevB.get(r.agent_id)||{n:0,ap:0,act:0};
+    const a=agentById(r.agent_id);
+    const who=esc((a?a.name:r.agent_id||'?').toUpperCase());
     const hh=String(new Date().getHours()).padStart(2,'0'), mm=String(new Date().getMinutes()).padStart(2,'0');
-    if(old===undefined){
-      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: SALE ON THE BOOK :: ${fmtAP(s.annual_premium)} AP`);
-      if(!AUTH||s.agent_id!==AUTH.id) sApprove();
-    } else if(old!==s.status&&s.status==='active'){
-      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: POLICY ACTIVE :: ${fmtAP(s.annual_premium)} AP LOCKED IN`);
+    if(+r.n_all>o.n){
+      const d=Math.max(0,+r.ap_all-o.ap);
+      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: SALE ON THE BOOK :: ${fmtAP(d)} AP`);
+      if(!AUTH||r.agent_id!==AUTH.id) sApprove();
+    } else if(+r.n_active>o.act){
+      tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: POLICY ACTIVE :: AP LOCKED IN`);
     }
   }
   // daily goal crossing — the code itself erupts, every open screen at once
@@ -2201,52 +2203,85 @@ let saleRange='month', saleWho=null;
 const SALE_STATUSES=[['submitted','Submitted'],['issued','Issued'],['active','Active'],['declined','Declined'],['cancelled','Cancelled']];
 const fmtAP=n=>'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
 const saleCounts=s=>s.status!=='declined'&&s.status!=='cancelled';
+/* board aggregates come from the public sales_board RPC (no client details);
+   full book rows are private — fetched per viewer through get_book */
+function salesBoardRows(){
+  if(!demo&&DATA.salesBoard) return DATA.salesBoard;
+  const m=new Map(), now=new Date();
+  for(const s of (DATA.sales||[])){
+    const r=m.get(s.agent_id)||{agent_id:s.agent_id,ap_all:0,n_all:0,ap_month:0,n_month:0,n_active:0};
+    const d=new Date(s.created_at);
+    const inM=d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    if(saleCounts(s)){ r.ap_all+=+s.annual_premium; r.n_all++; if(inM){ r.ap_month+=+s.annual_premium; r.n_month++; } }
+    if(s.status==='active') r.n_active++;
+    m.set(s.agent_id,r);
+  }
+  return [...m.values()];
+}
+let BOOK=[], BOOK_KEY=null, bookBusy=false;
+async function loadBook(force){
+  if(demo){
+    BOOK=(DATA.sales||[]).filter(s=>isAdmin()?(!saleWho||s.agent_id===saleWho):(AUTH&&s.agent_id===AUTH.id));
+    paintBook(); return;
+  }
+  if(!AUTH){ BOOK=[]; paintBook(); return; }
+  const key=isAdmin()?(saleWho||'*'):AUTH.id;
+  if(!force&&key===BOOK_KEY){ paintBook(); return; }
+  if(bookBusy) return;
+  bookBusy=true;
+  try{
+    const {data,error}=await db.rpc('get_book',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_who:isAdmin()?(saleWho||null):null});
+    if(error) throw error;
+    BOOK=data||[]; BOOK_KEY=key;
+  }catch(e){ BOOK=[]; }
+  bookBusy=false;
+  paintBook();
+}
 function renderSales(){
   const el=$('#apBoard'); if(!el) return;
-  const now=new Date();
-  const inRange=s=>{
-    if(saleRange==='all') return true;
-    const d=new Date(s.created_at);
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  };
-  const rows=DATA.agents.map(a=>{
-    const mine=(DATA.sales||[]).filter(s=>s.agent_id===a.id&&inRange(s)&&saleCounts(s));
-    return {a, ap:mine.reduce((t,s)=>t+Number(s.annual_premium),0), n:mine.length};
-  }).filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap).slice(0,10);
-  const max=Math.max(1,...rows.map(r=>r.ap));
-  el.innerHTML=rows.map((r,i)=>`
+  const names=Object.fromEntries(DATA.agents.map(a=>[a.id,a.name]));
+  const rows=salesBoardRows()
+    .map(r=>({r, name:names[r.agent_id]||r.agent_id,
+      ap:+(saleRange==='month'?r.ap_month:r.ap_all), n:+(saleRange==='month'?r.n_month:r.n_all)}))
+    .filter(x=>x.ap>0).sort((a,b)=>b.ap-a.ap).slice(0,10);
+  const max=Math.max(1,...rows.map(x=>x.ap));
+  el.innerHTML=rows.map((x,i)=>`
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
-        <div class="name">${esc(r.a.name)}<span class="sale-n">${r.n} ${r.n===1?'policy':'policies'}</span></div>
-        <div class="bar-wrap"><div class="bar ap" data-w="${(r.ap/max*100).toFixed(1)}"></div></div>
+        <div class="name">${esc(x.name)}<span class="sale-n">${x.n} ${x.n===1?'policy':'policies'}</span></div>
+        <div class="bar-wrap"><div class="bar ap" data-w="${(x.ap/max*100).toFixed(1)}"></div></div>
       </div>
-      <div class="pts">${fmtAP(r.ap)}<small>AP</small></div>
+      <div class="pts">${fmtAP(x.ap)}<small>AP</small></div>
     </div>`).join('') || `<p style="color:var(--ink-3)">No AP on the board ${saleRange==='month'?'this month':'yet'}. First sale takes it.</p>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('#apBoard .bar').forEach(b=>b.style.width=b.dataset.w+'%');
   }));
-  const list=$('#saleList'); if(!list) return;
   if(saleWho===null) saleWho=AUTH?AUTH.id:'';
-  const pick=$('#salePick');
+  loadBook();
+}
+function paintBook(){
+  const list=$('#saleList'), pick=$('#salePick'); if(!list) return;
   if(pick){
-    pick.innerHTML='<option value=""'+(saleWho===''?' selected':'')+'>Whole Floor</option>'+
-      DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
-        .map(a=>`<option value="${esc(a.id)}"${a.id===saleWho?' selected':''}>${esc(a.name)}${AUTH&&a.id===AUTH.id?"'s book (me)":"'s book"}</option>`).join('');
+    if(isAdmin()){
+      pick.style.display='';
+      pick.innerHTML='<option value=""'+(saleWho===''?' selected':'')+'>Whole Floor</option>'+
+        DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name))
+          .map(a=>`<option value="${esc(a.id)}"${a.id===saleWho?' selected':''}>${esc(a.name)}${AUTH&&a.id===AUTH.id?"'s book (me)":"'s book"}</option>`).join('');
+    } else pick.style.display='none';
   }
-  const book=[...(DATA.sales||[])].filter(s=>!saleWho||s.agent_id===saleWho)
-    .sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  const book=[...BOOK].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   const stat=$('#bookStat');
   if(stat){
     const counting=book.filter(saleCounts);
     const apSum=counting.reduce((t,s)=>t+Number(s.annual_premium),0);
     const act=book.filter(s=>s.status==='active').length;
+    const label=isAdmin()?'':'MY BOOK (private) :: ';
     stat.textContent=book.length
-      ? `> ${book.length} ${book.length===1?'policy':'policies'} logged :: ${fmtAP(apSum)} AP on the book :: ${act} active`
-      : '> nothing logged yet';
+      ? `> ${label}${book.length} ${book.length===1?'policy':'policies'} logged :: ${fmtAP(apSum)} AP :: ${act} active`
+      : `> ${label}nothing logged yet`;
   }
-  const sales=book.slice(0,200);
-  list.innerHTML=sales.map(s=>{
+  list.innerHTML=book.slice(0,200).map(s=>{
     const a=agentById(s.agent_id);
     const canEdit=AUTH&&(isAdmin()||AUTH.id===s.agent_id);
     const d=new Date(s.created_at);
@@ -2265,8 +2300,15 @@ function renderSales(){
 }
 document.addEventListener('change',e=>{
   if(e.target.id!=='salePick') return;
-  saleWho=e.target.value; sKey(); renderSales();
+  saleWho=e.target.value; sKey(); loadBook();
 });
+/* the sales table has no public reads (books are private), so realtime won't
+   carry its changes — poll while the tab is open to keep the board + wire fresh */
+setInterval(async()=>{
+  if(demo||!AUTH||document.visibilityState!=='visible') return;
+  try{ await loadAll(); }catch(e){ return; }
+  if(location.hash.replace('#/','')==='sales'){ renderSales(); loadBook(true); }
+},60000);
 document.addEventListener('click',e=>{
   const b=e.target.closest('.sale-r'); if(!b) return;
   saleRange=b.dataset.range;
@@ -2298,7 +2340,7 @@ document.addEventListener('click',async e=>{
       tickerPush(`<span class="dim">[${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}]</span> ▸ ${esc((a?a.name:'').toUpperCase())} :: SALE ON THE BOOK :: ${fmtAP(ap)} AP`);
     } // live mode: the diff engine logs it to the wire for everyone
     $('#saleName').value=''; $('#salePhone').value=''; $('#saleAP').value='';
-    renderSales();
+    renderSales(); loadBook(true);
   }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
   go.disabled=false;
 });
@@ -2308,8 +2350,8 @@ document.addEventListener('change',async e=>{
   try{
     if(!demo){ const {error}=await db.rpc('set_sale_status',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_sale_id:id,p_status:st}); if(error) throw error; await loadAll(); }
     else { const s=(DATA.sales||[]).find(x=>x.id===id); if(s) s.status=st; }
-    sKey(); renderSales();
-  }catch(err){ sDeny(); renderSales(); }
+    sKey(); renderSales(); loadBook(true);
+  }catch(err){ sDeny(); loadBook(true); }
 });
 document.addEventListener('click',async e=>{
   const b=e.target.closest('.sale-del'); if(!b||!AUTH) return;
@@ -2318,7 +2360,7 @@ document.addEventListener('click',async e=>{
   try{
     if(!demo){ const {error}=await db.rpc('delete_sale',{p_agent_id:AUTH.id,p_pin:AUTH.pin,p_sale_id:id}); if(error) throw error; await loadAll(); }
     else DATA.sales=(DATA.sales||[]).filter(x=>x.id!==id);
-    sKey(); renderSales();
+    sKey(); renderSales(); loadBook(true);
   }catch(err){ sDeny(); }
 });
 
@@ -2776,13 +2818,13 @@ async function loadAll(){
     db.from('skills').select('*'),
     db.from('config').select('*'),
     db.from('scripts').select('*').order('sort'),
-    db.from('sales').select('*'),
+    db.rpc('sales_board'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
     config:Object.fromEntries(((c&&c.data)||[]).map(r=>[r.key,r.value])),
     scripts:(sc&&sc.data)||[],
-    sales:(sl&&sl.data)||[]};
+    salesBoard:(sl&&sl.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){
