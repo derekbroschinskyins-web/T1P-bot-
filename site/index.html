@@ -719,6 +719,55 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .cmd-row span code{font-size:11.5px}
 .cmd-row em{color:var(--ink-3);font-style:normal;font-size:11px}
 @media(max-width:640px){.cmd-row{grid-template-columns:1fr;gap:2px}}
+/* ---------- objection firewall (minigame) ---------- */
+.fw-wrap{max-width:860px}
+.fw-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.fw-nodes{display:flex;gap:6px}
+.fw-node{
+  width:26px;height:12px;border:1px solid rgba(0,230,118,.35);border-radius:2px;
+  background:rgba(0,230,118,.05);transition:background .25s,box-shadow .25s;
+}
+.fw-node.on{background:var(--neon);box-shadow:0 0 10px rgba(0,230,118,.8)}
+.fw-trace{display:flex;gap:6px;align-items:center;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.15em;color:var(--ink-3)}
+.fw-trace i{width:11px;height:11px;border-radius:50%;border:1px solid rgba(255,77,77,.4);background:transparent;display:inline-block}
+.fw-trace i.hit{background:#FF4D4D;box-shadow:0 0 10px rgba(255,77,77,.8);animation:pulse 1.2s infinite}
+.fw-cat{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.25em;color:var(--neon);text-transform:uppercase}
+.fw-cat::before{content:'// '}
+.fw-q{
+  font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:clamp(17px,2.6vw,22px);
+  line-height:1.45;margin:10px 0 18px;color:#EAFFF4;
+}
+.fw-opts{display:grid;gap:10px}
+.fw-opt{
+  text-align:left;font-family:'General Sans',sans-serif;font-size:14px;line-height:1.55;color:var(--ink-2);
+  background:rgba(3,10,6,.7);border:1px solid rgba(0,230,118,.22);border-radius:4px;padding:13px 16px 13px 44px;
+  position:relative;cursor:pointer;transition:border-color .15s,background .15s;
+}
+.fw-opt::before{
+  content:attr(data-k);position:absolute;left:14px;top:13px;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim);
+}
+.fw-opt:hover{border-color:var(--neon);background:rgba(0,230,118,.06);color:#EAFFF4}
+.fw-opt:disabled{cursor:default}
+.fw-opt.good{border-color:var(--neon);background:rgba(0,230,118,.13);color:var(--neon-bright);box-shadow:0 0 16px rgba(0,230,118,.25)}
+.fw-opt.bad{border-color:#FF4D4D;background:rgba(255,77,77,.1);color:#FFB3A7;animation:glitchShake .3s steps(2,end) 2}
+.fw-line{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.08em;
+  margin-top:14px;min-height:18px;color:var(--neon-dim);
+}
+.fw-line.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
+.fw-line.err{color:#FF4D4D}
+.fw-panel.jam{animation:glitchShake .3s steps(2,end) 3}
+.fw-splash{text-align:center;padding:26px 10px}
+.fw-splash .big{
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:clamp(26px,5vw,42px);letter-spacing:.02em;
+  color:#EAFFF4;text-shadow:0 0 24px rgba(0,230,118,.35);
+}
+.fw-splash .big.red{color:#FF7A7A;text-shadow:0 0 24px rgba(255,77,77,.45)}
+.fw-splash .mono{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim);letter-spacing:.12em;line-height:2;margin:12px 0 18px}
+.fw-stat-row{display:flex;gap:26px;justify-content:center;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--ink-2);margin-bottom:20px;flex-wrap:wrap}
+.fw-stat-row b{color:var(--neon);font-weight:600}
+@media(max-width:520px){.fw-node{width:18px}}
 /* ---------- tv mode ---------- */
 body.tv .topbar, body.tv footer, body.tv #ticker{display:none}
 body.tv main{max-width:none;padding:40px 60px}
@@ -804,6 +853,7 @@ body.tv .page-h{font-size:64px}
         <button class="ngbtn" type="button">Intel <i>▾</i></button>
         <div class="ndrop">
           <a href="#/scripts" data-v="scripts">Scripts</a>
+          <a href="#/game" data-v="game">The Firewall</a>
           <a href="#/cmds" data-v="cmds">Commands</a>
         </div>
       </div>
@@ -988,6 +1038,14 @@ body.tv .page-h{font-size:64px}
     <h1 class="page-h">Heist Report</h1>
     <p class="page-sub">The week's take, straight from the ledger.</p></div>
     <div class="panel rv"><pre id="reportBody" class="report-pre"></pre></div>
+  </section>
+
+  <!-- OBJECTION FIREWALL (minigame) -->
+  <section class="view" id="v-game">
+    <div class="rv"><div class="kicker">Training Sim</div>
+    <h1 class="page-h">The Firewall</h1>
+    <p class="page-sub">The system runs the Locked Mortgage playbook — script lines, closes, and live objections. Answer with the right part of the script to crack a node. Ten nodes and the firewall falls. Three wrong answers and the trace catches you.</p></div>
+    <div class="panel rv fw-wrap fw-panel" id="gameBox"></div>
   </section>
 
   <!-- COMMANDS -->
@@ -1654,7 +1712,7 @@ function renderApprovals(){
 }
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','cmds','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','scripts','report','cmds','game','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -1685,6 +1743,7 @@ function renderCurrent(name){
   else if(name==='scripts') renderScripts();
   else if(name==='report') renderReport();
   else if(name==='cmds') renderCmds();
+  else if(name==='game') renderGame();
   else if(name==='approvals') renderApprovals();
   if(isAdmin()) renderApprovals(); // keep tab count fresh
   enhance();
@@ -1891,7 +1950,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
@@ -2075,7 +2134,7 @@ function renderCmds(){
   const sec=(t,rows)=>`<div class="script-cat">${t}</div><div class="panel rv" style="padding:18px 22px">${rows.join('')}</div>`;
   const consoleRows=[
     row('/','open the console from anywhere on the site'),
-    row('goto board · ranks · me · building · tree · rewards · skills · war · scripts · report','jump straight to any tab'),
+    row('goto board · ranks · me · building · tree · rewards · skills · war · scripts · report · firewall','jump straight to any tab'),
     row('stats &lt;name&gt;','pull an operative\'s file — e.g. <code>stats alex</code>'+(isAdmin()?'':' <em>(your own file only)</em>')),
     row('pending','jump to the approvals queue'),
     row('qr','show a scannable QR of the vault link for recruiting'),
@@ -2093,6 +2152,11 @@ function renderCmds(){
   ];
   const urlRows=[
     row('?tv=1','TV mode — no login, giant type, auto-rotates board → war room → tree → report; for the office screen'),
+  ];
+  const gameRows=[
+    row('The Firewall','Intel → The Firewall — objection training sim built off the Locked Mortgage script'),
+    row('10 correct','cracks all ten nodes — the firewall falls and the storm fires'),
+    row('3 wrong','the trace completes and the system locks you out — run it back'),
   ];
   const waRows=[
     row('name Derek B','register on the WhatsApp line'),
@@ -2116,9 +2180,243 @@ function renderCmds(){
     sec('At The Door', gateRows)+
     sec('Switches', toggleRows)+
     sec('Special URLs', urlRows)+
+    sec('The Firewall — training sim', gameRows)+
     sec('WhatsApp Line — text the business number', waRows)+
     (isAdmin()?sec('Command Authority — admin only', adminRows):'');
   observeReveals();
+}
+
+/* ================= OBJECTION FIREWALL (minigame) ================= */
+/* Question bank built from the Locked Mortgage "Top One Fresh" script + the
+   objection playbook. First answer in each list is the right one; the board
+   shuffles them at render time. */
+const FW_BANK=[
+ {c:'The Opener',q:'"Hey NAME, this is ___ with COMPANY. I know you were probably expecting my call — I saw you just threw in the request for the mortgage protection." What comes next?',a:[
+  '"Do you remember that?"',
+  '"How much coverage were you looking to get?"',
+  '"Can I grab your date of birth to pull up the file?"',
+  '"Great news — you\'ve been pre-approved."']},
+ {c:'The Opener',q:'Right after the opener, who do you tell them you are?',a:[
+  'A senior underwriter licensed through the state, with access to about 20–30 approved mortgage protection companies',
+  'The owner of a local agency with an exclusive in-house product',
+  'A representative from their mortgage lender',
+  'A financial advisor doing a free portfolio review']},
+ {c:'The Opener',q:'"Okay, and was this for you or..." — finish the line.',a:[
+  '"...for a spouse as well?"',
+  '"...for an investment property?"',
+  '"...for your parents?"',
+  '"...just something you were curious about?"']},
+ {c:'Discovery',q:'First health question in the script:',a:[
+  '"Are you a smoker or a nonsmoker?"',
+  '"When was your last physical?"',
+  '"Do you have a family history of heart disease?"',
+  '"What medications are you currently taking?"']},
+ {c:'Discovery',q:'Why does the script flag blood thinners like Plavix, Eliquis, or Warfarin?',a:[
+  'They often mean heart issues, strokes, or blood clots',
+  'They disqualify the client from all coverage',
+  'They double the monthly premium automatically',
+  'They require a doctor\'s note before the application']},
+ {c:'Discovery',q:'The mortgage question the script puts in ALL CAPS:',a:[
+  'WHO IS ON THE LOAN',
+  'WHAT IS THE INTEREST RATE',
+  'WHO IS THE LENDER',
+  'WHEN WAS THE HOUSE PURCHASED']},
+ {c:'Discovery',q:'"Anytime a homeowner has equity, we always recommend..."',a:[
+  'Protecting at least that amount',
+  'Refinancing to pull the cash out',
+  'Doubling the coverage on the full home value',
+  'Waiting until the mortgage is half paid off']},
+ {c:'Discovery',q:'The critical period: after a passing, how long does the bank give the family to keep making mortgage payments before it can foreclose?',a:[
+  '90 days','30 days','6 months','1 year']},
+ {c:'Discovery',q:'The underwriting rule on budget: every plan must stay below what share of leftover (discretionary) income?',a:[
+  '30%','10%','50%','There is no rule — whatever they agree to']},
+ {c:'The Pitch',q:'Equity Protection vs Full Payoff — about what percent of homeowners choose the payment-style permanent plan?',a:[
+  'About 95%','About 50%','About 25%','About 5%']},
+ {c:'The Pitch',q:'Budget anchoring: "Most people look at plans in the 5-600 a month range..." — then what?',a:[
+  'Drop to the 1–200 range and MAKE THEM PICK a comfortable number',
+  'Ask them what they can afford and accept the first number',
+  'Offer a discount if they sign today',
+  'Show the most expensive plan first and hold firm']},
+ {c:'The Pitch',q:'Company credibility: how many companies in the United States currently hold the A+ rating?',a:[
+  'Only 15','Over 200','Exactly 50','Just 3']},
+ {c:'The Pitch',q:'How long has the carrier been around, per the credibility pitch?',a:[
+  'Over 100 years','Since 1995','About 20 years','Over 250 years']},
+ {c:'The Pitch',q:'Which of these is NOT one of the four whole-life value bullets?',a:[
+  'Doubles in value on your 65th birthday',
+  'Never expires',
+  'Locked-in rates',
+  'Grows over time']},
+ {c:'The Pitch',q:'Living benefits mean the policy can pay out early if the client becomes...',a:[
+  'Critically, chronically, or terminally ill',
+  'Unemployed for more than 90 days',
+  'Behind on their mortgage payments',
+  'Older than 80']},
+ {c:'The Close',q:'The 3-option close: how do the options get presented?',a:[
+  'Pitch them low to high, then ask which one they\'d cross off — too expensive or not enough coverage',
+  'Show only the middle option so they can\'t compare',
+  'Pitch high to low and stop when they say yes',
+  'Email all three and follow up in a week']},
+ {c:'The Close',q:'After they cross one option off, the script has them do what with the one they want?',a:[
+  'Circle it','Initial next to it','Read it back out loud','Take a photo of it']},
+ {c:'The Close',q:'What do you tell them about the medical exam?',a:[
+  'No doctor visit — no peeing in a cup, no blood drawn; it\'s all verified virtually, so you just need a good social',
+  'A nurse will visit within 5–7 business days',
+  'They\'ll need recent lab work from their doctor',
+  'The exam is only required for smokers']},
+ {c:'The Close',q:'The banking step has one rule in bold caps. What is it?',a:[
+  'Wait until they find the routing number and are looking at it — NO GUESSING',
+  'Always collect the account number before the routing number',
+  'Never mention the word "bank" until the end',
+  'Read the numbers twice, once fast and once slow']},
+ {c:'The Close',q:'Full-payoff rebuttal: "Do you want them to have zero payment ___, or zero ___?"',a:[
+  '"...on paper" / "...stress"',
+  '"...today" / "...tomorrow"',
+  '"...in theory" / "...in practice"',
+  '"...for now" / "...forever"']},
+ {c:'Objections',q:'"I\'m not interested." First move:',a:[
+  '"Totally understand — at some point you did make a request, and I\'m legally obligated to get this information out to you. Do you already have something in place to protect your home?"',
+  '"No problem, I\'ll take you off the list. Have a great day."',
+  '"Can I ask why not? Most people who say that regret it."',
+  '"This will only take two minutes, I promise."']},
+ {c:'Objections',q:'"I already have coverage." The script\'s counter:',a:[
+  '"When you got that policy, was it to cover funeral and final expenses, or to leave a legacy? ... Let me get your file closed — which one of our carriers did you get your coverage through?"',
+  '"Your current policy is probably overpriced — want me to beat it?"',
+  '"That coverage likely expired. Most do after five years."',
+  '"Great, then you clearly see the value. Want more?"']},
+ {c:'Objections',q:'"I have coverage through work." What\'s the pickle you point out?',a:[
+  'If you\'re too ill or injured to work for more than 30 days, the work coverage is gone — and by then you can\'t qualify for outside coverage',
+  'Work policies never pay out for accidental death',
+  'HR can cancel it at any time without telling you',
+  'Work coverage doesn\'t count as real insurance legally']},
+ {c:'Objections',q:'"My health is too bad to qualify."',a:[
+  '"That\'s exactly why I\'m calling — I got someone approved with stage 4 cancer a couple weeks ago. It\'s not IF I can get you approved, it\'s WHAT I can get you approved for."',
+  '"You\'re probably right — let me check and call you back."',
+  '"Don\'t worry, we don\'t check health records at all."',
+  '"We have a special guaranteed plan for the uninsurable."']},
+ {c:'Objections',q:'"Just email me the info." The one-line killer:',a:[
+  '"Have you ever read an email that was better than a conversation?"',
+  '"Our compliance department doesn\'t allow email."',
+  '"Email gets marked as spam — this is faster."',
+  '"Sure — what\'s a good address?" (then keep pitching)']},
+ {c:'Objections',q:'"I\'m shopping around for the best price." (before numbers)',a:[
+  '"That\'s exactly why I\'m calling — I\'m contracted by every carrier throughout the state, which means I do all the shopping around FOR you and tailor a plan to what you\'re looking for."',
+  '"We price-match any written quote."',
+  '"Shopping around usually voids your eligibility window."',
+  '"Everyone charges the same rates — it\'s regulated."']},
+ {c:'Objections',q:'"I need to think about it."',a:[
+  '"Totally understand — we already agreed something is better than nothing and this is a necessity. Was it the PRICE you want to think about, or the TYPE of product you want to move forward with?"',
+  '"Take all the time you need — I\'ll call next month."',
+  '"Thinking about it is how families end up unprotected." (then hang up)',
+  '"What if I sweeten the deal right now?"']},
+ {c:'Objections',q:'"Why do you need my social?"',a:[
+  'Since nobody\'s coming out to stick you with needles, it runs through the MIB — the Medical Information Bureau — to check your prescription and medical history and make sure you\'re healthy enough to qualify',
+  'It\'s how we set up the automatic payments',
+  'The government requires it for all phone sales',
+  'It\'s just to verify your identity — we don\'t actually use it']},
+ {c:'Objections',q:'"Why do you need my account number?"',a:[
+  'The carrier has to validate you have an active, valid US bank account and that there\'s no fraud or money laundering — just their due diligence',
+  'So they can charge you today before rates change',
+  'We keep it on file in case a payment ever bounces',
+  'It speeds up your approval by 24 hours']},
+ {c:'Objections',q:'"I\'m a veteran — the VA has me covered."',a:[
+  '"Thank you for your service — sadly they only give $700 for plot allowance and $2,000 if it was service-related. What I show you plays hand in hand with your VA benefits so EVERYTHING is covered."',
+  '"The VA doesn\'t offer any death benefits at all."',
+  '"VA coverage expires when you turn 70."',
+  '"This replaces your VA benefits with something better."']},
+ {c:'Objections',q:'"I have savings, I don\'t need insurance."',a:[
+  '"Congratulations — but you have car insurance, right? Just like that, wouldn\'t you rather put the liability on the carrier than drain savings that could go to your family?"',
+  '"Savings get taxed at death — insurance doesn\'t." (leave it there)',
+  '"Most savings accounts lose to inflation anyway."',
+  '"Then buy the biggest plan — you can clearly afford it."']},
+ {c:'Objections',q:'"I need to talk to my wife first." The script\'s key question:',a:[
+  '"Is it about clearing it with her — or is it really about the money? ... She\'s the reason you want to do this. Then she can\'t be the reason you don\'t."',
+  '"Put her on the phone right now."',
+  '"Wives always say no — better to surprise her."',
+  '"Okay, I\'ll call back tomorrow at the same time."']},
+ {c:'Objections',q:'"Why does this have to be today?"',a:[
+  '"If money weren\'t in the equation whatsoever, would you do it, or would you still say no? ... Which is riskier — staying where you\'re at, or doing whatever it takes so next year doesn\'t look like last year?"',
+  '"The rates expire at midnight."',
+  '"My manager only approved this offer for today."',
+  '"It doesn\'t — take a few weeks if you want."']},
+];
+const FW_WIN=10, FW_TRACE=3;
+let FW=null;
+const fwBest=()=>{ try{return parseInt(localStorage.getItem('t1p-fw-best')||'0',10)||0;}catch(e){return 0;} };
+function fwShuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function renderGame(){
+  const el=$('#gameBox'); if(!el) return;
+  if(!FW||FW.done){ fwSplash(el); return; }
+  fwQuestion(el);
+}
+function fwSplash(el, mode){
+  const best=fwBest();
+  const head = mode==='win' ? '<div class="big">FIREWALL BREACHED</div>'
+    : mode==='lose' ? '<div class="big red">TRACE COMPLETE :: LOCKOUT</div>'
+    : '<div class="big">OBJECTION FIREWALL</div>';
+  const sub = mode==='win'
+    ? `10 NODES CRACKED · YOU KNOW THE SCRIPT COLD<br>ACCURACY ${FW.right}/${FW.right+FW.wrong} · BEST STREAK ${FW.beststreak}`
+    : mode==='lose'
+    ? `THE SYSTEM CAUGHT YOU AT ${FW.right}/${FW_WIN} NODES<br>WRONG ANSWERS BURN — READ THE PLAYBOOK, RUN IT BACK`
+    : `LOCKED MORTGAGE · TOP ONE FRESH · LIVE OBJECTIONS<br>${FW_WIN} CORRECT = BREACH · ${FW_TRACE} WRONG = LOCKOUT${best?`<br>PERSONAL BEST STREAK: ${best}`:''}`;
+  el.innerHTML=`<div class="fw-splash">${head}<div class="mono">${sub}</div>`+
+    (mode?`<div class="fw-stat-row"><span>CORRECT <b>${FW.right}</b></span><span>WRONG <b>${FW.wrong}</b></span><span>BEST STREAK <b>${FW.beststreak}</b></span></div>`:'')+
+    `<button class="btn" id="fwStart">${mode?'RUN IT BACK':'INITIATE BREACH'}</button></div>`;
+  $('#fwStart').addEventListener('click',()=>{
+    FW={deck:fwShuffle(FW_BANK),i:0,right:0,wrong:0,streak:0,beststreak:0,done:false,lock:false};
+    sGrant(); renderGame();
+  });
+}
+function fwQuestion(el){
+  if(FW.i>=FW.deck.length) FW.deck=FW.deck.concat(fwShuffle(FW_BANK)); // safety: recycle if they burn the deck
+  const q=FW.deck[FW.i];
+  const opts=fwShuffle(q.a.map((t,i)=>({t,ok:i===0})));
+  const K=['A','B','C','D'];
+  el.innerHTML=
+    `<div class="fw-top">
+      <div class="fw-nodes">${Array.from({length:FW_WIN},(_,i)=>`<span class="fw-node${i<FW.right?' on':''}"></span>`).join('')}</div>
+      <div class="fw-trace">TRACE ${Array.from({length:FW_TRACE},(_,i)=>`<i class="${i<FW.wrong?'hit':''}"></i>`).join('')}</div>
+    </div>
+    <div class="fw-cat">${esc(q.c)}</div>
+    <div class="fw-q">${esc(q.q)}</div>
+    <div class="fw-opts">${opts.map((o,i)=>`<button class="fw-opt" data-ok="${o.ok?1:0}" data-k="${K[i]}">${esc(o.t)}</button>`).join('')}</div>
+    <div class="fw-line" id="fwLine">> node ${FW.right+1}/${FW_WIN} :: awaiting input_</div>`;
+  el.querySelectorAll('.fw-opt').forEach(b=>b.addEventListener('click',()=>fwAnswer(b)));
+}
+function fwAnswer(btn){
+  if(FW.lock) return;
+  FW.lock=true;
+  const el=$('#gameBox'), line=$('#fwLine');
+  el.querySelectorAll('.fw-opt').forEach(b=>b.disabled=true);
+  const ok=btn.dataset.ok==='1';
+  if(ok){
+    btn.classList.add('good');
+    FW.right++; FW.streak++; FW.beststreak=Math.max(FW.beststreak,FW.streak);
+    line.textContent=`> ACCESS GRANTED :: node ${FW.right}/${FW_WIN} cracked`;
+    line.className='fw-line ok'; sGrant();
+  } else {
+    btn.classList.add('bad');
+    el.querySelector('.fw-opt[data-ok="1"]').classList.add('good');
+    FW.wrong++; FW.streak=0;
+    const dots=el.querySelectorAll('.fw-trace i'); if(dots[FW.wrong-1]) dots[FW.wrong-1].classList.add('hit');
+    line.textContent=`> INTRUSION DETECTED :: trace ${FW.wrong}/${FW_TRACE} — the right line is lit`;
+    line.className='fw-line err'; sDeny();
+    el.classList.add('jam'); setTimeout(()=>el.classList.remove('jam'),900);
+  }
+  FW.i++;
+  setTimeout(()=>{
+    FW.lock=false;
+    if(FW.right>=FW_WIN){
+      FW.done=true;
+      try{ if(FW.beststreak>fwBest()) localStorage.setItem('t1p-fw-best',String(FW.beststreak)); }catch(e){}
+      codeStorm(`${FW_WIN}/${FW_WIN} — YOU KNOW THE SCRIPT COLD`,'// TRAINING SIM','FIREWALL BREACHED');
+      fwSplash($('#gameBox'),'win');
+    } else if(FW.wrong>=FW_TRACE){
+      FW.done=true;
+      fwSplash($('#gameBox'),'lose');
+    } else {
+      fwQuestion($('#gameBox'));
+    }
+  }, ok?850:2400);
 }
 
 /* ================= HEIST REPORT ================= */
@@ -2402,8 +2700,9 @@ function notify(title, body){
 })();
 
 /* ================= CODE STORM (goal celebration) ================= */
-function codeStorm(msg){
-  if(reduceMotion){ notify('T1P — TARGET HIT', msg); return; }
+function codeStorm(msg, kicker, title){
+  kicker=kicker||'// DAILY GOAL'; title=title||'TARGET SMASHED';
+  if(reduceMotion){ notify('T1P — '+title, msg); return; }
   const wrap=$('#storm'), cv=$('#stormCv'); if(!wrap||!cv) return;
   wrap.classList.add('on'); document.body.classList.add('storming');
   const ctx=cv.getContext('2d');
@@ -2427,13 +2726,13 @@ function codeStorm(msg){
       wrap.classList.remove('on'); document.body.classList.remove('storming');
     }
   },33);
-  $('#promoName').textContent='TARGET SMASHED';
+  $('#promoName').textContent=title;
   $('#promoRank').textContent=msg.toUpperCase();
-  document.querySelector('#promo .promo-k').textContent='// DAILY GOAL';
+  document.querySelector('#promo .promo-k').textContent=kicker;
   $('#promo').classList.add('on');
   sPromo(); setTimeout(sPromo,500);
   setTimeout(()=>$('#promo').classList.remove('on'), 3200);
-  notify('T1P — DAILY TARGET SMASHED', msg);
+  notify('T1P — '+title, msg);
 }
 
 /* ================= GHOST TRANSMISSIONS ================= */
