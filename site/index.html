@@ -7,6 +7,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-700.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-500.woff2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
 /* Self-hosted premium type — served from our own storage, loads for everyone */
 @font-face{font-family:'Clash Display';font-weight:600;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-600.woff2') format('woff2')}
@@ -703,6 +704,32 @@ body:not(.locked) #ticker{display:flex}
 #storm canvas{position:absolute;inset:0}
 body.storming main{animation:stormShake .5s steps(3,end) 4}
 @keyframes stormShake{0%,100%{transform:translate(0)}30%{transform:translate(-3px,2px)}60%{transform:translate(3px,-2px)}}
+/* ---------- fx: animated blur numbers (adapted from 21st.dev serafimcloud/animated-blur-number) ---------- */
+.an-root{
+  --an-spring:linear(
+    0,0.028 2.5%,0.0995 5%,0.198 7.5%,0.3106 10%,0.4272 12.5%,0.5405 15%,
+    0.6454 17.5%,0.7387 20%,0.819 22.5%,0.8856 25%,0.9391 27.5%,0.9803 30%,
+    1.0107 32.5%,1.0317 35%,1.045 37.5%,1.052 40%,1.0543 42.5%,1.053 45%,
+    1.0493 47.5%,1.044 50%,1.0379 52.5%,1.0316 55%,1.0254 57.5%,1.0197 60%,
+    1.0146 62.5%,1.0102 65%,1.0065 67.5%,1.0035 70%,1.0012 72.5%,0.9995 75%,
+    0.9984 77.5%,0.9976 80%,0.9972 82.5%,0.9971 85%,0.9971 87.5%,0.9973 90%,
+    0.9976 92.5%,0.9979 95%,0.9983 97.5%,1);
+  --an-dist:.55em;
+  display:inline-flex;align-items:baseline;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.an-slot{position:relative;display:inline-block}
+.an-layer{display:inline-block;will-change:transform,opacity,filter}
+.an-out{position:absolute;inset:0}
+.an-in{animation:an-slide-in var(--an-dur,450ms) var(--an-spring) both,an-resolve var(--an-dur,450ms) cubic-bezier(.22,1,.36,1) both}
+.an-out{animation:an-slide-out var(--an-dur,450ms) cubic-bezier(.4,0,1,1) both,an-dissolve var(--an-dur,450ms) cubic-bezier(.4,0,1,1) both}
+@keyframes an-slide-in{from{transform:translateY(calc(var(--an-dir,1) * var(--an-dist)))}to{transform:translateY(0)}}
+@keyframes an-slide-out{from{transform:translateY(0)}to{transform:translateY(calc(var(--an-dir,1) * var(--an-dist) * -1))}}
+@keyframes an-resolve{from{opacity:0;filter:blur(14px)}to{opacity:1;filter:blur(0)}}
+@keyframes an-dissolve{from{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(14px)}}
+@media (prefers-reduced-motion: reduce){.an-in{animation:none}.an-out{animation:none;display:none}}
+/* ---------- fx: sparkles on the #1 rows (adapted from 21st.dev lepikhinb/sparkles) ---------- */
+.row.p1{position:relative;z-index:0}
+.fx-sparkles{position:absolute;inset:0;pointer-events:none;z-index:-1}
 /* ---------- scripts ---------- */
 .script-search{
   width:100%;max-width:420px;background:rgba(3,10,6,.8);color:var(--neon);
@@ -1841,12 +1868,17 @@ function renderBoard(){
         <div class="name">${esc(r.a.name)}${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
-      <div class="pts">${val}<small>pts</small></div>
+      <div class="pts"><span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span><small>pts</small></div>
     </div>`;
   $('#boardRecruiters').innerHTML = recs.map((r,i)=>row(r,i,r.rec,maxR,'gold')).join('') || '<p style="color:var(--ink-3)">No builder points yet. First referral takes it.</p>';
   $('#boardAgents').innerHTML = nas.map((r,i)=>row(r,i,r.na,maxN,'blue')).join('') || '<p style="color:var(--ink-3)">No agent points yet. First one licensed takes it.</p>';
+  anApply('#boardRecruiters'); anApply('#boardAgents');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
+    document.querySelectorAll('#boardRecruiters .row.p1, #boardAgents .row.p1').forEach(r=>{
+      const bar=r.querySelector('.bar');
+      fxSparkles(r, bar?getComputedStyle(bar).backgroundColor:'#00E676');
+    });
   }));
 }
 
@@ -1904,6 +1936,7 @@ function renderMe(){
     <div class="stat"><div class="v" style="color:${r.c}">${esc(r.name)}</div><div class="l">Current Rank</div></div>
     <div class="stat"><div class="v">${stepsDone}<span style="font-size:18px;color:var(--ink-3)">/9</span></div><div class="l">Ladder Steps</div></div>
     <div class="stat"><div class="v">${streakOf(a.id)}${streakOf(a.id)>=3?' 🔥':''}</div><div class="l">Day Streak</div></div>`;
+  fxCountUp('#meStats');
   const acct=$('#acctPanel'); if(acct) acct.style.display=(AUTH&&viewAgent===AUTH.id)?'':'none';
   renderContract(a);
   renderHeat(a.id);
@@ -1941,6 +1974,7 @@ function renderBuilding(){
     <div class="stat"><div class="v">${dl}</div><div class="l">Total Downline</div></div>
     <div class="stat"><div class="v">${Math.max(0,dl-directs)}</div><div class="l">Gen 2+</div></div>
     ${pendB?`<div class="stat"><div class="v dim">${pendB}</div><div class="l">Pending Approval</div></div>`:''}`;
+  fxCountUp('#buildStats');
   $('#buildSteps').innerHTML=BUILDER_ACTIONS.map((s,i)=>{
     const cnt=rows.filter(p=>p.action===s.action&&approved(p)).length;
     const pend=rows.filter(p=>p.action===s.action&&p.status==='pending').length;
@@ -2346,6 +2380,7 @@ function diffData(){
     if(+r.n_all>o.n){
       const d=Math.max(0,+r.ap_all-o.ap);
       tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: SALE ON THE BOOK :: ${fmtAP(d)} AP`);
+      fxBurst({particleCount:60,spread:100,origin:{y:.3},startVelocity:28});
       if(!AUTH||r.agent_id!==AUTH.id) sApprove();
     } else if(+r.n_active>o.act){
       tickerPush(`<span class="dim">[${hh}:${mm}]</span> ▸ ${who} :: POLICY ACTIVE :: AP LOCKED IN`);
@@ -2372,10 +2407,12 @@ function pumpPromo(){
   document.querySelector('#promo .promo-k').textContent='// PROMOTION DETECTED';
   $('#promo').classList.add('on');
   sPromo();
+  fxCannons(2200); fxBalloons();
   if(!reduceMotion) decodeEl($('#promoName'));
   setTimeout(()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); }, 3000);
 }
 function celebrate(p){
+  fxBurst({particleCount:130,spread:85});
   $('#promoName').textContent='+'+p.points;
   $('#promoRank').textContent=(ACTION_LABEL[p.action]||p.action).toUpperCase();
   document.querySelector('#promo .promo-k').textContent='// CLAIM APPROVED';
@@ -3802,6 +3839,88 @@ setInterval(async()=>{
 
 /* ================= REVEALS ================= */
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= FX KIT =================
+   Celebration + motion pieces adapted from 21st.dev components:
+   confetti (dillionverma), sparkles (lepikhinb), balloons (serafimcloud),
+   animated-blur-number (serafimcloud), count-animation (bundui). */
+const FX_COLORS=['#00E676','#9AFFC8','#FFD34D','#EAFFF4'];
+const fxOK=()=>!reduceMotion&&typeof confetti==='function';
+function fxBurst(opts){
+  if(!fxOK())return;
+  confetti(Object.assign({particleCount:90,spread:75,startVelocity:38,origin:{y:.65},colors:FX_COLORS,zIndex:120,disableForReducedMotion:true},opts||{}));
+}
+function fxCannons(ms){
+  if(!fxOK())return;
+  const end=Date.now()+(ms||2500);
+  (function frame(){
+    confetti({particleCount:3,angle:60,spread:55,startVelocity:60,origin:{x:0,y:.6},colors:FX_COLORS,zIndex:120});
+    confetti({particleCount:3,angle:120,spread:55,startVelocity:60,origin:{x:1,y:.6},colors:FX_COLORS,zIndex:120});
+    if(Date.now()<end)requestAnimationFrame(frame);
+  })();
+}
+let _balloonsP=null;
+function fxBalloons(){
+  if(reduceMotion)return;
+  (_balloonsP||(_balloonsP=import('https://cdn.jsdelivr.net/npm/balloons-js/+esm')))
+    .then(m=>m.balloons()).catch(()=>{_balloonsP=null;});
+}
+function fxSparkles(host,color){
+  if(reduceMotion||!host||host.querySelector('.fx-sparkles'))return;
+  const c=document.createElement('canvas');c.className='fx-sparkles';host.appendChild(c);
+  const ctx=c.getContext('2d');
+  const w=c.width=host.offsetWidth||300,h=c.height=host.offsetHeight||44;
+  const N=Math.max(12,Math.floor(w/40)),ps=[];
+  for(let i=0;i<N;i++)ps.push({x:Math.random()*w,y:Math.random()*h,r:.6+Math.random()*1.2,tw:Math.random()*Math.PI*2,sp:.15+Math.random()*.35,dx:(Math.random()-.5)*.2});
+  (function tick(){
+    if(!c.isConnected)return;
+    ctx.clearRect(0,0,w,h);
+    for(const p of ps){
+      p.tw+=.04+p.sp*.05;p.y-=p.sp*.22;p.x+=p.dx;
+      if(p.y<-2){p.y=h+2;p.x=Math.random()*w;}
+      ctx.globalAlpha=.1+.75*Math.abs(Math.sin(p.tw));
+      ctx.fillStyle=color;ctx.shadowBlur=6;ctx.shadowColor=color;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  })();
+}
+const AN_PREV=new Map();
+function anApply(scope){
+  document.querySelectorAll(scope+' .anv').forEach(el=>{
+    const key=el.dataset.ankey,ns=el.dataset.anval,os=AN_PREV.get(key);
+    AN_PREV.set(key,ns);
+    if(os===undefined||os===ns||reduceMotion){el.textContent=ns;return;}
+    const up=(+ns>=+os)?1:-1;
+    const L=Math.max(ns.length,os.length);
+    let html='';
+    for(let i=0;i<L;i++){
+      const nc=ns[ns.length-1-i],oc=os[os.length-1-i];
+      if(nc===undefined)continue;
+      if(nc===oc)html=`<span class="an-slot"><span class="an-layer">${nc}</span></span>`+html;
+      else html=`<span class="an-slot" style="--an-dir:${up}"><span class="an-layer an-in">${nc}</span><span class="an-layer an-out">${oc===undefined?'':oc}</span></span>`+html;
+    }
+    el.innerHTML=`<span class="an-root">${html}</span>`;
+  });
+}
+const CU_PREV=new Map();
+function fxCountUp(scope){
+  document.querySelectorAll(scope+' .stat .v').forEach(el=>{
+    if(!/^\d+$/.test(el.textContent.trim()))return;
+    const label=el.nextElementSibling?el.nextElementSibling.textContent:'';
+    const key=scope+':'+label,target=+el.textContent.trim(),prev=CU_PREV.get(key);
+    CU_PREV.set(key,target);
+    if(reduceMotion||prev===target)return;
+    const from=prev===undefined?0:prev;
+    if(from===target)return;
+    const t0=performance.now(),dur=900;
+    requestAnimationFrame(function step(t){
+      const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,3);
+      el.textContent=Math.round(from+(target-from)*e);
+      if(k<1&&el.isConnected)requestAnimationFrame(step);
+    });
+  });
+}
 let io=null;
 function observeReveals(){
   if(!io){
@@ -3874,6 +3993,10 @@ async function init(){
     setInterval(async()=>{
       try{ await loadAll(); if(DATA.agents.length){demo=false;setLive(true);rerender();} }catch(e){}
     },30000);
+  }
+  // FX showcase: ?fx=1 — fire the celebration kit once so it can be previewed
+  if(new URLSearchParams(location.search).has('fx')||window.__T1P_FX_DEMO){
+    setTimeout(()=>{ fxCannons(2500); fxBalloons(); },1200);
   }
   // TV mode: ?tv=1 — read-only big-screen rotation, no login
   if(new URLSearchParams(location.search).has('tv')){
@@ -4022,6 +4145,7 @@ function codeStorm(msg, kicker, title){
   if(reduceMotion){ notify('T1P — '+title, msg); return; }
   const wrap=$('#storm'), cv=$('#stormCv'); if(!wrap||!cv) return;
   wrap.classList.add('on'); document.body.classList.add('storming');
+  fxCannons(3000);
   const ctx=cv.getContext('2d');
   const W=cv.width=innerWidth, H=cv.height=innerHeight;
   const G='アイウエオカキクケコ0123456789$%#&+=*';
