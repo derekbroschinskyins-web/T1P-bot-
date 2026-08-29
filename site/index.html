@@ -2407,7 +2407,7 @@ function pumpPromo(){
   document.querySelector('#promo .promo-k').textContent='// PROMOTION DETECTED';
   $('#promo').classList.add('on');
   sPromo();
-  fxCannons(2200); fxBalloons();
+  fxCannons(2200);
   if(!reduceMotion) decodeEl($('#promoName'));
   setTimeout(()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); }, 3000);
 }
@@ -3859,31 +3859,37 @@ function fxCannons(ms){
     if(Date.now()<end)requestAnimationFrame(frame);
   })();
 }
-let _balloonsP=null;
-function fxBalloons(){
-  if(reduceMotion)return;
-  (_balloonsP||(_balloonsP=import('https://cdn.jsdelivr.net/npm/balloons-js/+esm')))
-    .then(m=>m.balloons()).catch(()=>{_balloonsP=null;});
-}
+let _fxIO=null;
 function fxSparkles(host,color){
   if(reduceMotion||!host||host.querySelector('.fx-sparkles'))return;
   const c=document.createElement('canvas');c.className='fx-sparkles';host.appendChild(c);
   const ctx=c.getContext('2d');
   const w=c.width=host.offsetWidth||300,h=c.height=host.offsetHeight||44;
-  const N=Math.max(12,Math.floor(w/40)),ps=[];
+  const N=Math.min(12,Math.max(7,Math.floor(w/70))),ps=[];
+  // glow is pre-rendered once to a sprite; per-frame shadowBlur murders phone GPUs
+  const sp=document.createElement('canvas');sp.width=sp.height=16;
+  const sctx=sp.getContext('2d'),g=sctx.createRadialGradient(8,8,0,8,8,8);
+  g.addColorStop(0,'#fff');g.addColorStop(.35,color);g.addColorStop(1,'rgba(0,0,0,0)');
+  sctx.fillStyle=g;sctx.beginPath();sctx.arc(8,8,8,0,7);sctx.fill();
   for(let i=0;i<N;i++)ps.push({x:Math.random()*w,y:Math.random()*h,r:.6+Math.random()*1.2,tw:Math.random()*Math.PI*2,sp:.15+Math.random()*.35,dx:(Math.random()-.5)*.2});
-  (function tick(){
-    if(!c.isConnected)return;
+  c._fxOn=true;
+  if(!_fxIO)_fxIO=new IntersectionObserver(es=>es.forEach(e=>{e.target._fxOn=e.isIntersecting;}));
+  _fxIO.observe(c);
+  let last=0;
+  requestAnimationFrame(function tick(t){
+    if(!c.isConnected){_fxIO.unobserve(c);return;}
+    requestAnimationFrame(tick);
+    if(!c._fxOn||t-last<50)return; // ~20fps twinkle, skipped entirely off-screen
+    last=t;
     ctx.clearRect(0,0,w,h);
     for(const p of ps){
-      p.tw+=.04+p.sp*.05;p.y-=p.sp*.22;p.x+=p.dx;
+      p.tw+=.1+p.sp*.12;p.y-=p.sp*.55;p.x+=p.dx*2.5;
       if(p.y<-2){p.y=h+2;p.x=Math.random()*w;}
       ctx.globalAlpha=.1+.75*Math.abs(Math.sin(p.tw));
-      ctx.fillStyle=color;ctx.shadowBlur=6;ctx.shadowColor=color;
-      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
+      const s=p.r*7;
+      ctx.drawImage(sp,p.x-s/2,p.y-s/2,s,s);
     }
-    requestAnimationFrame(tick);
-  })();
+  });
 }
 const AN_PREV=new Map();
 function anApply(scope){
@@ -3996,7 +4002,7 @@ async function init(){
   }
   // FX showcase: ?fx=1 — fire the celebration kit once so it can be previewed
   if(new URLSearchParams(location.search).has('fx')||window.__T1P_FX_DEMO){
-    setTimeout(()=>{ fxCannons(2500); fxBalloons(); },1200);
+    setTimeout(()=>{ fxCannons(2500); },1200);
   }
   // TV mode: ?tv=1 — read-only big-screen rotation, no login
   if(new URLSearchParams(location.search).has('tv')){
