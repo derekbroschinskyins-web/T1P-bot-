@@ -716,6 +716,9 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .script h4{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:16px;margin-bottom:6px;cursor:pointer}
 .script .b{display:none;white-space:pre-wrap;color:var(--ink-2);font-size:14px;line-height:1.7}
 .script.open .b{display:block}
+.script .b .sc-h{display:block;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;font-weight:600;letter-spacing:.22em;color:var(--neon);text-transform:uppercase;border-bottom:1px solid rgba(0,230,118,.28);padding-bottom:5px;margin:10px 0 2px;text-shadow:0 0 8px rgba(0,230,118,.35)}
+.script .b .sc-k{color:#EAFFF4;font-weight:650}
+.script .b .sc-d{color:var(--ink-3);font-style:italic}
 .script h4::after{content:' +';color:var(--neon-dim)}
 .script.open h4::after{content:' −'}
 /* ---------- report ---------- */
@@ -3283,6 +3286,29 @@ async function startDrill(){
 
 /* ================= SCRIPTS ================= */
 let scriptQ='';
+/* turn the raw script text into readable structure: section dividers, bolded
+   cues and labels, dimmed stage directions — so it's not one big blob */
+function fmtScript(t){
+  return esc(t).split('\n').map(line=>{
+    const l=line.trim();
+    if(!l) return line;
+    if(/^══+/.test(l)) return `<span class="sc-h">${l.replace(/═+/g,'').trim()}</span>`;
+    // full-line stage direction: (PAUSE), (If yes) ..., (Agent: ...)
+    if(/^\(.+\)[.:]?$/.test(l)&&l.length<110) return `<span class="sc-d">${line}</span>`;
+    // known labels at line start get bolded
+    line=line.replace(/^(\s*)(The Objection:|The Handle:|Notes:|Option \d+|Step \d+:|Coverage:|Monthly Cost:)/,
+      (m,sp,lab)=>`${sp}<span class="sc-k">${lab}</span>`);
+    // a leading ALL-CAPS quoted objection: "ARE YOU WITH THE VA?"
+    line=line.replace(/^(&quot;[^a-z]*?&quot;)/, m=>`<span class="sc-k">${m}</span>`);
+    // whole line mostly uppercase = a shouted cue (MAKE THEM PICK, GOLDEN QUESTION...)
+    const letters=l.replace(/[^A-Za-z]/g,'');
+    if(letters.length>=3&&l.length<90&&(letters.replace(/[^A-Z]/g,'').length/letters.length)>0.72&&!line.includes('sc-k'))
+      return `<span class="sc-k">${line}</span>`;
+    // short label lines ending with a colon
+    if(/^[^<]{2,60}:$/.test(l)&&!line.includes('sc-')) return `<span class="sc-k">${line}</span>`;
+    return line;
+  }).join('\n');
+}
 function renderScripts(){
   const el=$('#scriptList'); if(!el) return;
   const q=scriptQ.toLowerCase();
@@ -3292,7 +3318,7 @@ function renderScripts(){
   el.innerHTML=cats.map(c=>
     `<div class="script-cat">${esc(c)}</div>`+
     rows.filter(s=>s.category===c).map(s=>
-      `<div class="panel script rv" data-sid="${s.id}"><h4>${esc(s.title)}</h4><div class="b">${esc(s.body)}</div></div>`
+      `<div class="panel script rv" data-sid="${s.id}"><h4>${esc(s.title)}</h4><div class="b">${fmtScript(s.body)}</div></div>`
     ).join('')
   ).join('');
   observeReveals();
