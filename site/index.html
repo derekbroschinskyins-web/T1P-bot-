@@ -2407,7 +2407,7 @@ function pumpPromo(){
   document.querySelector('#promo .promo-k').textContent='// PROMOTION DETECTED';
   $('#promo').classList.add('on');
   sPromo();
-  fxCannons(2200); fxBalloons();
+  fxCannons(2200);
   if(!reduceMotion) decodeEl($('#promoName'));
   setTimeout(()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); }, 3000);
 }
@@ -3859,12 +3859,6 @@ function fxCannons(ms){
     if(Date.now()<end)requestAnimationFrame(frame);
   })();
 }
-let _balloonsP=null;
-function fxBalloons(){
-  if(reduceMotion)return;
-  (_balloonsP||(_balloonsP=import('https://cdn.jsdelivr.net/npm/balloons-js/+esm')))
-    .then(m=>m.balloons()).catch(()=>{_balloonsP=null;});
-}
 let _fxIO=null;
 function fxSparkles(host,color){
   if(reduceMotion||!host||host.querySelector('.fx-sparkles'))return;
@@ -4008,7 +4002,7 @@ async function init(){
   }
   // FX showcase: ?fx=1 — fire the celebration kit once so it can be previewed
   if(new URLSearchParams(location.search).has('fx')||window.__T1P_FX_DEMO){
-    setTimeout(()=>{ fxCannons(2500); fxBalloons(); },1200);
+    setTimeout(()=>{ fxCannons(2500); },1200);
   }
   // TV mode: ?tv=1 — read-only big-screen rotation, no login
   if(new URLSearchParams(location.search).has('tv')){
