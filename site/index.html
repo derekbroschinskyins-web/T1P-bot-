@@ -126,21 +126,24 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   animation:railGlow 5s ease-in-out infinite;
 }
 @keyframes railGlow{0%,100%{opacity:.35}50%{opacity:.85}}
-.topbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:22px;height:60px}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:14px;height:60px}
 .logo{display:flex;align-items:baseline;gap:10px;flex:none}
 .logo .mark{font-family:'Clash Display','General Sans',sans-serif;font-weight:900;font-size:24px;color:var(--gold);letter-spacing:.02em}
 .logo .sub{font-family:'General Sans','Instrument Sans',sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:var(--ink-2);text-transform:uppercase}
-nav.tabs{display:flex;gap:2px;flex-wrap:wrap;align-items:center;overflow:visible;flex:1;min-width:0}
+nav.tabs{
+  display:flex;gap:0;flex-wrap:nowrap;align-items:center;flex:1;min-width:0;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;height:60px;
+}
 .ngrp{position:relative}
 .ngbtn{
-  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink-2);padding:6px 10px;border-bottom:2px solid transparent;transition:color .15s;white-space:nowrap;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-2);padding:6px 8px;border-bottom:2px solid transparent;transition:color .15s;white-space:nowrap;
 }
 .ngbtn i{font-style:normal;color:var(--neon-dim);font-size:9px}
 .ngbtn:hover{color:var(--neon);text-shadow:0 0 10px rgba(0,230,118,.5)}
 .ngrp.cur .ngbtn{color:var(--neon-bright);border-bottom-color:var(--neon)}
 .ndrop{
-  position:absolute;top:calc(100% + 10px);left:0;min-width:180px;z-index:70;display:none;
+  position:fixed;min-width:180px;z-index:70;display:none;
   background:rgba(2,10,5,.97);border:1px solid rgba(0,230,118,.3);border-radius:6px;
   box-shadow:0 18px 50px rgba(0,0,0,.7), 0 0 24px rgba(0,230,118,.08);padding:6px;
 }
@@ -150,8 +153,8 @@ nav.tabs{display:flex;gap:2px;flex-wrap:wrap;align-items:center;overflow:visible
 .ndrop a.active{color:var(--neon-bright);background:rgba(0,230,118,.1)}
 nav.tabs::-webkit-scrollbar{display:none}
 nav.tabs a{
-  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink-2);padding:6px 10px;white-space:nowrap;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-weight:500;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-2);padding:6px 8px;white-space:nowrap;flex:none;
   border-bottom:2px solid transparent;transition:color .15s, text-shadow .15s;
 }
 nav.tabs a:hover{color:var(--neon);text-shadow:0 0 10px rgba(0,230,118,.5)}
@@ -164,12 +167,17 @@ nav.tabs a.hidden{display:none}
 .whoami{font-family:'General Sans','Instrument Sans',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-bright)}
 .logout-btn{font-family:'General Sans','Instrument Sans',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--edge-dim);padding:4px 10px}
 .logout-btn:hover{color:var(--ink);border-color:var(--edge)}
-@media(max-width:760px){
+@media(max-width:1120px){
   .logo .sub{display:none}
-  .topbar-inner{gap:12px;padding:0 14px}
-  .live-dot span{display:none}
+}
+@media(max-width:900px){
   .whoami{display:none}
-  nav.tabs a{padding:6px 9px;font-size:12px}
+  .live-dot span{display:none}
+}
+@media(max-width:760px){
+  .topbar-inner{gap:10px;padding:0 12px}
+  .top-right{gap:8px}
+  nav.tabs a,.ngbtn{padding:6px 8px;font-size:11px}
 }
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
@@ -2206,7 +2214,12 @@ document.addEventListener('click',e=>{
     const g=b.parentElement;
     const was=g.classList.contains('open');
     document.querySelectorAll('#tabs .ngrp').forEach(x=>x.classList.remove('open'));
-    if(!was) g.classList.add('open');
+    if(!was){
+      g.classList.add('open');
+      // dropdowns are position:fixed so the one-row nav can scroll without clipping them
+      const d=g.querySelector('.ndrop'), r=b.getBoundingClientRect();
+      if(d){ d.style.left=Math.max(8,Math.min(r.left,innerWidth-196))+'px'; d.style.top=(r.bottom+8)+'px'; }
+    }
     return;
   }
   if(!e.target.closest('.ngrp')) document.querySelectorAll('#tabs .ngrp').forEach(x=>x.classList.remove('open'));
