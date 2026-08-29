@@ -714,11 +714,20 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .script-cat::before{content:'> '}
 .script{margin-bottom:10px;padding:16px 20px}
 .script h4{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:16px;margin-bottom:6px;cursor:pointer}
-.script .b{display:none;white-space:pre-wrap;color:var(--ink-2);font-size:14px;line-height:1.7}
+.script .b{display:none;color:#C8DBCF;font-size:15px;line-height:1.85;max-width:78ch}
 .script.open .b{display:block}
-.script .b .sc-h{display:block;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;font-weight:600;letter-spacing:.22em;color:var(--neon);text-transform:uppercase;border-bottom:1px solid rgba(0,230,118,.28);padding-bottom:5px;margin:10px 0 2px;text-shadow:0 0 8px rgba(0,230,118,.35)}
-.script .b .sc-k{color:#EAFFF4;font-weight:650}
+.script .b .sc-t{white-space:pre-wrap}
+.script .b .sc-h{display:block;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--neon);text-transform:uppercase;border-bottom:1px solid rgba(0,230,118,.28);padding-bottom:6px;margin:0 0 10px;text-shadow:0 0 8px rgba(0,230,118,.35)}
+.script .b .sc-k{color:#F2FFF7;font-weight:700}
 .script .b .sc-d{color:var(--ink-3);font-style:italic}
+.sc-sec{border-left:2px solid rgba(0,230,118,.22);padding:10px 0 10px 18px;margin:22px 0;scroll-margin-top:80px}
+.sc-sec:hover{border-left-color:rgba(0,230,118,.5)}
+.sc-nav{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+.sc-nav button{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--neon-dim);border:1px solid rgba(0,230,118,.25);border-radius:20px;padding:4px 11px;cursor:pointer;background:rgba(0,230,118,.03);
+}
+.sc-nav button:hover{color:var(--neon-bright);border-color:var(--neon)}
 .script h4::after{content:' +';color:var(--neon-dim)}
 .script.open h4::after{content:' −'}
 /* ---------- report ---------- */
@@ -3286,13 +3295,12 @@ async function startDrill(){
 
 /* ================= SCRIPTS ================= */
 let scriptQ='';
-/* turn the raw script text into readable structure: section dividers, bolded
-   cues and labels, dimmed stage directions — so it's not one big blob */
-function fmtScript(t){
-  return esc(t).split('\n').map(line=>{
+/* turn the raw script text into readable structure: sectioned sub-cards with
+   jump chips, bolded cues and labels, dimmed stage directions */
+function fmtLines(txt){
+  return esc(txt).split('\n').map(line=>{
     const l=line.trim();
     if(!l) return line;
-    if(/^══+/.test(l)) return `<span class="sc-h">${l.replace(/═+/g,'').trim()}</span>`;
     // full-line stage direction: (PAUSE), (If yes) ..., (Agent: ...)
     if(/^\(.+\)[.:]?$/.test(l)&&l.length<110) return `<span class="sc-d">${line}</span>`;
     // known labels at line start get bolded
@@ -3309,6 +3317,31 @@ function fmtScript(t){
     return line;
   }).join('\n');
 }
+function fmtScript(t, sid){
+  // normalize the whitespace first — no more triple blank lines
+  t=String(t).replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+  const parts=t.split(/^══+\s*(.*?)\s*══+\s*$/m);
+  if(parts.length===1) return `<div class="sc-t">${fmtLines(t)}</div>`;
+  let html=''; const secs=[];
+  const pre=parts[0].trim();
+  if(pre) html+=`<div class="sc-t">${fmtLines(pre)}</div>`;
+  for(let i=1;i<parts.length;i+=2){
+    const h=parts[i].trim(), body=(parts[i+1]||'').trim();
+    const id=`scsec-${sid}-${(i-1)/2}`;
+    secs.push({h,id});
+    html+=`<div class="sc-sec" id="${id}"><span class="sc-h">${esc(h)}</span><div class="sc-t">${fmtLines(body)}</div></div>`;
+  }
+  const nav=secs.length>1
+    ?`<div class="sc-nav">${secs.map(s=>`<button type="button" data-goto="${s.id}">${esc(s.h.toLowerCase())}</button>`).join('')}</div>`
+    :'';
+  return nav+html;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.sc-nav [data-goto]'); if(!b) return;
+  const t=document.getElementById(b.dataset.goto);
+  if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  sKey();
+});
 function renderScripts(){
   const el=$('#scriptList'); if(!el) return;
   const q=scriptQ.toLowerCase();
@@ -3318,14 +3351,15 @@ function renderScripts(){
   el.innerHTML=cats.map(c=>
     `<div class="script-cat">${esc(c)}</div>`+
     rows.filter(s=>s.category===c).map(s=>
-      `<div class="panel script rv" data-sid="${s.id}"><h4>${esc(s.title)}</h4><div class="b">${fmtScript(s.body)}</div></div>`
+      `<div class="panel script rv" data-sid="${s.id}"><h4>${esc(s.title)}</h4><div class="b">${fmtScript(s.body, s.id)}</div></div>`
     ).join('')
   ).join('');
   observeReveals();
 }
 document.addEventListener('click',e=>{
-  const s=e.target.closest('.script'); if(!s) return;
-  s.classList.toggle('open'); sKey();
+  // toggle only on the title — clicking (or selecting) the script text must not collapse it
+  const h=e.target.closest('.script h4'); if(!h) return;
+  h.closest('.script').classList.toggle('open'); sKey();
 });
 (function(){
   const i=$('#scriptSearch'); if(!i) return;
