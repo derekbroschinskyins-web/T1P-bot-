@@ -730,6 +730,42 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 /* ---------- fx: sparkles on the #1 rows (adapted from 21st.dev lepikhinb/sparkles) ---------- */
 .row.p1{position:relative;z-index:0}
 .fx-sparkles{position:absolute;inset:0;pointer-events:none;z-index:-1}
+/* ---------- fx: retro perspective grid on the login gate (adapted from 21st.dev dillionverma/retro-grid) ---------- */
+.fx-retrogrid{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.35;perspective:220px}
+.fx-retrogrid .rg-plane{position:absolute;inset:0;transform:rotateX(64deg)}
+.fx-retrogrid .rg-lines{
+  position:absolute;inset:-100% 0;margin-left:-50%;width:600vw;height:300vh;transform-origin:100% 0 0;
+  background-image:linear-gradient(to right,rgba(0,230,118,.28) 1px,transparent 0),linear-gradient(to bottom,rgba(0,230,118,.28) 1px,transparent 0);
+  background-size:60px 60px;background-repeat:repeat;
+  animation:rg-scroll 16s linear infinite;
+}
+.fx-retrogrid .rg-fade{position:absolute;inset:0;background:linear-gradient(to top,transparent,var(--bg,#020503) 88%)}
+@keyframes rg-scroll{from{transform:translateY(0)}to{transform:translateY(60px)}}
+@media (prefers-reduced-motion: reduce){.fx-retrogrid .rg-lines{animation:none}}
+/* ---------- fx: rgb-split glitch bursts (in the spirit of 21st.dev glitch text components) ---------- */
+.fx-glitch{position:relative}
+.fx-glitch.on::before,.fx-glitch.on::after{
+  content:attr(data-text);position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.fx-glitch.on::before{color:#0ff;transform:translate(-2px,-1px);opacity:.7;animation:fx-gl1 .38s steps(2,end) 1;mix-blend-mode:screen}
+.fx-glitch.on::after{color:#f0f;transform:translate(2px,1px);opacity:.7;animation:fx-gl2 .38s steps(2,end) 1;mix-blend-mode:screen}
+@keyframes fx-gl1{0%{clip-path:inset(10% 0 62% 0)}25%{clip-path:inset(58% 0 8% 0)}50%{clip-path:inset(30% 0 45% 0)}75%{clip-path:inset(72% 0 3% 0)}100%{clip-path:inset(40% 0 40% 0)}}
+@keyframes fx-gl2{0%{clip-path:inset(65% 0 12% 0)}25%{clip-path:inset(4% 0 80% 0)}50%{clip-path:inset(48% 0 22% 0)}75%{clip-path:inset(15% 0 60% 0)}100%{clip-path:inset(55% 0 30% 0)}}
+@media (prefers-reduced-motion: reduce){.fx-glitch.on::before,.fx-glitch.on::after{display:none}}
+/* ---------- fx: terminal toasts (adapted from 21st.dev shugar/toast) ---------- */
+#fxToasts{position:fixed;right:14px;bottom:14px;z-index:96;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:min(360px,calc(100vw - 28px))}
+.fx-toast{
+  background:rgba(3,10,6,.92);border:1px solid rgba(0,230,118,.4);border-left:3px solid var(--neon,#00E676);
+  color:#C8DBCF;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.5;
+  padding:9px 12px;border-radius:3px;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 14px rgba(0,230,118,.12);
+  transform:translateX(16px);opacity:0;transition:transform .25s cubic-bezier(.2,.7,.3,1),opacity .25s;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.fx-toast.in{transform:translateX(0);opacity:1}
+.fx-toast .tt{color:var(--neon,#00E676);letter-spacing:.14em;font-size:9.5px;text-transform:uppercase;display:block;margin-bottom:3px}
+@media(max-width:640px){#fxToasts{bottom:64px}}
+/* ---------- fx: promo overlay code rain (adapted from 21st.dev minhxthanh/matrix-code) ---------- */
+#promoRain{position:absolute;inset:0;opacity:.3;pointer-events:none}
 /* ---------- scripts ---------- */
 .script-search{
   width:100%;max-width:420px;background:rgba(3,10,6,.8);color:var(--neon);
@@ -970,6 +1006,7 @@ body.tv .page-h{font-size:64px}
 
 <div id="loginGate">
   <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="fx-retrogrid" aria-hidden="true"><div class="rg-plane"><div class="rg-lines"></div></div><div class="rg-fade"></div></div>
   <div class="gate-card" id="gateCard">
     <div class="term-bar"><i></i><i></i><i></i><span>t1p://vault-01 — secure shell</span></div>
     <div class="term-body">
@@ -1390,6 +1427,7 @@ body.tv .page-h{font-size:64px}
 <div id="storm"><canvas id="stormCv"></canvas></div>
 
 <div id="promo" aria-hidden="true">
+  <canvas id="promoRain" aria-hidden="true"></canvas>
   <div class="promo-inner">
     <div class="promo-k">// PROMOTION DETECTED</div>
     <div class="promo-name" id="promoName"></div>
@@ -1462,8 +1500,24 @@ function demoData(){
   const agents=[
     {id:'derek',name:'Derek',recruiter_id:null,date_joined:'2025-09-01',is_admin:true},
     {id:'austin',name:'Austin',recruiter_id:'derek',date_joined:'2026-08-01',is_admin:true},
+    {id:'maya',name:'Maya',recruiter_id:'derek',date_joined:'2026-08-05',is_admin:false},
+    {id:'jordan',name:'Jordan',recruiter_id:'austin',date_joined:'2026-08-10',is_admin:false},
+    {id:'sam',name:'Sam',recruiter_id:'derek',date_joined:'2026-08-15',is_admin:false},
   ];
-  return {agents, log:[], skills:[], config:{daily_goal_points:'100'}, scripts:[
+  const now=Date.now(), day=86400000;
+  let __id=1;
+  const L=(agent_id,track,action,points,ago,status)=>({id:__id++,agent_id,track,action,points,status:status||'approved',earned_at:new Date(now-ago*day).toISOString()});
+  const demoLog=[
+    L('derek','recruiter','referral_licensed',50,12), L('derek','recruiter','referral_first_sale',75,6),
+    L('derek','recruiter','referral_submitted',25,0.1), L('derek','new_agent','first_sale',100,20),
+    L('austin','recruiter','referral_submitted',25,8), L('austin','recruiter','referral_interview',25,3),
+    L('austin','new_agent','licensed',50,25), L('austin','new_agent','month_5k',100,4),
+    L('maya','new_agent','licensed',50,10), L('maya','new_agent','first_appointment',25,2),
+    L('maya','new_agent','first_sale',100,0.2), L('maya','recruiter','referral_submitted',25,1),
+    L('jordan','new_agent','licensed',50,5), L('jordan','new_agent','onboarding',50,0.3),
+    L('sam','new_agent','licensed',50,2), L('sam','new_agent','first_appointment',25,0.05,'pending'),
+  ];
+  return {agents, log:demoLog, skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
   ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[]};
 }
@@ -1865,7 +1919,7 @@ function renderBoard(){
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
-        <div class="name">${esc(r.a.name)}${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
+        <div class="name"><span class="scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
       <div class="pts"><span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span><small>pts</small></div>
@@ -1873,6 +1927,9 @@ function renderBoard(){
   $('#boardRecruiters').innerHTML = recs.map((r,i)=>row(r,i,r.rec,maxR,'gold')).join('') || '<p style="color:var(--ink-3)">No builder points yet. First referral takes it.</p>';
   $('#boardAgents').innerHTML = nas.map((r,i)=>row(r,i,r.na,maxN,'blue')).join('') || '<p style="color:var(--ink-3)">No agent points yet. First one licensed takes it.</p>';
   anApply('#boardRecruiters'); anApply('#boardAgents');
+  fxScrambleNew('#boardRecruiters'); fxScrambleNew('#boardAgents');
+  const _rp=$('#reportHome');
+  if(_rp&&!_twReport&&_rp.textContent.trim()){_twReport=true;fxTypewriter(_rp);}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
     document.querySelectorAll('#boardRecruiters .row.p1, #boardAgents .row.p1').forEach(r=>{
@@ -1891,13 +1948,14 @@ function renderRanks(){
     return `<div class="tier rv" style="--tier-c:${r.c}">
       <div class="num">0${i+1}</div>
       <div>
-        <h3>${r.name}</h3>
+        <h3><span class="scr" data-text="${esc(r.name)}">${esc(r.name)}</span></h3>
         <div class="range">${r.max===Infinity?`${r.min}+ points`:`${r.min}–${r.max} points`}</div>
         <div class="members">${names||'<em style="color:var(--ink-3)">Unclaimed — be first.</em>'}${members.length>6?` +${members.length-6} more`:''}</div>
       </div>
       <div class="count">${members.length}<small>agents</small></div>
     </div>`;
   }).join('');
+  fxScrambleNew('#ladder');
   observeReveals();
 }
 
@@ -2252,6 +2310,8 @@ function decodeEl(el){
 function rerenderView(){
   const v=(location.hash.replace('#/','')||'board');
   renderCurrent(VIEWS.includes(v)?v:'board');
+  const h=document.querySelector('.view.on .page-h, section.view[style*="block"] .page-h')||document.querySelector('#v-'+v+' .page-h');
+  if(h&&h._fxG!==v){h._fxG=v;fxGlitch(h);}
 }
 window.addEventListener('hashchange',route);
 document.addEventListener('click',e=>{
@@ -2305,6 +2365,7 @@ function tickerPush(html){
   const el=$('#tickerTxt');
   if(el) el.innerHTML=html;
   wirePush(html);
+  try{ fxToast(html); }catch(e){}
 }
 function fmtEv(p,kind){
   const t=new Date(p.earned_at||Date.now());
@@ -2407,7 +2468,7 @@ function pumpPromo(){
   document.querySelector('#promo .promo-k').textContent='// PROMOTION DETECTED';
   $('#promo').classList.add('on');
   sPromo();
-  fxCannons(2200);
+  fxCannons(2200); fxPromoRain(3000);
   if(!reduceMotion) decodeEl($('#promoName'));
   setTimeout(()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); }, 3000);
 }
@@ -2417,6 +2478,7 @@ function celebrate(p){
   $('#promoRank').textContent=(ACTION_LABEL[p.action]||p.action).toUpperCase();
   document.querySelector('#promo .promo-k').textContent='// CLAIM APPROVED';
   $('#promo').classList.add('on');
+  fxPromoRain(1700);
   sApprove();
   setTimeout(()=>$('#promo').classList.remove('on'), 1700);
 }
@@ -3909,6 +3971,86 @@ function anApply(scope){
     el.innerHTML=`<span class="an-root">${html}</span>`;
   });
 }
+/* ---- text scramble (adapted from 21st.dev ibelick/text-scramble) ---- */
+const SCR_CHARS='アイウエオカキクケコサシスセソ0123456789$%#&+=*ABCDEF';
+const SCR_DONE=new Set();
+function fxScrambleEl(el,txt,dur){
+  if(reduceMotion){el.textContent=txt;return;}
+  const speed=40,steps=Math.max(6,(dur||600)/speed);let step=0;
+  const iv=setInterval(()=>{
+    let out='';
+    const prog=step/steps;
+    for(let i=0;i<txt.length;i++){
+      if(txt[i]===' '){out+=' ';continue;}
+      out+=(prog*txt.length>i)?txt[i]:SCR_CHARS[Math.floor(Math.random()*SCR_CHARS.length)];
+    }
+    el.textContent=out;step++;
+    if(step>steps||!el.isConnected){clearInterval(iv);el.textContent=txt;}
+  },speed);
+}
+function fxScrambleNew(scope){
+  document.querySelectorAll(scope+' .scr').forEach((el,i)=>{
+    const key=scope+':'+el.dataset.text;
+    if(SCR_DONE.has(key))return;
+    SCR_DONE.add(key);
+    setTimeout(()=>fxScrambleEl(el,el.dataset.text,550),i*70);
+  });
+}
+/* ---- typewriter (adapted from 21st.dev danielpetho/typewriter) ---- */
+let _twReport=false;
+function fxTypewriter(el){
+  if(!el||reduceMotion)return;
+  const txt=el.textContent;if(!txt.trim())return;
+  el.textContent='';
+  let i=0;
+  requestAnimationFrame(function step(){
+    if(!el.isConnected)return;
+    i=Math.min(txt.length,i+4);
+    el.textContent=txt.slice(0,i);
+    if(i<txt.length)requestAnimationFrame(step);
+  });
+}
+/* ---- rgb-split glitch bursts (in the spirit of 21st.dev glitch text components) ---- */
+function fxGlitch(el){
+  if(!el||reduceMotion)return;
+  el.dataset.text=el.textContent;
+  el.classList.add('fx-glitch','on');
+  setTimeout(()=>el.classList.remove('on'),400);
+}
+/* ---- terminal toasts (adapted from 21st.dev shugar/toast) ---- */
+function fxToast(html){
+  let wrap=document.getElementById('fxToasts');
+  if(!wrap){wrap=document.createElement('div');wrap.id='fxToasts';document.body.appendChild(wrap);}
+  const tmp=document.createElement('div');tmp.innerHTML=html;
+  const txt=(tmp.textContent||'').trim();if(!txt)return;
+  const t=document.createElement('div');t.className='fx-toast';
+  t.innerHTML='<span class="tt">// wire</span>&gt; '+esc(txt);
+  wrap.appendChild(t);
+  while(wrap.children.length>3)wrap.removeChild(wrap.firstChild);
+  requestAnimationFrame(()=>t.classList.add('in'));
+  setTimeout(()=>{t.classList.remove('in');setTimeout(()=>t.remove(),300);},4500);
+}
+/* ---- promo overlay code rain (adapted from 21st.dev minhxthanh/matrix-code) ---- */
+let _prTimer=null;
+function fxPromoRain(ms){
+  const cv=document.getElementById('promoRain');
+  if(!cv||reduceMotion)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width=cv.offsetWidth||innerWidth,H=cv.height=cv.offsetHeight||innerHeight;
+  const cols=Math.floor(W/16),drops=Array.from({length:cols},()=>Math.random()*-H/16);
+  clearInterval(_prTimer);
+  ctx.clearRect(0,0,W,H);
+  const end=Date.now()+(ms||3000);
+  _prTimer=setInterval(()=>{
+    if(Date.now()>end){clearInterval(_prTimer);ctx.clearRect(0,0,W,H);return;}
+    ctx.fillStyle='rgba(2,5,3,.18)';ctx.fillRect(0,0,W,H);
+    ctx.font='14px monospace';ctx.fillStyle='#00E676';
+    for(let i=0;i<cols;i++){
+      ctx.fillText(SCR_CHARS[Math.floor(Math.random()*SCR_CHARS.length)],i*16,drops[i]*16);
+      drops[i]=(drops[i]*16>H&&Math.random()>.97)?0:drops[i]+1;
+    }
+  },50);
+}
 const CU_PREV=new Map();
 function fxCountUp(scope){
   document.querySelectorAll(scope+' .stat .v').forEach(el=>{
@@ -4001,7 +4143,7 @@ async function init(){
     },30000);
   }
   // FX showcase: ?fx=1 — fire the celebration kit once so it can be previewed
-  if(new URLSearchParams(location.search).has('fx')||window.__T1P_FX_DEMO){
+  if(new URLSearchParams(location.search).has('fx')){
     setTimeout(()=>{ fxCannons(2500); },1200);
   }
   // TV mode: ?tv=1 — read-only big-screen rotation, no login
@@ -4269,5 +4411,6 @@ init();
     }).catch(()=>{});
 })();
 </script>
+
 </body>
 </html>
