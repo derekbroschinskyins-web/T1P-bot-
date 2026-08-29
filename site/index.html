@@ -1265,7 +1265,7 @@ body.tv .page-h{font-size:64px}
   <section class="view" id="v-game">
     <div class="rv"><div class="kicker">Training Sim</div>
     <h1 class="page-h">The Firewall</h1>
-    <p class="page-sub">The system runs the playbook — Locked Mortgage script lines and closes, plus the Metro objection guide. Answer with the right part of the script to crack a node. Ten nodes and the firewall falls. Three wrong answers and the trace catches you.</p></div>
+    <p class="page-sub">The system runs the playbook — Locked Mortgage script lines and closes, the Blueprint, and the word-for-word objections outline. Answer with the right handle to crack a node. Ten nodes and the firewall falls. Three wrong answers and the trace catches you.</p></div>
     <div class="panel rv fw-wrap fw-panel" id="gameBox"></div>
   </section>
 
@@ -2939,9 +2939,9 @@ No doctor visit — no needles, no cups; everything verifies virtually, so you n
 
 Confirm: mortgage amount, lender, address, age, smoker status, beneficiary. Control: "Co-borrower or spouse on the loan?" "Working or retired?" You are the doctor; they are the patient. Objections are requests for clarification, not obstacles — nobody asks about financial protection unless they want it.`},
  {m:6,t:'Objections',cat:'Objections',study:
-`Every rebuttal ends the same way: back to the script, book it, lock it down.
+`The formula on every one: agree first, never resist — then redirect with a question.
 
-"Call me back later" → the Quick Set: pencil them in at 6:00 or 7:30. "How much?" → "I just handle scheduling for the underwriters." "Already taken care of" → the system shows it's NOT — quality review call. "Can't afford it" → new low-cost state-approved plans; never been unable to help. "Don't think I'll qualify" → we can help anyone under 89, even active cancer. "Take me off your list" → "I don't make cold calls, and I don't have a list."`},
+"Talk to my spouse" → agree, then either/or close: "the 10,000 or the 15,000?" "Already have it" → act like you knew; you're finalizing, stopping the calls. "See it in writing" → yes — after approval; banking is what gets the approval. "Not today" → can't buy today anyway, takes 2-3 days; start at the bare minimum. "No banking over the phone" → "how did you expect to pay for this?" "Whole house paid off" → protect the equity; what she doesn't use, she keeps. "Think about it" → isolate: monthly cost or coverage amount? "Too expensive" → drop to the $50-75 range, then the foot-in-the-door plan. "Too busy" → back off, set the callback, ask one quick question. The full word-for-word handles live in Scripts → Objections.`},
 ];
 function acadPassed(id){ return new Set((DATA.academy||[]).filter(r=>r.agent_id===id).map(r=>r.module)); }
 let ACAD=null; // running exam {m,qs,idx,right}
@@ -3512,56 +3512,71 @@ const FW_BANK=[
   'You\'ve called once and texted once',
   'The lead is marked bad after two tries',
   'You\'ve dialed for exactly one hour']},
- {c:'Objections',q:'"I got to go — call me back later." The Quick Set:',a:[
-  '"Okay perfect, we can\'t do it right now either. Before I let you go — does this afternoon or evening work better? ... Looks like I can pencil you in for 6:00 or 7:30 today. Which time works better?"',
-  '"No problem, I\'ll try you again tomorrow."',
-  '"It\'ll just take five minutes, I promise."',
-  '"When exactly is a good time to call you back?"']},
- {c:'Objections',q:'"Can you tell me how much it\'s going to cost?"',a:[
-  '"I\'m not exactly sure — I just handle the scheduling for the underwriters. They have me set a time for an underwriter to see what you may be eligible for and if we can even help. I can squeeze you in at ___ or ___, which is better?"',
-  'Quote them a rough monthly number to keep them on the line',
-  '"That depends — how\'s your health?"',
-  '"Price doesn\'t matter when it\'s your family\'s protection."']},
- {c:'Objections',q:'"We already got it taken care of."',a:[
-  '"Perfect — it\'s showing as NOT taken care of in our system, which means the system hasn\'t been updated. All I can do is have an underwriter give you a quick 10–15 minute call to do a quality review check and update your file."',
-  '"Who did you go with? I can probably beat it."',
-  '"That policy has most likely lapsed by now."',
-  '"Great, I\'ll close the file out. Have a good one."']},
- {c:'Objections',q:'"I don\'t remember filling anything out."',a:[
-  '"This is regarding the letters sent out in the mail about the plans that pay off the mortgage if something happens to you — when you purchased or refinanced, the lender placed you into eligibility for the state-regulated plans."',
-  '"You definitely filled it out — I\'m looking at your signature."',
-  '"Maybe your spouse did it for you."',
-  '"It doesn\'t matter how you got on the list."']},
- {c:'Objections',q:'"I don\'t have time this week — call me back next week."',a:[
-  '"I definitely understand being busy — however, the eligibility period expires in about a week or so. I know how important this is to YOU and YOUR family, so I\'ll put down notes to best accommodate you before it expires."',
-  '"Sure, same time next week works for me."',
-  '"It\'s now or never — the underwriters are booked solid."',
-  '"I\'ll just email everything instead."']},
- {c:'Objections',q:'"I\'m no longer interested."',a:[
-  '"Okay — I know this was originally important to you, like it is for every family that responds to one of the letters. Are you no longer interested because you don\'t believe you can afford it, or you don\'t think you will qualify?"',
-  '"That\'s fine, I\'ll mark you down as not interested."',
-  '"People who say that are usually the ones who need it most."',
-  '"Can I at least send you a brochure?"']},
- {c:'Objections',q:'"I can\'t afford it."',a:[
-  '"That\'s exactly why I was getting back to you — we have access to new low-cost state-approved plans. To be frank, we\'ve never been unable to help someone protect their family because it wasn\'t affordable. I\'ll squeeze you in at ___ or ___, which is better?"',
-  '"How much can you afford? I\'ll make it work."',
-  '"It\'s cheaper than your phone bill." (leave it there)',
-  '"Then this probably isn\'t for you."']},
- {c:'Objections',q:'"I\'ve gotten multiple calls about mortgage protection."',a:[
-  '"Perfect — when this hits my desk it usually means one of two things: nobody ever got the information out to you, or they didn\'t get you all the possible options. It\'s just a brief 10–15 minute call with a senior underwriter."',
-  '"Those other callers are scammers — we\'re the real ones."',
-  '"I\'ll make sure nobody calls you again."',
-  '"That\'s annoying — want me to remove your number?"']},
- {c:'Objections',q:'"I don\'t think I can qualify."',a:[
-  '"That\'s exactly why I was getting back to you — we have access to all the plans in the state. We can help anyone, even people with active cancer, as long as they\'re under 89... and I can see you\'re not 89 just yet, right?"',
-  '"You\'re probably right, but it\'s worth a shot."',
-  '"Qualifying is easy — everyone gets approved."',
-  '"What conditions do you have? Let me pre-screen you."']},
- {c:'Objections',q:'"No, I\'m just not interested — take me off the list."',a:[
-  '"I don\'t make any cold calls, and I don\'t have a list. Again, I\'m just the scheduling coordinator, so I\'m not quite sure if we could even help just yet."',
-  '"Okay, you\'re off the list. Goodbye."',
-  '"There is no list — this is fate."',
-  '"I\'ll take you off after one quick question..."']},
+ {c:'Objections',q:'"I need to talk to my spouse." (numbers already pitched)',a:[
+  '"100%, I definitely want you to talk to her about these options... Now let me ask you this — what\'s the least amount of coverage you\'d wanna leave behind for her? Was it the 10,000 or the 15,000?"',
+  '"Okay, call me back once you two have decided."',
+  '"What is there to talk about? It\'s your decision."',
+  '"Put her on the phone and I\'ll re-pitch everything."']},
+ {c:'Objections',q:'"I already have that in place."',a:[
+  '"Yeah, I know — that\'s why I\'m calling you. My job is to make sure you 100% understand what you have and get everything squared away so you stop getting a million phone calls... I guess do you have that policy packet nearby?"',
+  '"Whoever sold you that probably overcharged you."',
+  '"Okay, I\'ll close the file. Have a good one."',
+  '"Are you sure? Most people only think they have coverage."']},
+ {c:'Objections',q:'"I want to see it in writing before we do anything."',a:[
+  '"No, 100% — that\'s what we\'re gonna do. Once we get approved, everything gets sent to your email and your address. Obviously they\'re not gonna draft up a policy for someone who hasn\'t been approved — and the banking is required to get that approval."',
+  '"I can email you a brochure right now instead."',
+  '"There\'s nothing to see until you buy it."',
+  '"Paperwork slows everything down — trust me."']},
+ {c:'Objections',q:'"We aren\'t doing anything today."',a:[
+  '"No, yeah — we couldn\'t even buy this today if we wanted to. It takes two to three days just to get you approved. That\'s why I\'d recommend starting with the bare minimum, get you approved, and you can think about raising it."',
+  '"Today is the only day this rate exists."',
+  '"Okay, when should I call back next month?"',
+  '"You\'re making a big mistake."']},
+ {c:'Objections',q:'"I don\'t give banking over the phone — ever."',a:[
+  '"No, 100%, man. I guess how did you expect to pay for this?"',
+  'A long explanation of the company\'s security protocols',
+  '"Okay, we\'ll do a paper application by mail."',
+  '"Everyone says that, and everyone gives it eventually."']},
+ {c:'Objections',q:'"I want the whole house paid off — that\'s the whole point."',a:[
+  '"I know you mentioned if you passed she\'d be in a pinch, right? Right now you have nothing in place — the bank would be coming after the home. So at the very least we give her money to protect that equity... and anything she doesn\'t use for the home, she keeps as extra life insurance. Does that make sense?"',
+  '"The full payoff is the only real option, you\'re right."',
+  '"Nobody can afford the full payoff — be realistic."',
+  '"Let\'s just double the premium and cover it all."']},
+ {c:'Objections',q:'"Why do you need my banking?"',a:[
+  '"They use your social to verify you are who you say you are — and with banking, they have to make sure it\'s your name tied to the account so there\'s no fraud associated with it." (Set the date and exact amount BEFORE asking.)',
+  '"It\'s just company policy, don\'t worry about it."',
+  '"So we can charge you as soon as possible."',
+  '"We keep it on file for future purchases."']},
+ {c:'Objections',q:'"I just have to think about it." (after numbers)',a:[
+  '"I definitely want you to think about it. I guess is the main thing you\'re thinking about how much you want to spend each month, or how much coverage you want to leave behind?"',
+  '"Take a week — I\'ll follow up next Friday."',
+  '"Thinking about it kills more families than anything."',
+  '"What if I knock ten bucks off right now?"']},
+ {c:'Objections',q:'"I just wanted some quotes — I\'m calling around."',a:[
+  '"I got you. At the end of the day I\'m just an underwriter, so I look at about 20 to 30 different carriers here in the state — which allows me to shop around on your behalf. That way you don\'t have to talk to 30 different agents."',
+  '"Our prices beat everyone, guaranteed."',
+  '"Quotes are useless without an application."',
+  '"Call the others first, then come back to me."']},
+ {c:'Objections',q:'"I didn\'t fill anything out — I didn\'t request a call."',a:[
+  '"You\'re good — it was just the plans that would pay off the home here in (state) if something happened to you. Is that ringing a bell? Sometimes when you\'re looking at it, it just fills it out itself. I guess were you looking to protect (name) or...?"',
+  '"You definitely did — I\'m looking at your signature."',
+  '"Someone in your house must have done it."',
+  '"Doesn\'t matter — you\'re in the system now."']},
+ {c:'Objections',q:'"It\'s just too expensive for me right now."',a:[
+  '"I got you — is something more around the $50 to $75 range, would that make more sense? ... What a lot of people in your situation do is the foot-in-the-door plan — it locks in your age, and down the road we can always look at more coverage."',
+  '"Cut your streaming subscriptions and you can afford it."',
+  '"Expensive compared to what — a funeral?"',
+  '"Okay, I\'ll call back when money\'s better."']},
+ {c:'Objections',q:'"I\'m too busy to talk right now."',a:[
+  '"No, you\'re good — I figured I wasn\'t catching you at the best time anyway. I really just wanted to introduce myself and see what the best time to catch you would be. Do you typically work a nine to five or? ... Mind if I ask one quick question so when we circle back tonight it\'s a little quicker?"',
+  '"This will only take thirty seconds, I swear."',
+  '"Everyone\'s busy — that\'s just an excuse."',
+  '"Fine, goodbye." (hang up)']},
+ {c:'Objections',q:'"If you have to ask me for anything, I\'m not giving it to you."',a:[
+  '"Okay — well obviously this is life insurance, so they do have to make sure it\'s actually you. Now the good news is everything blacks out on my end, and most of the stuff is pre-populated in the system. So it\'s pretty smooth."',
+  '"Then I can\'t help you at all. Goodbye."',
+  '"You give info to every website you visit."',
+  '"I\'ll just fill it in with my best guesses."']},
 ];
 const FW_WIN=10, FW_TRACE=3;
 let FW=null;
@@ -3581,7 +3596,7 @@ function fwSplash(el, mode){
     ? `10 NODES CRACKED · YOU KNOW THE SCRIPT COLD<br>ACCURACY ${FW.right}/${FW.right+FW.wrong} · BEST STREAK ${FW.beststreak}`
     : mode==='lose'
     ? `THE SYSTEM CAUGHT YOU AT ${FW.right}/${FW_WIN} NODES<br>WRONG ANSWERS BURN — READ THE PLAYBOOK, RUN IT BACK`
-    : `LOCKED MORTGAGE · TOP ONE FRESH · METRO OBJECTION GUIDE<br>${FW_WIN} CORRECT = BREACH · ${FW_TRACE} WRONG = LOCKOUT${best?`<br>PERSONAL BEST STREAK: ${best}`:''}`;
+    : `LOCKED MORTGAGE · THE BLUEPRINT · OBJECTIONS OUTLINE<br>${FW_WIN} CORRECT = BREACH · ${FW_TRACE} WRONG = LOCKOUT${best?`<br>PERSONAL BEST STREAK: ${best}`:''}`;
   el.innerHTML=`<div class="fw-splash">${head}<div class="mono">${sub}</div>`+
     (mode?`<div class="fw-stat-row"><span>CORRECT <b>${FW.right}</b></span><span>WRONG <b>${FW.wrong}</b></span><span>BEST STREAK <b>${FW.beststreak}</b></span></div>`:'')+
     `<button class="btn" id="fwStart">${mode?'RUN IT BACK':'INITIATE BREACH'}</button></div>`;
