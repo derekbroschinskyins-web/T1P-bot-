@@ -3079,12 +3079,22 @@ function mondayOf(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getD
 function addD(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function gauntletFor(mon){
   const prevMon=addD(mon,-7);
-  // seeded on last week's premium — the bracket runs on money, like the boards
-  const seeds=DATA.agents.map(a=>({a,pts:apIn(a.id,prevMon,mon)}))
-    .sort((x,y)=>y.pts-x.pts||x.a.id.localeCompare(y.a.id));
-  const size=seeds.length>=8?8:seeds.length>=4?4:seeds.length>=2?2:0;
-  if(!size) return null;
-  let cur=seeds.slice(0,size).map((s,i)=>({...s,seed:i+1}));
+  // Seeded on last week's premium. When that's level (a fresh month, a fresh
+  // roster) it falls through to month-to-date premium, then total points, then
+  // name — so the order always means something and never depends on ids.
+  const mtd=apThisMonth();
+  const seeds=DATA.agents.map(a=>({
+    a,
+    pts:apIn(a.id,prevMon,mon),
+    mtdAp:(mtd.get(a.id)||{ap:0}).ap,
+    tot:totals(a.id).total,
+  })).sort((x,y)=>y.pts-x.pts||y.mtdAp-x.mtdAp||y.tot-x.tot||x.a.name.localeCompare(y.a.name));
+  if(seeds.length<2) return null;
+  // bracket is the next power of two, so nobody on the roster is left out —
+  // top seeds take the byes
+  const size=seeds.length<=2?2:seeds.length<=4?4:8;
+  let cur=seeds.slice(0,Math.min(seeds.length,size)).map((s,i)=>({...s,seed:i+1}));
+  while(cur.length<size) cur.push(null);
   const spans=size===8?[[0,2],[2,4],[4,6]]:size===4?[[0,3],[3,6]]:[[0,6]];
   const names=size===8?['Quarterfinals · Mon–Tue','Semifinals · Wed–Thu','The Final · Fri–Sat']
     :size===4?['Semifinals · Mon–Wed','The Final · Thu–Sat']
@@ -3097,8 +3107,10 @@ function gauntletFor(mon){
     const ms=pair(cur).map(([A,B])=>{
       const sa=A?apIn(A.a.id,from,to):0, sb=B?apIn(B.a.id,from,to):0;
       let winner=null;
-      if(decided&&A&&B) winner=sb>sa?B:(sa>sb?A:(A.seed<B.seed?A:B));
-      return {A,B,sa,sb,winner,live:new Date()>=from&&!decided};
+      const bye=r===0&&((A&&!B)||(B&&!A));
+      if(bye) winner=A||B;
+      else if(decided&&A&&B) winner=sb>sa?B:(sa>sb?A:(A.seed<B.seed?A:B));
+      return {A,B,sa,sb,winner,live:new Date()>=from&&!decided,bye};
     });
     rounds.push({name:names[r],ms,decided});
     cur=ms.map(m=>m.winner);
@@ -3131,9 +3143,9 @@ function renderGauntlet(sel){
     return;
   }
   const cell=(p,score,m)=>{
-    if(!p) return `<div class="gnt-p"><span style="color:var(--ink-3)">TBD</span></div>`;
+    if(!p) return `<div class="gnt-p"><span style="color:var(--ink-3)">${m&&m.bye?'BYE':'TBD'}</span></div>`;
     const w=m.winner&&m.winner.a.id===p.a.id, out=m.winner&&m.winner.a.id!==p.a.id;
-    return `<div class="gnt-p${w?' win':''}${out?' out':''}"><span>#${p.seed} ${esc(p.a.name)}</span><span class="sc">${m.live||m.winner?fmtAP(score):''}</span></div>`;
+    return `<div class="gnt-p${w?' win':''}${out?' out':''}"><span>#${p.seed} ${esc(p.a.name)}</span><span class="sc">${m.bye?'':(m.live||m.winner?fmtAP(score):'')}</span></div>`;
   };
   el.innerHTML=beltLine+`<div class="panel rv"><div class="gnt-cols">`+
     g.rounds.map(r=>`<div class="gnt-col"><div class="gnt-round">${r.name}</div>`+
