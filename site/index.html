@@ -222,7 +222,7 @@ main{max-width:1200px;margin:0 auto;padding:48px 24px 110px}
 /* ---------- the breach (login gate) ---------- */
 #loginGate{
   position:fixed;inset:0;z-index:100;background:#020503;
-  display:none;align-items:center;justify-content:center;padding:20px;overflow:hidden;
+  display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;overflow-x:hidden;
 }
 body.locked #loginGate{display:flex}
 body.locked main, body.locked footer{display:none}
@@ -730,6 +730,56 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 /* ---------- fx: sparkles on the #1 rows (adapted from 21st.dev lepikhinb/sparkles) ---------- */
 .row.p1{position:relative;z-index:0}
 .fx-sparkles{position:absolute;inset:0;pointer-events:none;z-index:-1}
+/* ---------- public standings + discord on the gate ---------- */
+[hidden]{display:none!important}
+.gate-wrap{
+  margin:auto;position:relative;z-index:2;width:100%;max-width:900px;
+  display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;
+}
+.gate-board{
+  flex:1 1 300px;max-width:340px;width:100%;
+  background:rgba(2,10,5,.88);
+  border:1px solid rgba(0,255,102,.28);border-radius:10px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6), 0 30px 90px rgba(0,0,0,.8), 0 0 44px rgba(0,255,102,.09);
+  padding:16px 16px 14px;
+  font-family:'SF Mono',ui-monospace,'Cascadia Code','JetBrains Mono',Menlo,Consolas,monospace;
+}
+.gb-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.gb-k{color:var(--neon,#00E676);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.gb-live{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#8FB79E}
+.gb-live i{width:6px;height:6px;border-radius:50%;background:var(--neon,#00E676);box-shadow:0 0 8px rgba(0,230,118,.9);animation:gbPulse 2s ease-in-out infinite}
+@keyframes gbPulse{0%,100%{opacity:1}50%{opacity:.25}}
+.gb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.gb-row{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:9px}
+.gb-pos{color:#5C7A68;font-size:11px}
+.gb-row.lead .gb-pos{color:var(--neon-bright,#00FF66)}
+.gb-who{min-width:0}
+.gb-name{display:block;color:#C8DBCF;font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-row.lead .gb-name{color:#EAFFF4}
+.gb-bar{display:block;height:3px;margin-top:5px;background:rgba(0,255,102,.1);border-radius:2px;overflow:hidden}
+.gb-bar i{display:block;height:100%;width:0;border-radius:2px;background:var(--gb-c,#00E676);box-shadow:0 0 10px rgba(0,230,118,.5);transition:width .8s cubic-bezier(.2,.7,.3,1)}
+.gb-pts{color:#EAFFF4;font-size:12.5px;white-space:nowrap}
+.gb-pts small{color:#5C7A68;font-size:9px;margin-left:3px}
+.gb-foot{margin-top:13px;padding-top:11px;border-top:1px solid rgba(0,255,102,.14);color:#5C7A68;font-size:10px;letter-spacing:.06em}
+.gb-discord,.nav-discord{
+  text-decoration:none;color:#C3CBF7;
+  background:rgba(88,101,242,.14);border:1px solid rgba(88,101,242,.45);
+  transition:background .2s,border-color .2s,color .2s;
+}
+.gb-discord:hover,.nav-discord:hover{background:rgba(88,101,242,.3);border-color:rgba(88,101,242,.9);color:#fff}
+.gb-discord{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;padding:9px 12px;border-radius:6px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
+.gb-discord svg{width:15px;height:15px;flex:none;fill:currentColor}
+.nav-discord{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:5px;font-size:11.5px}
+.nav-discord svg{width:14px;height:14px;flex:none;fill:currentColor}
+@media(max-width:900px){
+  .gate-wrap{max-width:520px}
+  .gate-board{max-width:520px;flex-basis:100%;order:2}
+  .nav-discord span{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .gb-live i{animation:none}
+  .gb-bar i{transition:none}
+}
 /* ---------- fx: retro perspective grid on the login gate (adapted from 21st.dev dillionverma/retro-grid) ---------- */
 .fx-retrogrid{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.35;perspective:220px}
 .fx-retrogrid .rg-plane{position:absolute;inset:0;transform:rotateX(64deg)}
@@ -1007,6 +1057,7 @@ body.tv .page-h{font-size:64px}
 <div id="loginGate">
   <canvas id="matrix" aria-hidden="true"></canvas>
   <div class="fx-retrogrid" aria-hidden="true"><div class="rg-plane"><div class="rg-lines"></div></div><div class="rg-fade"></div></div>
+  <div class="gate-wrap">
   <div class="gate-card" id="gateCard">
     <div class="term-bar"><i></i><i></i><i></i><span>t1p://vault-01 — secure shell</span></div>
     <div class="term-body">
@@ -1045,6 +1096,16 @@ body.tv .page-h{font-size:64px}
         <button class="gate-alt" id="regBack" type="button">&gt; back to login_</button>
       </div>
     </div>
+  </div>
+  <aside class="gate-board" id="gateBoard" hidden>
+    <div class="gb-head">
+      <span class="gb-k">// live standings</span>
+      <span class="gb-live"><i></i>live</span>
+    </div>
+    <ol class="gb-list" id="gateBoardList"></ol>
+    <div class="gb-foot" id="gateBoardFoot"></div>
+    <a class="gb-discord" id="gateDiscord" target="_blank" rel="noopener noreferrer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.056c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg><span>Join the T1P Discord</span></a>
+  </aside>
   </div>
   <pre id="dbDump" aria-hidden="true"></pre>
 </div>
@@ -1093,6 +1154,7 @@ body.tv .page-h{font-size:64px}
       <span class="live-dot" id="liveDot"><i></i><span id="liveTxt">Live</span></span>
       <button class="snd-btn" id="bellBtn" title="Desktop alerts" aria-label="Enable alerts">◎</button>
       <button class="snd-btn" id="sndBtn" title="Sound on/off" aria-label="Toggle sound">▶))</button>
+      <a class="nav-discord" id="navDiscord" target="_blank" rel="noopener noreferrer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.056c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg><span>Discord</span></a>
       <button class="logout-btn" id="logoutBtn" style="display:none">Log out</button>
     </span>
   </div>
@@ -1592,7 +1654,7 @@ function lock(){
   document.body.classList.add('locked');
   $('#whoami').textContent='';
   $('#logoutBtn').style.display='none';
-  fillGate(); resetGateFx(); bootSeq();
+  fillGate(); renderGateBoard(); resetGateFx(); bootSeq();
 }
 
 /* --- vault keypad --- */
@@ -1905,6 +1967,49 @@ const SYS_LINES=[
     pulse();
   }, 30000+Math.random()*25000);
 })();
+
+/* ================= PUBLIC GATE BOARD + DISCORD ================= */
+function discordUrl(){
+  const u=((DATA.config&&DATA.config.discord_url)||'').trim();
+  return /^https:\/\/(www\.)?(discord\.gg|discord\.com|discordapp\.com)\/\S*$/i.test(u)?u:'';
+}
+function renderDiscordLinks(){
+  const u=discordUrl();
+  [$('#gateDiscord'),$('#navDiscord')].forEach(el=>{
+    if(!el) return;
+    if(u){ el.href=u; el.hidden=false; }
+    else { el.removeAttribute('href'); el.hidden=true; }
+  });
+}
+// Standings anyone can see, before the PIN. Runs off data init() already loaded,
+// and re-runs from rerender() so the realtime feed keeps it current.
+function renderGateBoard(){
+  const wrap=$('#gateBoard');
+  renderDiscordLinks();
+  if(!wrap) return;
+  const rows=DATA.agents.map(a=>({a,...totals(a.id)}))
+    .filter(r=>r.total>0)
+    .sort((x,y)=>y.total-x.total)
+    .slice(0,5);
+  if(!rows.length){ wrap.hidden=true; return; }
+  wrap.hidden=false;
+  const max=Math.max(1,...rows.map(r=>r.total));
+  $('#gateBoardList').innerHTML=rows.map((r,i)=>`
+      <li class="gb-row${i===0?' lead':''}" style="--gb-c:${rankOf(r.total).c}">
+        <span class="gb-pos">${String(i+1).padStart(2,'0')}</span>
+        <span class="gb-who">
+          <span class="gb-name">${esc(r.a.name)}</span>
+          <span class="gb-bar"><i data-w="${(r.total/max*100).toFixed(1)}"></i></span>
+        </span>
+        <span class="gb-pts">${r.total}<small>pts</small></span>
+      </li>`).join('');
+  const k=dayKey();
+  const today=DATA.log.filter(p=>dayKey(p.earned_at)===k&&approved(p)).reduce((n,p)=>n+p.points,0);
+  $('#gateBoardFoot').textContent=`${DATA.agents.length} operatives \u00b7 ${today} points logged today`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    wrap.querySelectorAll('.gb-bar i').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
+  }));
+}
 
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
@@ -2499,7 +2604,7 @@ function palExec(raw){
   const parts=raw.trim().toLowerCase().split(/\s+/).filter(Boolean);
   if(!parts.length) return palClose();
   const [c,arg]=parts;
-  if(c==='help'){ hint.innerHTML='<span class="hit">goto</span> &lt;tab&gt; · <span class="hit">stats</span> &lt;name&gt; · <span class="hit">pending</span> · <span class="hit">logout</span>'; return; }
+  if(c==='help'){ hint.innerHTML='<span class="hit">goto</span> &lt;tab&gt; · <span class="hit">stats</span> &lt;name&gt; · <span class="hit">pending</span> · <span class="hit">logout</span> \u00b7 <span class="hit">discord</span> &lt;url&gt;'; return; }
   if(c==='logout'){ palClose(); lock(); return; }
   if(c==='goto'&&PAL_TABS[arg]){ location.hash='#/'+PAL_TABS[arg]; sKey(); return palClose(); }
   if(PAL_TABS[c]){ location.hash='#/'+PAL_TABS[c]; sKey(); return palClose(); }
@@ -2512,6 +2617,25 @@ function palExec(raw){
         if(!demo){ const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'daily_goal_points',p_value:String(n)}); if(error) throw error; await loadAll(); }
         else DATA.config.daily_goal_points=String(n);
         hint.innerHTML=`daily target set :: <span class="hit">${n} pts</span>`; sKey(); rerender();
+      }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
+    })();
+    return;
+  }
+  if(c==='discord'){
+    if(!isAdmin()){ hint.innerHTML='<span class="err">clearance denied :: admin only</span>'; sDeny(); return; }
+    // read the url off the raw input: parts[] is lowercased and invite codes are case-sensitive
+    const m=raw.trim().match(/^discord\s+(\S+)$/i);
+    const val=m?m[1]:'';
+    const url=/^off$/i.test(val)?'':val;
+    if(!m||(url&&!/^https:\/\/(www\.)?(discord\.gg|discord\.com|discordapp\.com)\/\S*$/i.test(url))){
+      hint.innerHTML='<span class="err">usage: discord https://discord.gg/xxxx</span> \u00b7 <span class="hit">discord off</span> to clear'; return;
+    }
+    (async()=>{
+      try{
+        if(!demo){ const {error}=await db.rpc('set_config',{p_admin_id:AUTH.id,p_pin:AUTH.pin,p_key:'discord_url',p_value:url}); if(error) throw error; await loadAll(); }
+        else DATA.config.discord_url=url;
+        hint.innerHTML=url?('discord linked :: <span class="hit">'+esc(url)+'</span>'):'discord link cleared';
+        sKey(); rerender();
       }catch(e){ hint.innerHTML='<span class="err">'+esc(e.message||'failed')+'</span>'; }
     })();
     return;
@@ -4124,6 +4248,7 @@ async function loadAll(){
 function rerender(){
   fillAgentPicks();
   rerenderView();
+  renderGateBoard();
   if(isAdmin()) renderApprovals();
 }
 async function init(){
@@ -4158,6 +4283,7 @@ async function init(){
     return;
   }
   fillGate();
+  renderGateBoard();
   const s=loadSession();
   if(s&&agentById(s.id)){
     // re-verify quietly so a stale PIN doesn't linger
