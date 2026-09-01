@@ -1242,7 +1242,7 @@ body.tv .page-h{font-size:64px}
     <div id="cotw" class="rv"></div>
     <div class="panel board board-ap rv">
       <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Top Producers<span class="ap-total" id="apTotal"></span></h3>
-      <div class="hint">annual premium written this month — Discord deal submissions and the Sales tab</div>
+      <div class="hint">annual premium written this month — deals posted in #deal-submissions on Discord</div>
       <div class="rule"></div>
       <div id="boardAP"></div>
     </div>
@@ -1389,7 +1389,7 @@ body.tv .page-h{font-size:64px}
   <section class="view" id="v-sales">
     <div class="rv"><div class="kicker">Production Ledger</div>
     <h1 class="page-h">Sales</h1>
-    <p class="page-sub">Every policy written goes on the book — client, annual premium, status. The AP board settles who's really producing, live for the whole floor.</p></div>
+    <p class="page-sub">Every policy written goes on the book — client, annual premium, status. The book is for tracking clients; the leaderboard, team goal and Gauntlet count only deals posted in the Discord.</p></div>
     <div class="panel rv" style="margin-bottom:16px">
       <h3 class="disp" style="font-size:15px">Submit a Sale</h3>
       <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">client · annual premium · phone · status — hits the book and the board instantly</div>
@@ -2084,12 +2084,16 @@ const SYS_LINES=[
 })();
 
 /* ================= AP: DISCORD DEALS + SALES TAB ================= */
-// One month-to-date AP figure per agent, from both places a policy can be filed.
+// One month-to-date AP figure per agent. Discord deal submissions ONLY — the
+// Sales tab is a client book and does not score the board, the goal, or the
+// Gauntlet. A policy counts when it's posted in #deal-submissions.
 function apThisMonth(){
   const m=new Map();
-  const add=(id,ap,n)=>{ const c=m.get(id)||{ap:0,n:0}; c.ap+=ap; c.n+=n; m.set(id,c); };
-  for(const r of salesBoardRows()) add(r.agent_id,+r.ap_month||0,+r.n_month||0);
-  for(const r of (DATA.discordAp||[])) add(r.agent_id,+r.ap_month||0,+r.n_month||0);
+  for(const r of (DATA.discordAp||[])){
+    const c=m.get(r.agent_id)||{ap:0,n:0};
+    c.ap+=+r.ap_month||0; c.n+=+r.n_month||0;
+    m.set(r.agent_id,c);
+  }
   return m;
 }
 // Premium leaderboard, adapted from 21st.dev trophyso/leaderboard-rankings:

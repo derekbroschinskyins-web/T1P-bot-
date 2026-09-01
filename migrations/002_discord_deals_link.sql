@@ -115,3 +115,25 @@ drop trigger if exists deals_ping_trg on deals;
 create trigger deals_ping_trg
   after insert or update or delete on deals
   for each statement execute function public.deals_ping();
+
+-- 6. one source of truth for scores ----------------------------------------
+-- Per-agent AP by local day, for the Gauntlet and any windowed total.
+-- Discord deals only: the Sales tab is a client book and does not score the
+-- leaderboard, the team goal, or the Gauntlet.
+create or replace function public.ap_daily()
+returns table(agent_id text, day date, ap numeric, n bigint)
+language sql
+security definer
+set search_path to 'public', 'extensions'
+as $function$
+  select a.id,
+         (coalesce(dl.submitted_at, dl.created_at) at time zone 'America/Denver')::date as d,
+         coalesce(sum(coalesce(dl.premium, dl.amount, 0)), 0),
+         count(*)
+  from deals dl
+  join agents a on a.discord_id = dl.agent_id
+  group by a.id, d;
+$function$;
+
+revoke all on function public.ap_daily() from public;
+grant execute on function public.ap_daily() to anon, authenticated, service_role;
