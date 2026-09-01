@@ -2898,10 +2898,17 @@ let saleRange='month', saleWho=null;
 const SALE_STATUSES=[['submitted','Submitted'],['issued','Issued'],['active','Active'],['declined','Declined'],['cancelled','Cancelled']];
 const fmtAP=n=>'$'+Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
 const saleCounts=s=>s.status!=='declined'&&s.status!=='cancelled';
-/* board aggregates come from the public sales_board RPC (no client details);
-   full book rows are private — fetched per viewer through get_book */
+/* Every ranking in the app — the Sales tab board, records, the wire's sale
+   events — reads this feed, and it is Discord deals ONLY. The Sales tab's
+   client book is separate and private (fetched per viewer through get_book);
+   nothing logged there scores anywhere. */
 function salesBoardRows(){
-  if(!demo&&DATA.salesBoard) return DATA.salesBoard;
+  if(!demo) return (DATA.discordAp||[]).map(r=>({
+    agent_id:r.agent_id,
+    ap_all:+r.ap_all||0, n_all:+r.n_all||0,
+    ap_month:+r.ap_month||0, n_month:+r.n_month||0,
+    n_active:+r.n_all||0,
+  }));
   const m=new Map(), now=new Date();
   for(const s of (DATA.sales||[])){
     const r=m.get(s.agent_id)||{agent_id:s.agent_id,ap_all:0,n_all:0,ap_month:0,n_month:0,n_active:0};
