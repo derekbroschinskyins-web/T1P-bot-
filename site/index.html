@@ -410,6 +410,62 @@ body .board-ap{border-color:rgba(0,230,118,.32)}
 .board-ap h3{color:var(--neon-bright,#00FF66);text-shadow:0 0 10px rgba(0,255,102,.45)}
 .board.board-ap .hint{color:rgba(0,230,118,.55)}
 .board-ap .rule{background:linear-gradient(90deg,var(--neon,#00E676),transparent)}
+/* ---------- leaderboard rows (adapted from 21st.dev trophyso/leaderboard-rankings) ---------- */
+.lb{list-style:none;margin:0;padding:0}
+.lb-row{
+  position:relative;display:grid;grid-template-columns:26px 34px 1fr auto;gap:13px;align-items:center;
+  padding:12px 10px;margin:0 -10px;border-radius:8px;
+  border-bottom:1px solid var(--edge-dim);
+  transition:background .2s ease;
+}
+.lb-row:last-child{border-bottom:none}
+.lb-row::before{
+  content:'';position:absolute;inset:0;border-radius:8px;pointer-events:none;z-index:0;
+  background:linear-gradient(90deg,rgba(0,230,118,.09),rgba(0,230,118,0));
+  width:var(--share,0%);transition:width 1s cubic-bezier(.2,.7,.3,1);
+}
+.lb-row>*{position:relative;z-index:1}
+.lb-row:hover{background:rgba(0,230,118,.045)}
+.lb-row.lead{background:rgba(0,230,118,.055)}
+.lb-rank{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;font-variant-numeric:tabular-nums;
+  color:var(--ink-3);text-align:center;
+}
+.lb-row.lead .lb-rank{color:var(--neon-bright,#00FF66)}
+.lb-row.p2 .lb-rank,.lb-row.p3 .lb-rank{color:var(--ink-2)}
+.lb-av{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.04em;
+  color:var(--av,#00E676);background:color-mix(in srgb, var(--av,#00E676) 12%, transparent);
+  border:1px solid color-mix(in srgb, var(--av,#00E676) 45%, transparent);
+}
+@supports not (color: color-mix(in srgb, red 50%, transparent)){
+  .lb-av{background:rgba(0,230,118,.12);border-color:rgba(0,230,118,.45)}
+}
+.lb-id{min-width:0}
+.lb-name{
+  display:block;font-family:'General Sans','Instrument Sans',system-ui,sans-serif;font-weight:600;font-size:14.5px;
+  color:#EAFFF4;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lb-by{
+  display:block;margin-top:3px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lb-val{
+  font-family:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;font-size:16px;font-weight:500;
+  font-variant-numeric:tabular-nums;color:#EAFFF4;white-space:nowrap;text-align:right;
+}
+.lb-row.lead .lb-val{color:var(--neon-bright,#00FF66)}
+.lb-unit{display:block;font-size:9px;letter-spacing:.14em;color:var(--ink-3);margin-top:2px}
+.lb-empty{color:var(--ink-3);padding:6px 0}
+@media(max-width:560px){
+  .lb-row{grid-template-columns:22px 28px 1fr auto;gap:10px}
+  .lb-av{width:28px;height:28px;font-size:10px}
+  .lb-name{font-size:13.5px}
+  .lb-val{font-size:14.5px}
+}
+@media (prefers-reduced-motion: reduce){ .lb-row::before{transition:none} }
 .ap-total{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;color:#EAFFF4}
 .ap-total small{display:block;text-align:right;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .row .bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 3px 3px 0;background:inherit}
@@ -679,9 +735,9 @@ body:not(.locked) #ticker{display:flex}
 .gp-pace.on{color:var(--neon-bright,#00FF66);background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.4)}
 .gp-pace.off{color:#FF8A8A;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.35)}
 .gp-nums{display:flex;align-items:baseline;gap:12px;margin:16px 0 4px;flex-wrap:wrap}
-.gp-now{font-family:'Clash Display','General Sans',system-ui,sans-serif;font-weight:700;font-size:40px;line-height:1;color:#EAFFF4;letter-spacing:-.02em}
+.gp-now{font-family:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;font-weight:600;font-size:36px;line-height:1;color:#EAFFF4;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .gp-of{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
-.gp-target{font-family:'Clash Display','General Sans',system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1;color:var(--neon)}
+.gp-target{font-family:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;font-weight:500;font-size:20px;line-height:1;color:var(--neon);font-variant-numeric:tabular-nums}
 .gp-unit{font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;margin-left:2px}
 .gp-track{
   position:relative;height:10px;margin-top:14px;border-radius:3px;overflow:hidden;
@@ -2045,9 +2101,13 @@ function apThisMonth(){
   for(const r of (DATA.discordAp||[])) add(r.agent_id,+r.ap_month||0,+r.n_month||0);
   return m;
 }
-// Home-page premium board. Shares the row builder with the points boards so the
-// three panels stay identical in shape.
-function renderApBoard(row){
+// Premium leaderboard, adapted from 21st.dev trophyso/leaderboard-rankings:
+// rank, initials, name over a byline, value on the right. Share of the leader
+// shows as a wash across the row instead of a separate bar.
+function initialsOf(name){
+  return (name||'').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'??';
+}
+function renderApBoard(){
   const host=$('#boardAP'); if(!host) return;
   const ap=apThisMonth();
   const rows=DATA.agents.map(a=>({a,...totals(a.id),ap:(ap.get(a.id)||{}).ap||0,n:(ap.get(a.id)||{}).n||0}))
@@ -2056,12 +2116,25 @@ function renderApBoard(row){
   const tot=$('#apTotal');
   if(tot) tot.innerHTML=rows.length?`${fmtAP(sum)}<small>team, this month</small>`:'';
   if(!rows.length){
-    host.innerHTML='<p style="color:var(--ink-3)">No premium logged this month yet. First policy takes the top spot.</p>';
+    host.innerHTML='<p class="lb-empty">No premium logged this month yet. First policy takes the top spot.</p>';
     return;
   }
   const max=Math.max(1,...rows.map(r=>r.ap));
-  host.innerHTML=rows.map((r,i)=>row(r,i,r.ap,max,'money',fmtAP(r.ap),`${r.n} ${r.n===1?'policy':'policies'}`)).join('');
-  anApply('#boardAP');
+  host.innerHTML='<ol class="lb">'+rows.map((r,i)=>{
+    const rank=rankOf(r.total, r.a.id);
+    return `<li class="lb-row p${i+1}${i===0?' lead':''}" data-share="${(r.ap/max*100).toFixed(1)}">
+      <span class="lb-rank">${String(i+1).padStart(2,'0')}</span>
+      <span class="lb-av" style="--av:${rank.c}">${esc(initialsOf(r.a.name))}</span>
+      <span class="lb-id">
+        <span class="lb-name scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>
+        <span class="lb-by">${r.n} ${r.n===1?'policy':'policies'} \u00b7 ${esc(rank.name)}</span>
+      </span>
+      <span class="lb-val">${fmtAP(r.ap)}<span class="lb-unit">ap</span></span>
+    </li>`;
+  }).join('')+'</ol>';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    host.querySelectorAll('.lb-row').forEach(el=>{ el.style.setProperty('--share', el.dataset.share+'%'); });
+  }));
 }
 
 /* ================= PUBLIC GATE BOARD + DISCORD ================= */
@@ -2080,28 +2153,14 @@ function renderBoard(){
   _belt=undefined;
   renderTeamGoal(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip();
   const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
-  // disp/unit carry the money value; without them this is a points row, count-up
-  // animation and all, which the other views still use.
-  const row=(r,i,val,max,cls,disp,unit)=>`
-    <div class="row p${i+1}">
-      <div class="pos">${i+1}</div>
-      <div class="who">
-        <div class="name"><span class="scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total, r.a.id)}</div>
-        <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
-      </div>
-      <div class="pts">${disp!==undefined
-        ? `<span>${esc(String(disp))}</span>`
-        : `<span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span>`}<small>${esc(unit||'pts')}</small></div>
-    </div>`;
-  renderApBoard(row);
+  renderApBoard();
   fxScrambleNew('#boardAP');
   const _rp=$('#reportHome');
   if(_rp&&!_twReport&&_rp.textContent.trim()){_twReport=true;fxTypewriter(_rp);}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
-    document.querySelectorAll('#boardAP .row.p1').forEach(r=>{
-      const bar=r.querySelector('.bar');
-      fxSparkles(r, bar?getComputedStyle(bar).backgroundColor:'#00E676');
+    document.querySelectorAll('#boardAP .lb-row.lead').forEach(r=>{
+      fxSparkles(r, '#00E676');
     });
   }));
 }
