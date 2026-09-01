@@ -1990,7 +1990,10 @@ function renderGateBoard(){
   if(!wrap) return;
   // AP written this month is the headline. Before the first policy of the month
   // there is nothing to rank, so it falls back to points rather than sitting empty.
-  const apBy=new Map(salesBoardRows().map(r=>[r.agent_id,{ap:+r.ap_month||0,n:+r.n_month||0}]));
+  const apBy=new Map();
+  const addAp=(id,ap,n)=>{ const c=apBy.get(id)||{ap:0,n:0}; c.ap+=ap; c.n+=n; apBy.set(id,c); };
+  for(const r of salesBoardRows()) addAp(r.agent_id,+r.ap_month||0,+r.n_month||0);
+  for(const r of (DATA.discordAp||[])) addAp(r.agent_id,+r.ap_month||0,+r.n_month||0);
   const all=DATA.agents.map(a=>{
     const t=totals(a.id), s=apBy.get(a.id)||{ap:0,n:0};
     return {a, pts:t.total, ap:s.ap, n:s.n};
@@ -4228,7 +4231,7 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma]=await Promise.all([
+  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
@@ -4243,6 +4246,7 @@ async function loadAll(){
     db.from('call_notes').select('*'),
     db.rpc('sales_month_totals'),
     db.rpc('month_activity'),
+    db.rpc('discord_ap_board'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
@@ -4256,7 +4260,8 @@ async function loadAll(){
     calls:(cl&&cl.data)||[],
     callNotes:(cn&&cn.data)||[],
     salesMonths:(sm&&sm.data)||[],
-    monthAct:(ma&&ma.data)||[]};
+    monthAct:(ma&&ma.data)||[],
+    discordAp:(da&&da.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){
