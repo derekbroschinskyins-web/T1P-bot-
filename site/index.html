@@ -737,21 +737,19 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 /* ---------- fx: sparkles on the #1 rows (adapted from 21st.dev lepikhinb/sparkles) ---------- */
 .row.p1{position:relative;z-index:0}
 .fx-sparkles{position:absolute;inset:0;pointer-events:none;z-index:-1}
-/* ---------- discord link on the gate ---------- */
+/* ---------- discord link in the top bar ---------- */
 [hidden]{display:none!important}
 .gate-wrap{
   margin:auto;position:relative;z-index:2;width:100%;max-width:520px;
   display:flex;justify-content:center;
 }
-.gb-discord,.nav-discord{
+.nav-discord{
   text-decoration:none;color:#C3CBF7;
   background:rgba(88,101,242,.14);border:1px solid rgba(88,101,242,.45);
   transition:background .2s,border-color .2s,color .2s;
+  display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:5px;font-size:11.5px;
 }
-.gb-discord:hover,.nav-discord:hover{background:rgba(88,101,242,.3);border-color:rgba(88,101,242,.9);color:#fff}
-.gb-discord{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;padding:9px 12px;border-radius:6px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;text-shadow:none}
-.gb-discord svg{width:15px;height:15px;flex:none;fill:currentColor}
-.nav-discord{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:5px;font-size:11.5px}
+.nav-discord:hover{background:rgba(88,101,242,.3);border-color:rgba(88,101,242,.9);color:#fff}
 .nav-discord svg{width:14px;height:14px;flex:none;fill:currentColor}
 @media(max-width:900px){
   .nav-discord span{display:none}
@@ -1071,7 +1069,6 @@ body.tv .page-h{font-size:64px}
         <div class="gate-status" id="regStatus"></div>
         <button class="gate-alt" id="regBack" type="button">&gt; back to login_</button>
       </div>
-      <a class="gb-discord" id="gateDiscord" target="_blank" rel="noopener noreferrer" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.056c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg><span>Join the T1P Discord</span></a>
     </div>
   </div>
   </div>
@@ -1977,11 +1974,9 @@ function discordUrl(){
 }
 function renderDiscordLinks(){
   const u=discordUrl();
-  [$('#gateDiscord'),$('#navDiscord')].forEach(el=>{
-    if(!el) return;
-    if(u){ el.href=u; el.hidden=false; }
-    else { el.removeAttribute('href'); el.hidden=true; }
-  });
+  const el=$('#navDiscord'); if(!el) return;
+  if(u){ el.href=u; el.hidden=false; }
+  else { el.removeAttribute('href'); el.hidden=true; }
 }
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
