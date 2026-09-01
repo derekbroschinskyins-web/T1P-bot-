@@ -4363,6 +4363,9 @@ async function init(){
     db.channel('t1p-live')
       .on('postgres_changes',{event:'*',schema:'public'},async()=>{ try{await loadAll();rerender();}catch(e){} })
       .subscribe();
+    // the realtime socket can drop quietly (sleeping laptop, TV mode running
+    // all day) and missed events never replay — a slow poll self-heals
+    setInterval(async()=>{ if(demo) return; try{ await loadAll(); rerender(); }catch(e){} }, 60000);
   }catch(err){
     demo=true; DATA=demoData(); setLive(false);
     try{ diffData(); }catch(e){}

@@ -93,3 +93,25 @@ create trigger deals_normalize_trg
 --   insert into deals_archive select d.*, now() from deals d;
 --   delete from deals;
 -- To put them back: insert into deals select <deals columns> from deals_archive;
+
+-- 5. keep every open page current ------------------------------------------
+-- deals is not in the realtime publication and its RLS keeps row events from
+-- browsers by design. Any change to deals nudges config.deals_ping instead —
+-- config broadcasts and is publicly readable — and pages reload on the signal.
+create or replace function public.deals_ping()
+returns trigger
+language plpgsql
+security definer
+set search_path to 'public', 'extensions'
+as $function$
+begin
+  insert into config(key, value) values ('deals_ping', extract(epoch from now())::text)
+  on conflict (key) do update set value = excluded.value;
+  return null;
+end;
+$function$;
+
+drop trigger if exists deals_ping_trg on deals;
+create trigger deals_ping_trg
+  after insert or update or delete on deals
+  for each statement execute function public.deals_ping();
