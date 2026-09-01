@@ -666,8 +666,53 @@ body:not(.locked) #ticker{display:flex}
 #wire .wl.new{animation:wireIn .5s ease}
 @keyframes wireIn{from{opacity:0;transform:translateX(-14px);background:rgba(0,230,118,.12)}to{background:transparent}}
 #wire .dim{color:var(--neon-dim)}
-/* ---------- goal hud / duel ---------- */
-#goalHud{margin-bottom:16px}
+/* ---------- production goal tracker ---------- */
+#goalHud{margin-bottom:20px}
+.goal-panel{padding:18px 20px 16px}
+.gp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.gp-k{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--neon)}
+.gp-month{font-size:11px;color:var(--ink-3);margin-top:3px;letter-spacing:.04em}
+.gp-pace{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:5px 10px;border-radius:4px;white-space:nowrap;
+}
+.gp-pace.on{color:var(--neon-bright,#00FF66);background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.4)}
+.gp-pace.off{color:#FF8A8A;background:rgba(255,77,77,.08);border:1px solid rgba(255,77,77,.35)}
+.gp-nums{display:flex;align-items:baseline;gap:12px;margin:16px 0 4px;flex-wrap:wrap}
+.gp-now{font-family:'Clash Display','General Sans',system-ui,sans-serif;font-weight:700;font-size:40px;line-height:1;color:#EAFFF4;letter-spacing:-.02em}
+.gp-of{font-size:12px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+.gp-target{font-family:'Clash Display','General Sans',system-ui,sans-serif;font-weight:600;font-size:22px;line-height:1;color:var(--neon)}
+.gp-unit{font-size:11px;color:var(--ink-3);letter-spacing:.14em;text-transform:uppercase;margin-left:2px}
+.gp-track{
+  position:relative;height:10px;margin-top:14px;border-radius:3px;overflow:hidden;
+  background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.18);
+}
+.gp-track i{display:block;height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold-deep,#8A6B14),var(--neon,#00E676) 55%,var(--neon-bright,#00FF66));
+  transition:width 1s cubic-bezier(.2,.7,.3,1)}
+.gp-track.hit i{animation:goalGlow 1.6s ease-in-out infinite}
+.gp-mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:rgba(234,255,244,.75);box-shadow:0 0 8px rgba(255,255,255,.5);border-radius:2px}
+.gp-scale{display:flex;justify-content:space-between;margin-top:7px;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.gp-agents{margin-top:16px;padding-top:14px;border-top:1px solid var(--edge-dim);display:flex;flex-direction:column;gap:9px}
+.gp-agent{display:grid;grid-template-columns:minmax(64px,130px) 1fr auto;gap:14px;align-items:center;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px}
+.gp-agent .n{color:#C8DBCF;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gp-agent .b{height:4px;border-radius:2px;background:rgba(0,230,118,.09);overflow:hidden}
+.gp-agent .b i{display:block;height:100%;width:0;border-radius:2px;background:var(--neon,#00E676);transition:width .9s cubic-bezier(.2,.7,.3,1)}
+.gp-agent.done .b i{background:var(--neon-bright,#00FF66);box-shadow:0 0 8px rgba(0,255,102,.5)}
+.gp-agent .v{color:var(--ink-3);white-space:nowrap}
+.gp-agent .v b{color:#EAFFF4;font-weight:500}
+.gp-empty{color:var(--ink-3);font-size:12px;margin-top:12px;line-height:1.6}
+@media(max-width:560px){
+  .gp-now{font-size:32px}
+  .gp-agent{grid-template-columns:minmax(56px,90px) 1fr auto;font-size:10px;gap:10px}
+}
+@media (prefers-reduced-motion: reduce){
+  .gp-track i,.gp-agent .b i{transition:none}
+  .gp-track.hit i{animation:none}
+}
+/* ---------- duel ---------- */
 .goal-bar{
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.12em;
   color:var(--neon-dim);text-transform:uppercase;
@@ -1136,16 +1181,10 @@ body.tv .page-h{font-size:64px}
       <p class="page-sub">Two tracks. Points stack. Every dial, every deal, every recruit — counted once it's approved. Updates land for the whole floor in real time.</p>
     </div>
     <div id="todayStrip" class="rv today-strip"></div>
-    <div id="goalHud" class="rv"></div>
+    <div id="goalHud" class="panel rv goal-panel"></div>
     <div id="paceHud" class="rv"></div>
     <div id="duelCard" class="rv"></div>
     <div id="cotw" class="rv"></div>
-    <div class="panel rv wire-panel">
-      <h3 style="font-size:15px;display:flex;align-items:center;gap:10px"><span class="tk-led"></span>The Wire</h3>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every event on the floor, as it happens</div>
-      <div class="rule" style="margin:10px 0 12px"></div>
-      <div id="wire"></div>
-    </div>
     <div class="panel board board-ap rv">
       <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Top Producers<span class="ap-total" id="apTotal"></span></h3>
       <div class="hint">annual premium written this month — Discord deal submissions and the Sales tab</div>
@@ -1836,17 +1875,75 @@ const flame=id=>{
   const f=s>=30?'🔥🔥🔥':s>=7?'🔥🔥':'🔥';
   return ` <span class="streak" title="${s}-day streak — log something every day or it resets">${f}${s}</span>`;
 };
-function renderGoalHud(){
+// The team's month is the sum of the AP targets people set for themselves in
+// their own contracts — nobody sets the team number, it adds up from the floor.
+function teamGoal(){
+  const ym=new Date().toISOString().slice(0,7);
+  const ap=apThisMonth();
+  const rows=[];
+  let target=0;
+  for(const a of DATA.agents){
+    const c=(DATA.contracts||[]).find(x=>x.agent_id===a.id&&x.ym===ym);
+    const t=c?+c.ap||0:0;
+    const now=(ap.get(a.id)||{ap:0}).ap;
+    if(t>0){ target+=t; rows.push({a,t,now}); }
+  }
+  let now=0;
+  for(const v of ap.values()) now+=v.ap;
+  rows.sort((x,y)=>(y.now/y.t)-(x.now/x.t));
+  return {target, now, rows};
+}
+function renderTeamGoal(){
   const el=$('#goalHud'); if(!el) return;
-  const target=goalTarget();
-  if(!target){ el.innerHTML=''; return; }
-  const now=todaysPoints(), pct=Math.min(100, now/target*100), hit=now>=target;
-  el.innerHTML=`<div class="goal-bar">TODAY'S TARGET :: <span style="color:${hit?'var(--neon-bright)':'var(--neon)'}">${now} / ${target} PTS${hit?' — SMASHED':''}</span></div>
-    <div class="goal-track${hit?' hit':''}"><i data-w="${pct.toFixed(1)}"></i></div>`;
+  const {target, now, rows}=teamGoal();
+  const month=new Date().toLocaleString(undefined,{month:'long',year:'numeric'});
+  const head=`<div class="gp-head">
+      <div><div class="gp-k">// production goal</div><div class="gp-month">${esc(month)}</div></div>`;
+  if(!target){
+    el.innerHTML=head+`</div>
+      <div class="gp-empty">No premium goals set for this month yet.<br>Sign your contract on My Progress and the team number builds itself.</div>`;
+    return;
+  }
+  const pct=Math.min(100, now/target*100);
+  const hit=now>=target;
+  const elapsed=monthElapsed();
+  const expected=target*elapsed;
+  const ahead=now-expected;
+  const onPace=now>=expected;
+  const d=new Date();
+  const left=new Date(d.getFullYear(), d.getMonth()+1, 0).getDate()-d.getDate();
+  el.innerHTML=head+
+    `<div class="gp-pace ${onPace?'on':'off'}">${hit?'GOAL SMASHED':(onPace?'ON PACE':'BEHIND')} \u00b7 ${fmtAP(Math.abs(Math.round(ahead)))} ${onPace?'ahead':'behind'}</div>
+    </div>
+    <div class="gp-nums">
+      <span class="gp-now">${fmtAP(now)}</span>
+      <span class="gp-of">of</span>
+      <span class="gp-target">${fmtAP(target)}<span class="gp-unit">ap</span></span>
+    </div>
+    <div class="gp-track${hit?' hit':''}">
+      <i data-w="${pct.toFixed(1)}"></i>
+      <span class="gp-mark" style="left:${(elapsed*100).toFixed(1)}%" title="where pace says you should be today"></span>
+    </div>
+    <div class="gp-scale">
+      <span>${Math.round(pct)}% of goal</span>
+      <span>${Math.round(elapsed*100)}% of month gone</span>
+      <span>${left} day${left===1?'':'s'} left</span>
+    </div>
+    <div class="gp-agents">`+
+    rows.slice(0,6).map(r=>{
+      const p=Math.min(100, r.now/r.t*100);
+      return `<div class="gp-agent${r.now>=r.t?' done':''}">
+        <span class="n">${esc(r.a.name)}</span>
+        <span class="b"><i data-w="${p.toFixed(1)}"></i></span>
+        <span class="v"><b>${fmtAP(r.now)}</b> / ${fmtAP(r.t)}</span>
+      </div>`;
+    }).join('')+
+    `</div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    const b=el.querySelector('.goal-track i'); if(b) b.style.width=b.dataset.w+'%';
+    el.querySelectorAll('[data-w]').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
   }));
 }
+
 function duelPairs(){
   const pool=DATA.agents.filter(a=>!a.is_admin).sort((a,b)=>a.id.localeCompare(b.id));
   if(pool.length<2) return [];
@@ -1981,7 +2078,7 @@ function renderDiscordLinks(){
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
   _belt=undefined;
-  renderGoalHud(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip(); renderWire();
+  renderTeamGoal(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip();
   const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
   // disp/unit carry the money value; without them this is a points row, count-up
   // animation and all, which the other views still use.
@@ -3048,8 +3145,9 @@ function contractOf(id){
 }
 function actualsOf(id){
   const ma=(DATA.monthAct||[]).find(r=>r.agent_id===id)||{dials:0,appts:0};
-  const sb=salesBoardRows().find(r=>r.agent_id===id)||{ap_month:0};
-  return {dials:+ma.dials||0, appts:+ma.appts||0, ap:+sb.ap_month||0};
+  // AP counts both places a policy can be filed, same as the boards
+  const ap=(apThisMonth().get(id)||{ap:0}).ap;
+  return {dials:+ma.dials||0, appts:+ma.appts||0, ap};
 }
 function monthElapsed(){
   const now=new Date();
