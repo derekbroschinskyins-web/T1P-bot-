@@ -405,6 +405,13 @@ body .board-p:hover{border-color:rgba(255,77,77,.6);box-shadow:inset 0 1px 0 rgb
 .row .bar{position:relative;height:100%;width:0;transition:width .8s cubic-bezier(.2,.7,.3,1)}
 .row .bar.gold{background:var(--mark-build)}
 .row .bar.blue{background:var(--mark-blue)}
+.row .bar.money{background:var(--neon,#00E676)}
+body .board-ap{border-color:rgba(0,230,118,.32)}
+.board-ap h3{color:var(--neon-bright,#00FF66);text-shadow:0 0 10px rgba(0,255,102,.45)}
+.board.board-ap .hint{color:rgba(0,230,118,.55)}
+.board-ap .rule{background:linear-gradient(90deg,var(--neon,#00E676),transparent)}
+.ap-total{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:13px;color:#EAFFF4}
+.ap-total small{display:block;text-align:right;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .row .bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 3px 3px 0;background:inherit}
 .row .pts{font-family:'General Sans','Instrument Sans',sans-serif;font-weight:600;font-size:17px;color:var(--ink);text-align:right;min-width:56px}
 .row .pts small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:9px;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
@@ -1181,6 +1188,12 @@ body.tv .page-h{font-size:64px}
       <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">every event on the floor, as it happens</div>
       <div class="rule" style="margin:10px 0 12px"></div>
       <div id="wire"></div>
+    </div>
+    <div class="panel board board-ap rv" style="margin-bottom:20px">
+      <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Premium Written<span class="ap-total" id="apTotal"></span></h3>
+      <div class="hint">annual premium this month — Discord deal submissions and the Sales tab</div>
+      <div class="rule"></div>
+      <div id="boardAP"></div>
     </div>
     <div class="boards">
       <div class="panel board board-b rv">
@@ -1969,6 +1982,34 @@ const SYS_LINES=[
   }, 30000+Math.random()*25000);
 })();
 
+/* ================= AP: DISCORD DEALS + SALES TAB ================= */
+// One month-to-date AP figure per agent, from both places a policy can be filed.
+function apThisMonth(){
+  const m=new Map();
+  const add=(id,ap,n)=>{ const c=m.get(id)||{ap:0,n:0}; c.ap+=ap; c.n+=n; m.set(id,c); };
+  for(const r of salesBoardRows()) add(r.agent_id,+r.ap_month||0,+r.n_month||0);
+  for(const r of (DATA.discordAp||[])) add(r.agent_id,+r.ap_month||0,+r.n_month||0);
+  return m;
+}
+// Home-page premium board. Shares the row builder with the points boards so the
+// three panels stay identical in shape.
+function renderApBoard(row){
+  const host=$('#boardAP'); if(!host) return;
+  const ap=apThisMonth();
+  const rows=DATA.agents.map(a=>({a,...totals(a.id),ap:(ap.get(a.id)||{}).ap||0,n:(ap.get(a.id)||{}).n||0}))
+    .filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap).slice(0,10);
+  const sum=rows.reduce((n,r)=>n+r.ap,0);
+  const tot=$('#apTotal');
+  if(tot) tot.innerHTML=rows.length?`${fmtAP(sum)}<small>team, this month</small>`:'';
+  if(!rows.length){
+    host.innerHTML='<p style="color:var(--ink-3)">No premium logged this month yet. First policy takes the top spot.</p>';
+    return;
+  }
+  const max=Math.max(1,...rows.map(r=>r.ap));
+  host.innerHTML=rows.map((r,i)=>row(r,i,r.ap,max,'money',fmtAP(r.ap),`${r.n} ${r.n===1?'policy':'policies'}`)).join('');
+  anApply('#boardAP');
+}
+
 /* ================= PUBLIC GATE BOARD + DISCORD ================= */
 function discordUrl(){
   const u=((DATA.config&&DATA.config.discord_url)||'').trim();
@@ -1990,10 +2031,7 @@ function renderGateBoard(){
   if(!wrap) return;
   // AP written this month is the headline. Before the first policy of the month
   // there is nothing to rank, so it falls back to points rather than sitting empty.
-  const apBy=new Map();
-  const addAp=(id,ap,n)=>{ const c=apBy.get(id)||{ap:0,n:0}; c.ap+=ap; c.n+=n; apBy.set(id,c); };
-  for(const r of salesBoardRows()) addAp(r.agent_id,+r.ap_month||0,+r.n_month||0);
-  for(const r of (DATA.discordAp||[])) addAp(r.agent_id,+r.ap_month||0,+r.n_month||0);
+  const apBy=apThisMonth();
   const all=DATA.agents.map(a=>{
     const t=totals(a.id), s=apBy.get(a.id)||{ap:0,n:0};
     return {a, pts:t.total, ap:s.ap, n:s.n};
@@ -2037,19 +2075,24 @@ function renderBoard(){
   const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
   const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
   const maxR=Math.max(1,...recs.map(r=>r.rec)), maxN=Math.max(1,...nas.map(r=>r.na));
-  const row=(r,i,val,max,cls)=>`
+  // disp/unit let the premium board reuse this for money; without them it is
+  // the points row, count-up animation and all.
+  const row=(r,i,val,max,cls,disp,unit)=>`
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
         <div class="name"><span class="scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
-      <div class="pts"><span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span><small>pts</small></div>
+      <div class="pts">${disp!==undefined
+        ? `<span>${esc(String(disp))}</span>`
+        : `<span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span>`}<small>${esc(unit||'pts')}</small></div>
     </div>`;
+  renderApBoard(row);
   $('#boardRecruiters').innerHTML = recs.map((r,i)=>row(r,i,r.rec,maxR,'gold')).join('') || '<p style="color:var(--ink-3)">No builder points yet. First referral takes it.</p>';
   $('#boardAgents').innerHTML = nas.map((r,i)=>row(r,i,r.na,maxN,'blue')).join('') || '<p style="color:var(--ink-3)">No agent points yet. First one licensed takes it.</p>';
   anApply('#boardRecruiters'); anApply('#boardAgents');
-  fxScrambleNew('#boardRecruiters'); fxScrambleNew('#boardAgents');
+  fxScrambleNew('#boardRecruiters'); fxScrambleNew('#boardAgents'); fxScrambleNew('#boardAP');
   const _rp=$('#reportHome');
   if(_rp&&!_twReport&&_rp.textContent.trim()){_twReport=true;fxTypewriter(_rp);}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
