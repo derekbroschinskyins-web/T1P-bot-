@@ -755,6 +755,7 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .gb-row.lead .gb-pos{color:var(--neon-bright,#00FF66)}
 .gb-who{min-width:0}
 .gb-name{display:block;color:#C8DBCF;font-size:12.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gb-sub{display:block;margin-top:2px;color:#5C7A68;font-size:9.5px;letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gb-row.lead .gb-name{color:#EAFFF4}
 .gb-bar{display:block;height:3px;margin-top:5px;background:rgba(0,255,102,.1);border-radius:2px;overflow:hidden}
 .gb-bar i{display:block;height:100%;width:0;border-radius:2px;background:var(--gb-c,#00E676);box-shadow:0 0 10px rgba(0,230,118,.5);transition:width .8s cubic-bezier(.2,.7,.3,1)}
@@ -1099,7 +1100,7 @@ body.tv .page-h{font-size:64px}
   </div>
   <aside class="gate-board" id="gateBoard" hidden>
     <div class="gb-head">
-      <span class="gb-k">// live standings</span>
+      <span class="gb-k" id="gateBoardKicker">// live standings</span>
       <span class="gb-live"><i></i>live</span>
     </div>
     <ol class="gb-list" id="gateBoardList"></ol>
@@ -1987,25 +1988,38 @@ function renderGateBoard(){
   const wrap=$('#gateBoard');
   renderDiscordLinks();
   if(!wrap) return;
-  const rows=DATA.agents.map(a=>({a,...totals(a.id)}))
-    .filter(r=>r.total>0)
-    .sort((x,y)=>y.total-x.total)
-    .slice(0,5);
+  // AP written this month is the headline. Before the first policy of the month
+  // there is nothing to rank, so it falls back to points rather than sitting empty.
+  const apBy=new Map(salesBoardRows().map(r=>[r.agent_id,{ap:+r.ap_month||0,n:+r.n_month||0}]));
+  const all=DATA.agents.map(a=>{
+    const t=totals(a.id), s=apBy.get(a.id)||{ap:0,n:0};
+    return {a, pts:t.total, ap:s.ap, n:s.n};
+  });
+  const apLive=all.some(r=>r.ap>0);
+  const rows=(apLive
+    ? all.filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap)
+    : all.filter(r=>r.pts>0).sort((x,y)=>y.pts-x.pts)).slice(0,5);
   if(!rows.length){ wrap.hidden=true; return; }
   wrap.hidden=false;
-  const max=Math.max(1,...rows.map(r=>r.total));
+  const val=r=>apLive?r.ap:r.pts;
+  const max=Math.max(1,...rows.map(val));
+  $('#gateBoardKicker').textContent=apLive?'// ap this month':'// live standings';
   $('#gateBoardList').innerHTML=rows.map((r,i)=>`
-      <li class="gb-row${i===0?' lead':''}" style="--gb-c:${rankOf(r.total).c}">
+      <li class="gb-row${i===0?' lead':''}" style="--gb-c:${rankOf(r.pts).c}">
         <span class="gb-pos">${String(i+1).padStart(2,'0')}</span>
         <span class="gb-who">
           <span class="gb-name">${esc(r.a.name)}</span>
-          <span class="gb-bar"><i data-w="${(r.total/max*100).toFixed(1)}"></i></span>
+          <span class="gb-sub">${apLive?`${r.n} ${r.n===1?'policy':'policies'} \u00b7 ${r.pts} pts`:esc(rankOf(r.pts).name)}</span>
+          <span class="gb-bar"><i data-w="${(val(r)/max*100).toFixed(1)}"></i></span>
         </span>
-        <span class="gb-pts">${r.total}<small>pts</small></span>
+        <span class="gb-pts">${apLive?fmtAP(r.ap):r.pts}<small>${apLive?'ap':'pts'}</small></span>
       </li>`).join('');
   const k=dayKey();
   const today=DATA.log.filter(p=>dayKey(p.earned_at)===k&&approved(p)).reduce((n,p)=>n+p.points,0);
-  $('#gateBoardFoot').textContent=`${DATA.agents.length} operatives \u00b7 ${today} points logged today`;
+  const apMonth=all.reduce((n,r)=>n+r.ap,0);
+  $('#gateBoardFoot').textContent=apLive
+    ? `${DATA.agents.length} operatives \u00b7 ${fmtAP(apMonth)} AP written this month`
+    : `${DATA.agents.length} operatives \u00b7 ${today} points logged today`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     wrap.querySelectorAll('.gb-bar i').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
   }));
