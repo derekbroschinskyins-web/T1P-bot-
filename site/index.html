@@ -1181,10 +1181,10 @@ body.tv .page-h{font-size:64px}
     <a class="logo" href="#/board"><span class="mark">T1P</span><span class="sub">Top One Percent</span></a>
     <nav class="tabs" id="tabs">
       <a href="#/board" data-v="board">Board</a>
+      <a href="#/gauntlet" data-v="gauntlet">Gauntlet</a>
       <a href="#/war" data-v="war">War Room</a>
       <a href="#/sales" data-v="sales">Sales</a>
       <a href="#/skills" data-v="skills">Skills</a>
-      <a href="#/report" data-v="report">Report</a>
       <div class="ngrp">
         <button class="ngbtn" type="button">My Desk <i>▾</i></button>
         <div class="ndrop">
@@ -1198,7 +1198,6 @@ body.tv .page-h{font-size:64px}
         <div class="ndrop">
           <a href="#/tree" data-v="tree">Duplication Tree</a>
           <a href="#/ranks" data-v="ranks">Ranks</a>
-          <a href="#/gauntlet" data-v="gauntlet">The Gauntlet</a>
           <a href="#/records" data-v="records">Records</a>
           <a href="#/recruiting" data-v="recruiting">Recruiting</a>
         </div>
@@ -1248,10 +1247,10 @@ body.tv .page-h{font-size:64px}
       <div id="boardAP"></div>
     </div>
     <div class="panel rv" style="margin-top:20px">
-      <h3 class="disp" style="font-size:15px">Heist Report</h3>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">this week's take — full debrief on the Report tab</div>
+      <h3 class="disp" style="font-size:15px">The Gauntlet</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">this week's bracket — seeded Monday by last week's premium</div>
       <div class="rule" style="margin:10px 0 12px"></div>
-      <pre id="reportHome" class="report-pre" style="font-size:12px"></pre>
+      <div id="gauntletHome"></div>
     </div>
   </section>
 
@@ -1443,14 +1442,6 @@ body.tv .page-h{font-size:64px}
     <div id="scriptList"></div>
   </section>
 
-  <!-- REPORT -->
-  <section class="view" id="v-report">
-    <div class="rv"><div class="kicker">Weekly Debrief</div>
-    <h1 class="page-h">Heist Report</h1>
-    <p class="page-sub">The week's take, straight from the ledger.</p></div>
-    <div class="panel rv"><pre id="reportBody" class="report-pre"></pre></div>
-  </section>
-
   <!-- OBJECTION FIREWALL (minigame) -->
   <section class="view" id="v-game">
     <div class="rv"><div class="kicker">Training Sim</div>
@@ -1463,7 +1454,7 @@ body.tv .page-h{font-size:64px}
   <section class="view" id="v-gauntlet">
     <div class="rv"><div class="kicker">Weekly Tournament</div>
     <h1 class="page-h">The Gauntlet</h1>
-    <p class="page-sub">Every Monday the top performers are seeded into a bracket by last week's points. Head-to-head, points decide, losers go home. Survive to Friday and take the belt — it sits next to your name until somebody rips it off you.</p></div>
+    <p class="page-sub">Every Monday the top producers are seeded into a bracket by last week's premium. Head-to-head, AP decides, losers go home. Survive to Friday and take the belt — it sits next to your name until somebody rips it off you.</p></div>
     <div id="gauntletBox"></div>
   </section>
 
@@ -2151,12 +2142,9 @@ function renderDiscordLinks(){
 /* ================= RENDER: LEADERBOARD ================= */
 function renderBoard(){
   _belt=undefined;
-  renderTeamGoal(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip();
-  const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
+  renderTeamGoal(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip(); renderGauntlet('#gauntletHome');
   renderApBoard();
   fxScrambleNew('#boardAP');
-  const _rp=$('#reportHome');
-  if(_rp&&!_twReport&&_rp.textContent.trim()){_twReport=true;fxTypewriter(_rp);}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
     document.querySelectorAll('#boardAP .lb-row.lead').forEach(r=>{
@@ -2428,7 +2416,7 @@ document.addEventListener('click',async e=>{
 });
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','report','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -2458,7 +2446,6 @@ function renderCurrent(name){
   else if(name==='war') renderWar();
   else if(name==='sales') renderSales();
   else if(name==='scripts') renderScripts();
-  else if(name==='report') renderReport();
   else if(name==='cmds') renderCmds();
   else if(name==='game') renderGame();
   else if(name==='gauntlet') renderGauntlet();
@@ -2711,7 +2698,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',report:'report',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',gauntlet:'gauntlet',records:'records',recruiting:'recruiting',academy:'academy',calls:'calls',callvault:'calls',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',gauntlet:'gauntlet',records:'records',recruiting:'recruiting',academy:'academy',calls:'calls',callvault:'calls',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
@@ -3078,24 +3065,37 @@ function ptsIn(id, from, to){
   }
   return n;
 }
+// AP written by one agent inside a window — the money twin of ptsIn
+function apIn(id, from, to){
+  let n=0;
+  for(const r of (DATA.apDaily||[])){
+    if(r.agent_id!==id) continue;
+    const t=new Date(r.day+'T00:00:00');
+    if(t>=from&&t<to) n+=+r.ap||0;
+  }
+  return n;
+}
 function mondayOf(d){ const x=new Date(d); x.setHours(0,0,0,0); x.setDate(x.getDate()-((x.getDay()+6)%7)); return x; }
 function addD(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function gauntletFor(mon){
   const prevMon=addD(mon,-7);
-  const seeds=DATA.agents.map(a=>({a,pts:ptsIn(a.id,prevMon,mon)}))
+  // seeded on last week's premium — the bracket runs on money, like the boards
+  const seeds=DATA.agents.map(a=>({a,pts:apIn(a.id,prevMon,mon)}))
     .sort((x,y)=>y.pts-x.pts||x.a.id.localeCompare(y.a.id));
-  const size=seeds.length>=8?8:seeds.length>=4?4:0;
+  const size=seeds.length>=8?8:seeds.length>=4?4:seeds.length>=2?2:0;
   if(!size) return null;
   let cur=seeds.slice(0,size).map((s,i)=>({...s,seed:i+1}));
-  const spans=size===8?[[0,2],[2,4],[4,6]]:[[0,3],[3,6]];
-  const names=size===8?['Quarterfinals · Mon–Tue','Semifinals · Wed–Thu','The Final · Fri–Sat']:['Semifinals · Mon–Wed','The Final · Thu–Sat'];
+  const spans=size===8?[[0,2],[2,4],[4,6]]:size===4?[[0,3],[3,6]]:[[0,6]];
+  const names=size===8?['Quarterfinals · Mon–Tue','Semifinals · Wed–Thu','The Final · Fri–Sat']
+    :size===4?['Semifinals · Mon–Wed','The Final · Thu–Sat']
+    :['Head to Head · Mon–Sat'];
   const pair=arr=>{const o=[];for(let i=0;i<arr.length/2;i++)o.push([arr[i],arr[arr.length-1-i]]);return o;};
   const rounds=[];
   for(let r=0;r<spans.length;r++){
     const from=addD(mon,spans[r][0]), to=addD(mon,spans[r][1]);
     const decided=new Date()>=to;
     const ms=pair(cur).map(([A,B])=>{
-      const sa=A?ptsIn(A.a.id,from,to):0, sb=B?ptsIn(B.a.id,from,to):0;
+      const sa=A?apIn(A.a.id,from,to):0, sb=B?apIn(B.a.id,from,to):0;
       let winner=null;
       if(decided&&A&&B) winner=sb>sa?B:(sa>sb?A:(A.seed<B.seed?A:B));
       return {A,B,sa,sb,winner,live:new Date()>=from&&!decided};
@@ -3118,8 +3118,8 @@ function beltHolder(){
   return _belt;
 }
 function beltMark(id){ return beltHolder()===id?' <span class="belt" title="Reigning Gauntlet champion">🏆</span>':''; }
-function renderGauntlet(){
-  const el=$('#gauntletBox'); if(!el) return;
+function renderGauntlet(sel){
+  const el=$(sel||'#gauntletBox'); if(!el) return;
   _belt=undefined;
   const mon=mondayOf(new Date());
   const g=gauntletFor(mon);
@@ -3127,19 +3127,19 @@ function renderGauntlet(){
   const beltLine=holder?`<div class="panel rv" style="margin-bottom:16px"><span class="belt">🏆</span> <b style="font-family:'Clash Display',sans-serif">${esc((agentById(holder)||{name:holder}).name)}</b> <span class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">holds the belt — it travels with their name on every board until someone takes it</span></div>`:'';
   if(!g){
     el.innerHTML=beltLine+`<div class="lockwall rv"><div class="big">BRACKET FORMING</div>
-      <div class="mono">THE GAUNTLET NEEDS AT LEAST 4 OPERATIVES ON THE ROSTER<br>RECRUIT · REGISTER · THE BRACKET SEEDS ITSELF EVERY MONDAY FROM LAST WEEK'S POINTS</div></div>`;
+      <div class="mono">THE GAUNTLET NEEDS AT LEAST 2 OPERATIVES ON THE ROSTER<br>RECRUIT · REGISTER · THE BRACKET SEEDS ITSELF EVERY MONDAY FROM LAST WEEK'S PREMIUM</div></div>`;
     return;
   }
   const cell=(p,score,m)=>{
     if(!p) return `<div class="gnt-p"><span style="color:var(--ink-3)">TBD</span></div>`;
     const w=m.winner&&m.winner.a.id===p.a.id, out=m.winner&&m.winner.a.id!==p.a.id;
-    return `<div class="gnt-p${w?' win':''}${out?' out':''}"><span>#${p.seed} ${esc(p.a.name)}</span><span class="sc">${m.live||m.winner?score+'pts':''}</span></div>`;
+    return `<div class="gnt-p${w?' win':''}${out?' out':''}"><span>#${p.seed} ${esc(p.a.name)}</span><span class="sc">${m.live||m.winner?fmtAP(score):''}</span></div>`;
   };
   el.innerHTML=beltLine+`<div class="panel rv"><div class="gnt-cols">`+
     g.rounds.map(r=>`<div class="gnt-col"><div class="gnt-round">${r.name}</div>`+
       r.ms.map(m=>`<div class="gnt-match">${cell(m.A,m.sa,m)}${cell(m.B,m.sb,m)}</div>`).join('')+`</div>`).join('')+
     `<div class="gnt-col"><div class="gnt-round">Champion</div><div class="gnt-match gnt-champ"><div class="gnt-p">${g.champion?'🏆 '+esc(g.champion.a.name):'<span style="color:var(--ink-3)">SURVIVE TO FRIDAY</span>'}</div></div></div>`+
-  `</div><div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">seeded by last week's approved points · each round decided by points scored in its window · ties go to the higher seed</div></div>`;
+  `</div><div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">seeded by last week's premium · each round decided by points scored in its window · ties go to the higher seed</div></div>`;
   observeReveals();
 }
 
@@ -4063,41 +4063,6 @@ function fwAnswer(btn){
   }, ok?850:2400);
 }
 
-/* ================= HEIST REPORT ================= */
-function renderReport(){
-  const el=$('#reportBody'); if(!el) return;
-  el.innerHTML=reportHTML();
-}
-function reportHTML(){
-  const now=new Date();
-  const start=new Date(now); start.setDate(start.getDate()-((start.getDay()+6)%7)); // monday
-  const sk=dayKey(start);
-  const wk=p=>approved(p)&&dayKey(p.earned_at)>=sk;
-  const per=DATA.agents.map(a=>({a, w:DATA.log.filter(p=>p.agent_id===a.id&&wk(p)).reduce((n,p)=>n+p.points,0), t:totals(a.id).total}))
-    .sort((x,y)=>y.w-x.w);
-  const total=per.reduce((n,r)=>n+r.w,0);
-  const top=per[0];
-  const pend=pendingRows().length;
-  const promos=per.filter(r=>r.w>0&&rankOf(r.t,r.a.id)!==rankOf(r.t-r.w,r.a.id));
-  const lines=[];
-  lines.push(`> T1P HEIST REPORT :: week of ${sk}`);
-  lines.push(`> compiled ${dayKey()} — the ledger doesn't lie`);
-  lines.push('');
-  lines.push(`  TOTAL TAKE ............ <span class="w">${total} PTS</span>`);
-  lines.push(`  OPERATIVE OF THE WEEK . <span class="w">${top&&top.w>0?top.a.name.toUpperCase()+' ('+top.w+' pts)':'UNCLAIMED'}</span>`);
-  lines.push(`  CLAIMS AWAITING JUDGE . ${pend}`);
-  if(promos.length) lines.push(`  PROMOTIONS ............ ${promos.map(r=>r.a.name.toUpperCase()+' → '+rankOf(r.t,r.a.id).name.toUpperCase()).join(', ')}`);
-  lines.push('');
-  lines.push('  THE WEEK, BY OPERATIVE');
-  per.forEach((r,i)=>{
-    const bar='█'.repeat(Math.min(30,Math.round(r.w/((top&&top.w)||1)*30)))||'·';
-    lines.push(`  ${String(i+1).padStart(2,'0')}. ${r.a.name.padEnd(10)} ${bar} ${r.w}`);
-  });
-  lines.push('');
-  lines.push('> run your lane.');
-  return lines.join('\n');
-}
-
 /* ================= TWICE-DAILY LOG REMINDERS ================= */
 let myLoggedToday=null; // null = unknown, true/false once checked
 async function checkMyLogged(){
@@ -4336,7 +4301,7 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da]=await Promise.all([
+  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da,apd]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
@@ -4352,6 +4317,7 @@ async function loadAll(){
     db.rpc('sales_month_totals'),
     db.rpc('month_activity'),
     db.rpc('discord_ap_board'),
+    db.rpc('ap_daily'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
@@ -4366,7 +4332,8 @@ async function loadAll(){
     callNotes:(cn&&cn.data)||[],
     salesMonths:(sm&&sm.data)||[],
     monthAct:(ma&&ma.data)||[],
-    discordAp:(da&&da.data)||[]};
+    discordAp:(da&&da.data)||[],
+    apDaily:(apd&&apd.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){
@@ -4401,7 +4368,7 @@ async function init(){
     document.body.classList.add('tv');
     document.body.classList.remove('locked');
     route();
-    const ROT=['board','war','tree','report'];
+    const ROT=['board','gauntlet','war','tree'];
     let ri=0;
     setInterval(()=>{ ri=(ri+1)%ROT.length; location.hash='#/'+ROT[ri]; }, 15000);
     return;
