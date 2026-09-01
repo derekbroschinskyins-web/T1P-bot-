@@ -386,10 +386,10 @@ body .board-p:hover{border-color:rgba(255,77,77,.6);box-shadow:inset 0 1px 0 rgb
 .board.board-p .hint{color:rgba(255,122,122,.55)}
 .board-p .rule{background:linear-gradient(90deg,#FF4D4D,transparent)}
 .boards .board{display:flex;flex-direction:column;height:100%}
-#boardRecruiters,#boardAgents{flex:1;min-height:130px}
+#boardAP{flex:1;min-height:130px}
 /* boards reveal in lockstep, fade-only — keeps the two panels pixel-identical */
 .boards .panel{transition-delay:0ms !important;transform:none !important}
-@media(max-width:860px){.boards{grid-template-columns:1fr}#boardRecruiters,#boardAgents{min-height:0}}
+@media(max-width:860px){.boards{grid-template-columns:1fr}#boardAP{min-height:0}}
 .board h3{font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px}
 .board h3 .swatch{width:12px;height:12px;flex:none}
 .board .hint{font-size:11px;color:var(--neon-dim);margin-top:2px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace}
@@ -768,6 +768,7 @@ body.storming main{animation:stormShake .5s steps(3,end) 4}
 .gb-bar i{display:block;height:100%;width:0;border-radius:2px;background:var(--gb-c,#00E676);box-shadow:0 0 10px rgba(0,230,118,.5);transition:width .8s cubic-bezier(.2,.7,.3,1)}
 .gb-pts{color:#EAFFF4;font-size:12.5px;white-space:nowrap}
 .gb-pts small{color:#5C7A68;font-size:9px;margin-left:3px}
+.gb-empty{color:#5C7A68;font-size:11px;line-height:1.6;text-align:center;padding:8px 0}
 .gb-foot{margin-top:13px;padding-top:11px;border-top:1px solid rgba(0,255,102,.14);color:#5C7A68;font-size:10px;letter-spacing:.06em}
 .gb-discord,.nav-discord{
   text-decoration:none;color:#C3CBF7;
@@ -1189,25 +1190,11 @@ body.tv .page-h{font-size:64px}
       <div class="rule" style="margin:10px 0 12px"></div>
       <div id="wire"></div>
     </div>
-    <div class="panel board board-ap rv" style="margin-bottom:20px">
-      <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Premium Written<span class="ap-total" id="apTotal"></span></h3>
-      <div class="hint">annual premium this month — Discord deal submissions and the Sales tab</div>
+    <div class="panel board board-ap rv">
+      <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Top Producers<span class="ap-total" id="apTotal"></span></h3>
+      <div class="hint">annual premium written this month — Discord deal submissions and the Sales tab</div>
       <div class="rule"></div>
       <div id="boardAP"></div>
-    </div>
-    <div class="boards">
-      <div class="panel board board-b rv">
-        <h3><span class="swatch" style="background:var(--mark-build)"></span>Top Builders</h3>
-        <div class="hint">Builder points — earned by growing the org</div>
-        <div class="rule"></div>
-        <div id="boardRecruiters"></div>
-      </div>
-      <div class="panel board board-p rv">
-        <h3><span class="swatch" style="background:var(--mark-blue)"></span>Top Producers</h3>
-        <div class="hint">$20K-ladder points — earned by climbing</div>
-        <div class="rule"></div>
-        <div id="boardAgents"></div>
-      </div>
     </div>
     <div class="panel rv" style="margin-top:20px">
       <h3 class="disp" style="font-size:15px">Heist Report</h3>
@@ -1541,7 +1528,8 @@ const RANKS = [
   {name:'Builder', min:100, max:299, cls:'r1', c:'#2FBF71'},
   {name:'Closer', min:300, max:599, cls:'r2', c:'#22D3EE'},
   {name:'Captain', min:600, max:999, cls:'r3', c:'#00E676'},
-  {name:'Empire Builder', min:1000, max:Infinity, cls:'r4', c:'#EAFFF4'},
+  {name:'Master Builder', min:1000, max:Infinity, cls:'r4', c:'#EAFFF4',
+   needsOnePercenter:true, req:'and an agent you recruited hitting a $20K month'},
 ];
 const LADDER_STEPS = [
   {action:'licensed', t:'Get Licensed', d:'Pass the exam, get appointed', p:50},
@@ -1622,9 +1610,22 @@ function totals(agentId){
   }
   return {rec,na,pend,total:rec+na};
 }
-function rankOf(pts){ return RANKS.find(r=>pts>=r.min&&pts<=r.max) || RANKS[0]; }
-function badge(pts){
-  const r=rankOf(pts);
+// Master Builder is not bought with points. It needs a One Percenter under
+// you: either the builder-track credit is on your record, or somebody you
+// recruited has an approved $20K month on theirs.
+function builtOnePercenter(id){
+  if(!id) return false;
+  if(DATA.log.some(p=>p.agent_id===id&&p.action==='referral_20k_month'&&approved(p))) return true;
+  return DATA.agents.some(a=>a.recruiter_id===id
+    &&DATA.log.some(p=>p.agent_id===a.id&&p.action==='month_20k'&&approved(p)));
+}
+function rankOf(pts, id){
+  const r=RANKS.find(r=>pts>=r.min&&pts<=r.max)||RANKS[0];
+  if(r.needsOnePercenter&&!builtOnePercenter(id)) return RANKS[Math.max(0,RANKS.indexOf(r)-1)];
+  return r;
+}
+function badge(pts, id){
+  const r=rankOf(pts, id);
   return `<span class="badge ${r.cls}" title="${r.name} · ${pts} pts"><svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 0l1.5 3.2L10 3.8 7.5 6.2 8.1 10 5 8.2 1.9 10l.6-3.8L0 3.8l3.5-.6z"/></svg>${esc(r.name)}</span>`;
 }
 function agentById(id){ return DATA.agents.find(a=>a.id===id); }
@@ -2032,35 +2033,30 @@ function renderGateBoard(){
   // AP written this month is the headline. Before the first policy of the month
   // there is nothing to rank, so it falls back to points rather than sitting empty.
   const apBy=apThisMonth();
-  const all=DATA.agents.map(a=>{
-    const t=totals(a.id), s=apBy.get(a.id)||{ap:0,n:0};
-    return {a, pts:t.total, ap:s.ap, n:s.n};
-  });
-  const apLive=all.some(r=>r.ap>0);
-  const rows=(apLive
-    ? all.filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap)
-    : all.filter(r=>r.pts>0).sort((x,y)=>y.pts-x.pts)).slice(0,5);
-  if(!rows.length){ wrap.hidden=true; return; }
+  const rows=DATA.agents.map(a=>{
+    const s=apBy.get(a.id)||{ap:0,n:0};
+    return {a, ap:s.ap, n:s.n};
+  }).filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap).slice(0,5);
   wrap.hidden=false;
-  const val=r=>apLive?r.ap:r.pts;
-  const max=Math.max(1,...rows.map(val));
-  $('#gateBoardKicker').textContent=apLive?'// ap this month':'// live standings';
+  $('#gateBoardKicker').textContent='// top producers';
+  if(!rows.length){
+    $('#gateBoardList').innerHTML='<li class="gb-empty">No premium logged this month yet.<br>First policy takes the top spot.</li>';
+    $('#gateBoardFoot').textContent=`${DATA.agents.length} operatives on the floor`;
+    return;
+  }
+  const max=Math.max(1,...rows.map(r=>r.ap));
   $('#gateBoardList').innerHTML=rows.map((r,i)=>`
-      <li class="gb-row${i===0?' lead':''}" style="--gb-c:${rankOf(r.pts).c}">
+      <li class="gb-row${i===0?' lead':''}">
         <span class="gb-pos">${String(i+1).padStart(2,'0')}</span>
         <span class="gb-who">
           <span class="gb-name">${esc(r.a.name)}</span>
-          <span class="gb-sub">${apLive?`${r.n} ${r.n===1?'policy':'policies'} \u00b7 ${r.pts} pts`:esc(rankOf(r.pts).name)}</span>
-          <span class="gb-bar"><i data-w="${(val(r)/max*100).toFixed(1)}"></i></span>
+          <span class="gb-sub">${r.n} ${r.n===1?'policy':'policies'} this month</span>
+          <span class="gb-bar"><i data-w="${(r.ap/max*100).toFixed(1)}"></i></span>
         </span>
-        <span class="gb-pts">${apLive?fmtAP(r.ap):r.pts}<small>${apLive?'ap':'pts'}</small></span>
+        <span class="gb-pts">${fmtAP(r.ap)}<small>ap</small></span>
       </li>`).join('');
-  const k=dayKey();
-  const today=DATA.log.filter(p=>dayKey(p.earned_at)===k&&approved(p)).reduce((n,p)=>n+p.points,0);
-  const apMonth=all.reduce((n,r)=>n+r.ap,0);
-  $('#gateBoardFoot').textContent=apLive
-    ? `${DATA.agents.length} operatives \u00b7 ${fmtAP(apMonth)} AP written this month`
-    : `${DATA.agents.length} operatives \u00b7 ${today} points logged today`;
+  const apMonth=rows.reduce((n,r)=>n+r.ap,0);
+  $('#gateBoardFoot').textContent=`${DATA.agents.length} operatives \u00b7 ${fmtAP(apMonth)} AP written this month`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     wrap.querySelectorAll('.gb-bar i').forEach(b=>{ b.style.width=b.dataset.w+'%'; });
   }));
@@ -2071,17 +2067,13 @@ function renderBoard(){
   _belt=undefined;
   renderGoalHud(); renderPace(); renderDuel(); renderCotw(); renderTodayStrip(); renderWire();
   const rh=$('#reportHome'); if(rh) rh.innerHTML=reportHTML();
-  const rows=DATA.agents.map(a=>({a,...totals(a.id)}));
-  const recs=[...rows].sort((x,y)=>y.rec-x.rec).filter(r=>r.rec>0).slice(0,10);
-  const nas=[...rows].sort((x,y)=>y.na-x.na).filter(r=>r.na>0).slice(0,10);
-  const maxR=Math.max(1,...recs.map(r=>r.rec)), maxN=Math.max(1,...nas.map(r=>r.na));
-  // disp/unit let the premium board reuse this for money; without them it is
-  // the points row, count-up animation and all.
+  // disp/unit carry the money value; without them this is a points row, count-up
+  // animation and all, which the other views still use.
   const row=(r,i,val,max,cls,disp,unit)=>`
     <div class="row p${i+1}">
       <div class="pos">${i+1}</div>
       <div class="who">
-        <div class="name"><span class="scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total)}</div>
+        <div class="name"><span class="scr" data-text="${esc(r.a.name)}">${esc(r.a.name)}</span>${beltMark(r.a.id)}${flame(r.a.id)} ${badge(r.total, r.a.id)}</div>
         <div class="bar-wrap"><div class="bar ${cls}" data-w="${(val/max*100).toFixed(1)}"></div></div>
       </div>
       <div class="pts">${disp!==undefined
@@ -2089,15 +2081,12 @@ function renderBoard(){
         : `<span class="anv" data-ankey="${cls}:${esc(r.a.id)}" data-anval="${val}">${val}</span>`}<small>${esc(unit||'pts')}</small></div>
     </div>`;
   renderApBoard(row);
-  $('#boardRecruiters').innerHTML = recs.map((r,i)=>row(r,i,r.rec,maxR,'gold')).join('') || '<p style="color:var(--ink-3)">No builder points yet. First referral takes it.</p>';
-  $('#boardAgents').innerHTML = nas.map((r,i)=>row(r,i,r.na,maxN,'blue')).join('') || '<p style="color:var(--ink-3)">No agent points yet. First one licensed takes it.</p>';
-  anApply('#boardRecruiters'); anApply('#boardAgents');
-  fxScrambleNew('#boardRecruiters'); fxScrambleNew('#boardAgents'); fxScrambleNew('#boardAP');
+  fxScrambleNew('#boardAP');
   const _rp=$('#reportHome');
   if(_rp&&!_twReport&&_rp.textContent.trim()){_twReport=true;fxTypewriter(_rp);}
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     document.querySelectorAll('.row .bar').forEach(b=>b.style.width=b.dataset.w+'%');
-    document.querySelectorAll('#boardRecruiters .row.p1, #boardAgents .row.p1').forEach(r=>{
+    document.querySelectorAll('#boardAP .row.p1').forEach(r=>{
       const bar=r.querySelector('.bar');
       fxSparkles(r, bar?getComputedStyle(bar).backgroundColor:'#00E676');
     });
@@ -2108,13 +2097,13 @@ function renderBoard(){
 function renderRanks(){
   const withT=DATA.agents.map(a=>({a,...totals(a.id)}));
   $('#ladder').innerHTML = RANKS.map((r,i)=>{
-    const members=withT.filter(x=>rankOf(x.total)===r).sort((a,b)=>b.total-a.total);
+    const members=withT.filter(x=>rankOf(x.total,x.a.id)===r).sort((a,b)=>b.total-a.total);
     const names=members.slice(0,6).map(m=>esc(m.a.name)).join(' · ');
     return `<div class="tier rv" style="--tier-c:${r.c}">
       <div class="num">0${i+1}</div>
       <div>
         <h3><span class="scr" data-text="${esc(r.name)}">${esc(r.name)}</span></h3>
-        <div class="range">${r.max===Infinity?`${r.min}+ points`:`${r.min}–${r.max} points`}</div>
+        <div class="range">${r.max===Infinity?`${r.min}+ points`:`${r.min}–${r.max} points`}${r.req?` <span style="color:var(--neon-dim)">${esc(r.req)}</span>`:''}</div>
         <div class="members">${names||'<em style="color:var(--ink-3)">Unclaimed — be first.</em>'}${members.length>6?` +${members.length-6} more`:''}</div>
       </div>
       <div class="count">${members.length}<small>agents</small></div>
@@ -2146,7 +2135,7 @@ for (const sel of ['#agentPick','#agentPickB','#agentPickR']){
 function renderMe(){
   const a=agentById(viewAgent); if(!a) return;
   const t=totals(a.id);
-  const r=rankOf(t.total);
+  const r=rankOf(t.total, a.id);
   const rows=DATA.log.filter(p=>p.agent_id===a.id&&p.track==='new_agent');
   const doneActions=new Set(rows.filter(approved).map(p=>p.action));
   const pendActions=new Set(rows.filter(p=>p.status==='pending').map(p=>p.action));
@@ -2222,7 +2211,7 @@ function renderTree(){
   if(!roots.length){ el.innerHTML='<p class="war-empty">&gt; no agents yet.</p>'; return; }
   const branch=(a,gen)=>{
     const ks=kids(a.id);
-    const t=totals(a.id), r=rankOf(t.total), dl=downline(a.id);
+    const t=totals(a.id), r=rankOf(t.total, a.id), dl=downline(a.id);
     return `<div class="obranch">
       <div class="ocard-wrap${ks.length?' haskids':''}">
         <div class="ocard" data-nav="${esc(a.id)}" style="--rc:${r.c}">
@@ -2289,7 +2278,7 @@ function renderSkills(){
       return `<td><button class="chk${on?' on':''}" ${canEdit?'':'disabled'} data-skill="${esc(s)}" data-agent="${esc(a.id)}" aria-pressed="${on}" aria-label="${esc(a.name)}: ${esc(s)}"></button></td>`;
     }).join('');
     const n=SKILLS.filter(s=>DATA.skills.some(k=>k.agent_id===a.id&&k.skill_name===s&&k.completed)).length;
-    return `<tr><td>${esc(a.name)} ${badge(t.total)}</td>${cells}<td class="skill-count">${n}/7</td></tr>`;
+    return `<tr><td>${esc(a.name)} ${badge(t.total, a.id)}</td>${cells}<td class="skill-count">${n}/7</td></tr>`;
   }).join('');
   $('#skillTable').innerHTML=head+`<tbody>${body}</tbody>`;
 }
@@ -2592,7 +2581,7 @@ function diffData(){
   for(const a of DATA.agents){
     const ot=PREV.totals.get(a.id);
     if(ot===undefined) continue;
-    const nr=RANKS.indexOf(rankOf(totals(a.id).total)), or_=RANKS.indexOf(rankOf(ot));
+    const nr=RANKS.indexOf(rankOf(totals(a.id).total, a.id)), or_=RANKS.indexOf(rankOf(ot, a.id));
     if(nr>or_){ queuePromo(a.name, RANKS[nr].name); notify('T1P — PROMOTION', a.name+' just hit '+RANKS[nr].name.toUpperCase()); }
   }
   // sales hitting the book — logged to the wire from the public aggregates,
@@ -4016,7 +4005,7 @@ function reportHTML(){
   const total=per.reduce((n,r)=>n+r.w,0);
   const top=per[0];
   const pend=pendingRows().length;
-  const promos=per.filter(r=>r.w>0&&rankOf(r.t)!==rankOf(r.t-r.w));
+  const promos=per.filter(r=>r.w>0&&rankOf(r.t,r.a.id)!==rankOf(r.t-r.w,r.a.id));
   const lines=[];
   lines.push(`> T1P HEIST REPORT :: week of ${sk}`);
   lines.push(`> compiled ${dayKey()} — the ledger doesn't lie`);
@@ -4024,7 +4013,7 @@ function reportHTML(){
   lines.push(`  TOTAL TAKE ............ <span class="w">${total} PTS</span>`);
   lines.push(`  OPERATIVE OF THE WEEK . <span class="w">${top&&top.w>0?top.a.name.toUpperCase()+' ('+top.w+' pts)':'UNCLAIMED'}</span>`);
   lines.push(`  CLAIMS AWAITING JUDGE . ${pend}`);
-  if(promos.length) lines.push(`  PROMOTIONS ............ ${promos.map(r=>r.a.name.toUpperCase()+' → '+rankOf(r.t).name.toUpperCase()).join(', ')}`);
+  if(promos.length) lines.push(`  PROMOTIONS ............ ${promos.map(r=>r.a.name.toUpperCase()+' → '+rankOf(r.t,r.a.id).name.toUpperCase()).join(', ')}`);
   lines.push('');
   lines.push('  THE WEEK, BY OPERATIVE');
   per.forEach((r,i)=>{
