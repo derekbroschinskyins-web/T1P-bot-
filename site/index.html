@@ -1022,6 +1022,38 @@ body.tv .page-h{font-size:64px}
 .log-msg{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim)}
 .log-msg.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
 .log-msg.err{color:#FF4D4D}
+/* ---------- new agent start-here tab ---------- */
+.wt-banner{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;padding:13px 16px;
+  border-radius:8px;text-decoration:none;cursor:pointer;position:relative;
+  background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.55);
+  box-shadow:0 0 18px rgba(0,230,118,.25), inset 0 0 24px rgba(0,230,118,.05);
+  animation:wtbGlow 2.2s ease-in-out infinite;
+}
+@keyframes wtbGlow{
+  0%,100%{box-shadow:0 0 14px rgba(0,230,118,.2), inset 0 0 20px rgba(0,230,118,.04);border-color:rgba(0,230,118,.45)}
+  50%{box-shadow:0 0 30px rgba(0,230,118,.55), inset 0 0 30px rgba(0,230,118,.09);border-color:rgba(0,255,102,.9)}
+}
+.wt-banner:hover{background:rgba(0,230,118,.13)}
+.wtb-dot{width:9px;height:9px;flex:none;border-radius:50%;background:var(--neon-bright,#00FF66);box-shadow:0 0 10px rgba(0,255,102,.9);animation:gbPulse 1.4s ease-in-out infinite}
+.wtb-txt{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px;letter-spacing:.14em;
+  color:#C8DBCF;white-space:nowrap;
+}
+.wtb-txt b{color:var(--neon-bright,#00FF66);text-shadow:0 0 10px rgba(0,255,102,.5)}
+.wtb-sub{
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.06em;
+  color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
+.wtb-x{
+  margin-left:auto;flex:none;width:26px;height:26px;border-radius:5px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  color:var(--ink-3);background:transparent;border:1px solid var(--edge-dim);
+  transition:color .2s,border-color .2s;
+}
+.wtb-x:hover{color:#EAFFF4;border-color:rgba(0,230,118,.5)}
+@media(max-width:700px){.wtb-sub{display:none}}
+@media (prefers-reduced-motion: reduce){.wt-banner{animation:none}.wtb-dot{animation:none}}
 /* ---------- agent walkthrough ---------- */
 .wt-intro p{margin:7px 0;color:#C8DBCF;font-size:13.5px;line-height:1.7}
 .wt-step{position:relative;margin-top:14px;padding:16px 18px 15px 62px}
@@ -1271,6 +1303,12 @@ body.tv .page-h{font-size:64px}
 
   <!-- LEADERBOARD -->
   <section class="view" id="v-board">
+    <a id="wtBanner" class="rv wt-banner" href="#/walkthrough" hidden>
+      <span class="wtb-dot" aria-hidden="true"></span>
+      <span class="wtb-txt">NEW AGENT? <b>START HERE_</b></span>
+      <span class="wtb-sub">the full walkthrough — licensing to your first $20K month</span>
+      <button class="wtb-x" id="wtBannerX" type="button" aria-label="Dismiss">&#10005;</button>
+    </a>
     <div class="rv hero-wrap">
       <div class="kicker">Live Standings <span id="liveClock" class="live-clock"></span></div>
       <h1 class="page-h">The Board Doesn't Lie</h1>
@@ -2923,6 +2961,17 @@ function palExec(raw){
   hint.innerHTML='<span class="err">unknown command</span> — try <span class="hit">help</span>';
   sDeny();
 }
+(function(){
+  const b=$('#wtBanner'); if(!b) return;
+  let hidden=false;
+  try{ hidden=localStorage.getItem('t1p-wt-hide')==='1'; }catch(e){}
+  b.hidden=hidden;
+  $('#wtBannerX').addEventListener('click',e=>{
+    e.preventDefault(); e.stopPropagation();
+    b.hidden=true;
+    try{ localStorage.setItem('t1p-wt-hide','1'); }catch(e){}
+  });
+})();
 document.addEventListener('keydown',e=>{
   if(document.body.classList.contains('locked')) return;
   const tag=(e.target.tagName||'').toLowerCase();
