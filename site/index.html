@@ -1045,13 +1045,6 @@ body.tv .page-h{font-size:64px}
   font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.06em;
   color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
 }
-.wtb-x{
-  margin-left:auto;flex:none;width:26px;height:26px;border-radius:5px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:12px;
-  color:var(--ink-3);background:transparent;border:1px solid var(--edge-dim);
-  transition:color .2s,border-color .2s;
-}
-.wtb-x:hover{color:#EAFFF4;border-color:rgba(0,230,118,.5)}
 @media(max-width:700px){.wtb-sub{display:none}}
 @media (prefers-reduced-motion: reduce){.wt-banner{animation:none}.wtb-dot{animation:none}}
 /* ---------- agent walkthrough ---------- */
@@ -1303,11 +1296,10 @@ body.tv .page-h{font-size:64px}
 
   <!-- LEADERBOARD -->
   <section class="view" id="v-board">
-    <a id="wtBanner" class="rv wt-banner" href="#/walkthrough" hidden>
+    <a id="wtBanner" class="rv wt-banner" href="#/walkthrough">
       <span class="wtb-dot" aria-hidden="true"></span>
       <span class="wtb-txt">NEW AGENT? <b>START HERE_</b></span>
       <span class="wtb-sub">the full walkthrough — licensing to your first $20K month</span>
-      <button class="wtb-x" id="wtBannerX" type="button" aria-label="Dismiss">&#10005;</button>
     </a>
     <div class="rv hero-wrap">
       <div class="kicker">Live Standings <span id="liveClock" class="live-clock"></span></div>
@@ -2961,17 +2953,6 @@ function palExec(raw){
   hint.innerHTML='<span class="err">unknown command</span> — try <span class="hit">help</span>';
   sDeny();
 }
-(function(){
-  const b=$('#wtBanner'); if(!b) return;
-  let hidden=false;
-  try{ hidden=localStorage.getItem('t1p-wt-hide')==='1'; }catch(e){}
-  b.hidden=hidden;
-  $('#wtBannerX').addEventListener('click',e=>{
-    e.preventDefault(); e.stopPropagation();
-    b.hidden=true;
-    try{ localStorage.setItem('t1p-wt-hide','1'); }catch(e){}
-  });
-})();
 document.addEventListener('keydown',e=>{
   if(document.body.classList.contains('locked')) return;
   const tag=(e.target.tagName||'').toLowerCase();
