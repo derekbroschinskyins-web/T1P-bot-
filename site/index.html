@@ -1022,6 +1022,46 @@ body.tv .page-h{font-size:64px}
 .log-msg{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--neon-dim)}
 .log-msg.ok{color:var(--neon-bright);text-shadow:0 0 8px rgba(0,230,118,.4)}
 .log-msg.err{color:#FF4D4D}
+/* ---------- agent walkthrough ---------- */
+.wt-intro p{margin:7px 0;color:#C8DBCF;font-size:13.5px;line-height:1.7}
+.wt-step{position:relative;margin-top:14px;padding:16px 18px 15px 62px}
+.wt-step h3{font-size:16.5px;margin-bottom:2px}
+.wt-step p{margin:8px 0 0;color:#C8DBCF;font-size:13px;line-height:1.65}
+.wt-num{
+  position:absolute;left:16px;top:17px;width:30px;height:30px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+  color:var(--neon,#00E676);background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.3);
+}
+.wt-final .wt-num{color:var(--gold-bright,#FFD75E);background:rgba(255,200,60,.08);border-color:rgba(255,200,60,.35)}
+.wt-k{
+  margin-top:12px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--neon-dim);
+}
+.wt-list{list-style:none;margin:6px 0 0;padding:0}
+.wt-list li{position:relative;padding:3px 0 3px 17px;color:#C8DBCF;font-size:12.5px;line-height:1.55}
+.wt-list li::before{content:'\25B8';position:absolute;left:0;color:var(--neon-dim)}
+.wt-ol{counter-reset:wt}
+.wt-ol li{counter-increment:wt;padding-left:24px}
+.wt-ol li::before{content:counter(wt,decimal-leading-zero);font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;color:var(--neon-dim);top:5px}
+.wt-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.wt-link{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:5px;text-decoration:none;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.06em;
+  color:var(--neon,#00E676);background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.35);
+  transition:background .2s,border-color .2s;
+}
+.wt-link:hover{background:rgba(0,230,118,.16);border-color:rgba(0,230,118,.7)}
+.wt-link::before{content:'\2197'}
+.wt-note{
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--edge-dim);
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;line-height:1.6;color:var(--ink-3);
+}
+.wt-soon{
+  margin-top:10px;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px;letter-spacing:.2em;color:var(--ink-3);
+}
+@media(max-width:560px){.wt-step{padding-left:18px}.wt-num{position:static;margin-bottom:8px}}
 /* ---------- gauntlet ---------- */
 .gnt-cols{display:flex;gap:22px;align-items:center;overflow-x:auto;padding:8px 2px 16px}
 .gnt-col{display:flex;flex-direction:column;gap:14px;min-width:190px;flex:none}
@@ -1205,6 +1245,7 @@ body.tv .page-h{font-size:64px}
       <div class="ngrp">
         <button class="ngbtn" type="button">Intel <i>▾</i></button>
         <div class="ndrop">
+          <a href="#/walkthrough" data-v="walkthrough">Agent Walkthrough</a>
           <a href="#/scripts" data-v="scripts">Scripts</a>
           <a href="#/game" data-v="game">The Firewall</a>
           <a href="#/academy" data-v="academy">Academy</a>
@@ -1440,6 +1481,87 @@ body.tv .page-h{font-size:64px}
     <p class="page-sub">Every opener, rebuttal, and close — loaded for reading between dials. Know it cold.</p></div>
     <input id="scriptSearch" class="script-search rv" placeholder="> search the playbook..." autocomplete="off">
     <div id="scriptList"></div>
+  </section>
+
+  <!-- AGENT WALKTHROUGH -->
+  <section class="view" id="v-walkthrough">
+    <div class="rv"><div class="kicker">New Operative Protocol</div>
+    <h1 class="page-h">Agent Walkthrough</h1>
+    <p class="page-sub">The path from Day 1 — what to do, where the resources live, how to improve quickly, how to make money, how to build long term.</p></div>
+    <div class="panel rv wt-intro">
+      <h3 class="disp" style="font-size:15px">Read This First</h3>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <p>This business rewards people who stay consistent, stay coachable, and stay in motion. Brin handles the operational side from pre-licensing through contracting and carrier setup, but it is still your responsibility to stay organized and keep moving.</p>
+      <p>Your first goal is not perfection. Your first goal is: <b>reps, skill acquisition, confidence, consistency, momentum.</b></p>
+      <p>The people who win here usually are not the most talented. They are the ones who stay around long enough to get dangerous.</p>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">01</div>
+      <h3>Licensing &amp; Setup</h3>
+<p>Create a designated insurance email: <b>FirstNameLastName.ins@gmail.com</b> — e.g. Johnadams.ins@gmail.com.</p><div class="wt-k">complete the following</div><ul class="wt-list"><li>Pre-licensing course</li><li>State exam</li><li>Fingerprints / background check</li><li>Receive your NPN number</li><li>Receive your active state license through NIPR</li><li>Complete the New Agent Agreement</li><li>Submit carrier contracting through SureLC</li></ul><div class="wt-k">once your npn comes back</div><ul class="wt-list"><li>Join the Uncommon WhatsApp</li><li>Join the Metro Discord</li></ul><div class="wt-links"><a class="wt-link" href="https://nipr.com/licensing-center/look-up-a-national-producer-number" target="_blank" rel="noopener noreferrer">NPN Lookup</a><a class="wt-link" href="https://chat.whatsapp.com/GA2vISVz3VjG15LhIavs7q?s=cl&amp;p=i&amp;mlu=4" target="_blank" rel="noopener noreferrer">Uncommon WhatsApp</a><a class="wt-link" href="https://discord.gg/hCN86pMBP" target="_blank" rel="noopener noreferrer">Metro Discord</a></div><div class="wt-note">Brin helps move you through carrier setup and approvals once contracting is submitted. Carrier approvals take time — do not sit around waiting during this phase.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">02</div>
+      <h3>Plug Into Daily Training</h3>
+<div class="wt-soon">COMING SOON</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">03</div>
+      <h3>Get Organized Early</h3>
+<p>Create a dedicated notes tab in your phone or computer specifically for insurance.</p><div class="wt-k">track</div><ul class="wt-list"><li>State license number</li><li>NPN number</li><li>Carrier writing numbers</li><li>Carrier login info</li><li>Carrier support numbers</li><li>Underwriting contacts</li><li>Important links</li></ul><div class="wt-k">as carriers come in</div><ul class="wt-list"><li>Log into the carrier portal immediately</li><li>Create your online account</li><li>Bookmark the login page</li><li>Save your login information</li><li>Learn where to submit business</li><li>Learn where to check pending business</li></ul><div class="wt-note">The organized agents usually stay in business longer.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">04</div>
+      <h3>Set Up</h3>
+<div class="wt-k">inside you will find</div><ul class="wt-list"><li>Agent resources</li><li>Past Zoom trainings</li><li>Carrier guides</li><li>Underwriting information</li><li>Product breakdowns</li></ul><div class="wt-note">Get familiar with it early.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">05</div>
+      <h3>Start Learning The Business</h3>
+<p>Study mortgage protection.</p><div class="wt-k">focus on</div><ul class="wt-list"><li>Conversation flow</li><li>Discovery questions</li><li>Tonality</li><li>Presenting options</li><li>Objection handling</li><li>Closing simply</li></ul><div class="wt-note">Take notes while watching.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">06</div>
+      <h3>Plug Into Resources</h3>
+<div class="wt-k">uncommon agency drive</div><ul class="wt-list"><li>Trainings</li><li>Scripts</li><li>Carrier guides</li><li>Underwriting help</li><li>Presentations</li><li>Resources</li></ul><div class="wt-k">metro academy — use daily</div><ul class="wt-list"><li>Audios</li><li>Objection handling</li><li>Live calls</li><li>Sales breakdowns</li><li>Tonality</li><li>Presentations</li></ul><div class="wt-k">insurance tool kits</div><ul class="wt-list"><li>Quoting</li><li>Pricing</li><li>Pitching products</li><li>Product comparisons</li><li>Sales tools</li><li>Product breakdowns</li></ul><div class="wt-links"><a class="wt-link" href="https://drive.google.com/drive/folders/1GbG3eTIRznHq0kNwn7e6_4JnqpAdhfWD?usp=sharing" target="_blank" rel="noopener noreferrer">Uncommon Agency Drive</a><a class="wt-link" href="https://drive.google.com/drive/folders/15kCXmnMkNNX4z5LqN6WKlVQEAI7e0Qpg?usp=sharing" target="_blank" rel="noopener noreferrer">Metro Academy</a><a class="wt-link" href="https://insurancetoolkits.com/login" target="_blank" rel="noopener noreferrer">Insurance Tool Kits</a></div><div class="wt-note">Insurance Tool Kits uses a shared team login — get it from your upline. A lot of your learning early on comes from hearing the business repeatedly.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">07</div>
+      <h3>Study Producers</h3>
+<p>Spend time learning from people actually producing.</p><div class="wt-k">watch</div><ul class="wt-list"><li>Live dials</li><li>Objection handling</li><li>Sales psychology</li><li>Underwriting breakdowns</li><li>Phone structure</li></ul><div class="wt-links"><a class="wt-link" href="https://drive.google.com/drive/folders/1hyxRVzf37lzq725CBIyPjzX3cWEZ1rJg?usp=sharing" target="_blank" rel="noopener noreferrer">Austin Harless Trainings</a><a class="wt-link" href="https://drive.google.com/drive/folders/1Rm-DSGLqedWqyoEVXQ1fnI5pZTkG5-nd?usp=sharing" target="_blank" rel="noopener noreferrer">TVL 100k Month Recordings</a></div><div class="wt-note">Immersion matters.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">08</div>
+      <h3>Memorize The Fresh Script</h3>
+<p><b>Do not reinvent the script.</b> It should be memorized within your first week in the business.</p><div class="wt-k">do not sound robotic — learn</div><ul class="wt-list"><li>Structure</li><li>Flow</li><li>Transitions</li><li>Tonality</li><li>Control</li></ul><div class="wt-links"><a class="wt-link" href="https://docs.google.com/document/d/12OZaGxF3O6WmZuv0eFS4pgWBY80b2YnfQ-tgS9jKGXE/edit?tab=t.wosus2pprk8" target="_blank" rel="noopener noreferrer">Fresh Mortgage Script</a><a class="wt-link" href="https://docs.google.com/document/d/12O2p1ME5RqhKEDc62N5zo07DHf9F3qamrtLmqZiTGL8/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Aged Mortgage Script</a></div><div class="wt-note">The best agents understand conversations, not just scripts.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">09</div>
+      <h3>Start Hand Dialing</h3>
+<p>Before getting fancy, learn how to work manually. Start hand dialing first.</p><div class="wt-k">learn</div><ul class="wt-list"><li>How to talk to people</li><li>How to control conversations</li><li>How to handle objections</li><li>How to stay on calls</li><li>How to book appointments</li></ul><div class="wt-note">Once you are consistently working, ask your upline to help get Wavv set up inside the CRM/dialer system — use code NEW-ELKSY. Tools help after skill. Not before.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">10</div>
+      <h3>Enter The Gulag</h3>
+<p>Everybody starts in the Gulag. The Gulag is free leads. <b>3 set deals gets you out — and $600 of aged leads.</b> The point is not perfection. The point is reps.</p><div class="wt-k">use this phase to</div><ul class="wt-list"><li>Learn the phones</li><li>Learn objections — write down any objection and take it to your upline</li><li>Learn follow-up</li><li>Learn presentations</li><li>Learn how to close</li><li>Get comfortable being uncomfortable</li></ul><div class="wt-links"><a class="wt-link" href="https://docs.google.com/document/d/1zcXICRj9LFvx5CoGDTGlDPPPG6OjxKdU8v3vQunGPKs/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Setter Script</a></div><div class="wt-note">Most people quit before they ever get enough reps to improve. Stay in it.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">11</div>
+      <h3>Policy Tracker</h3>
+<p>Once you are out of the Gulag and actively writing business, create your account on the policy tracker.</p><div class="wt-k">track</div><ul class="wt-list"><li>Pending business</li><li>Draft dates</li><li>Policy status</li><li>Placement</li><li>Retention</li></ul><p>Keep a close eye on <b>KCL, Foresters, and fully underwritten deals</b> — these require stronger follow-up.</p><div class="wt-k">instant approval process</div><ol class="wt-list wt-ol"><li>Plug policy into the policy tracker</li><li>Set up the client online portal the next day if approved</li><li>Set a Google Calendar reminder for the draft date</li><li>Check email and call the carrier to confirm the first payment went through</li><li>Enroll the client into the retention campaign</li></ol><div class="wt-k">sent to underwriting process</div><ol class="wt-list wt-ol"><li>Plug policy into the policy tracker</li><li>Call the carrier for updates and requirements</li><li>Communicate updates with the client</li><li>Get the policy approved or rewrite quickly</li><li>Set a Google Calendar reminder for the draft date</li><li>Confirm the first payment processed successfully</li><li>Enroll the client into the retention campaign</li></ol><div class="wt-links"><a class="wt-link" href="https://uncommonpolicytracker.manus.space/" target="_blank" rel="noopener noreferrer">Policy Tracker</a></div><div class="wt-note">Submitted business is cool. Issued and placed business is what matters.</div>
+    </div>
+    <div class="panel rv wt-step">
+      <div class="wt-num">12</div>
+      <h3>Graduate To Aged Leads</h3>
+<p>Once you start making money from the Gulag, roll the money back into aged leads.</p><div class="wt-k">start with</div><ul class="wt-list"><li>$2–$6 aged leads</li><li>High volume</li><li>More conversations</li><li>More reps</li></ul><div class="wt-k">this is where you stack</div><ul class="wt-list"><li>Skillset</li><li>Confidence</li><li>Capital</li><li>Consistency</li></ul><p>Do not rush fresh leads before you are ready. You earn the right to work fresh by getting dangerous on aged.</p><div class="wt-note">The progression is simple: GULAG → AGED → FRESH. Free reps. Cheap reps. Premium opportunities.</div>
+    </div>
+    <div class="panel rv wt-step wt-final">
+      <div class="wt-num">★</div>
+      <h3>Final Standard</h3>
+      <p><b>$20–25K a month is the standard.</b> From there: replicate yourself, teach others, build leaders — or become elite at production.</p>
+      <p>If you want to build: it starts now. Bring people around. Share the opportunity. Post. Recruit. Develop people. If you only want to produce: learn how to write a massive amount of business consistently.</p>
+      <div class="wt-note">Either way, become undeniable at the core skill first: writing business.</div>
+    </div>
   </section>
 
   <!-- OBJECTION FIREWALL (minigame) -->
@@ -2420,7 +2542,7 @@ document.addEventListener('click',async e=>{
 });
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','walkthrough','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -2702,7 +2824,7 @@ function celebrate(p){
 document.getElementById('promo').addEventListener('click',()=>{ $('#promo').classList.remove('on'); promoBusy=false; pumpPromo(); });
 
 /* ================= COMMAND PALETTE ================= */
-const PAL_TABS={board:'board',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',gauntlet:'gauntlet',records:'records',recruiting:'recruiting',academy:'academy',calls:'calls',callvault:'calls',approvals:'approvals',pending:'approvals'};
+const PAL_TABS={board:'board',walkthrough:'walkthrough',guide:'walkthrough',leaderboard:'board',lb:'board',ranks:'ranks',me:'me',progress:'me',building:'building',build:'building',tree:'tree',rewards:'rewards',skills:'skills',war:'war',warroom:'war',scripts:'scripts',commands:'cmds',cmds:'cmds',manual:'cmds',game:'game',firewall:'game',breach:'game',sales:'sales',book:'sales',ap:'sales',gauntlet:'gauntlet',records:'records',recruiting:'recruiting',academy:'academy',calls:'calls',callvault:'calls',approvals:'approvals',pending:'approvals'};
 function palOpen(){
   if(!AUTH) return;
   $('#palette').classList.add('on');
