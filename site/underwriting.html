@@ -207,10 +207,12 @@ select option{background:#0a1016}
       <button data-v="quit1">QUIT 1-2 YRS</button>
       <button data-v="current">CURRENT</button>
     </div>
-    <div class="k">Marijuana</div>
-    <div class="seg" id="mj">
-      <button data-v="no" class="on">NO</button>
-      <button data-v="yes">YES</button>
+    <div class="k">Coverage type the client wants</div>
+    <div class="seg" id="kind">
+      <button data-v="all" class="on">ALL</button>
+      <button data-v="term">TERM</button>
+      <button data-v="wl">WHOLE LIFE</button>
+      <button data-v="iul">IUL</button>
     </div>
     <div class="nav"><button class="btn go" data-go="1">BUILD →</button></div>
   </section>
@@ -239,8 +241,13 @@ select option{background:#0a1016}
   <!-- 3 -->
   <section class="step" data-step="2">
     <h2>Health conditions</h2>
-    <p class="sub">Tap everything that applies. Diagnosed, treated, or medicated — the carriers see the Rx database either way.</p>
-    <div class="search"><input id="condSearch" placeholder="Search conditions — diabetes, a-fib, COPD…"></div>
+    <p class="sub">Type them in, or pick from the list below. Diagnosed, treated, or medicated — the carriers see the Rx database either way.</p>
+    <div class="search">
+      <input id="condSearch" placeholder="Type a condition — diabetes, a-fib, high bp, sleep apnea…" autocomplete="off">
+      <div class="ac" id="condAc" style="display:none"></div>
+    </div>
+    <div class="chips" id="condPills" style="margin-top:14px"></div>
+    <div class="hint">Type it how you'd say it. Anything not on file can still be entered — it gets flagged for the carrier instead of guessed at.</div>
     <div id="condList"></div>
     <div class="nav"><button class="btn" data-go="1">← BACK</button><button class="btn go" data-go="3">MEDICATIONS →</button></div>
   </section>
@@ -316,70 +323,70 @@ const OUTCOME_META = {
 
 /* PRODUCTS */
 const PRODUCTS = [
-  {id:'tms',   carrier:'AmAm', lane:'aa_term', name:'Term Made Simple', type:'Simplified term to 95',
+  {id:'tms', kind:'term',   carrier:'AmAm', lane:'aa_term', name:'Term Made Simple', type:'Simplified term to 95',
    ages:[18,75], face:[50000,500000], fee:'$70', best:'pref',
    termAges:{10:[18,75],15:[18,70],20:[18,65],30:[18,55]},
    req:['App + MIB','Rx database','MVR','No exam / no labs'],
    note:'Accept/reject through Table 4 — no table ratings. Phone interview ages 65-75.'},
 
-  {id:'safe',  carrier:'AmAm', lane:'aa_term', name:'SafeCare Term', type:'Simplified term to 95 (FFL)',
+  {id:'safe', kind:'term',  carrier:'AmAm', lane:'aa_term', name:'SafeCare Term', type:'Simplified term to 95 (FFL)',
    ages:[18,75], face:[25000,500000], fee:'$70', best:'pref',
    termAges:{10:[18,75],15:[18,70],20:[18,65],30:[18,55]},
    req:['App + MIB','Rx database','MVR','No exam / no labs'],
    note:'ROP available on 20/30 yr. Phone interview ages 65-75.'},
 
-  {id:'easy',  carrier:'AmAm', lane:'aa_term', name:'Easy Term', type:'Simplified term to 95',
+  {id:'easy', kind:'term',  carrier:'AmAm', lane:'aa_term', name:'Easy Term', type:'Simplified term to 95',
    ages:[18,70], face:[25000,500000], fee:'$60', best:'std',
    termAges:{10:[18,70],20:[18,65],30:[18,55]},
    req:['App + MIB','Rx database','MVR'],
    note:'NT / Tobacco only — no Preferred. $500K to age 45, $300K ages 46-70.'},
 
-  {id:'sc',    carrier:'AmAm', lane:'aa_fe',   name:'Senior Choice', type:'Final expense whole life',
+  {id:'sc', kind:'wl',    carrier:'AmAm', lane:'aa_fe',   name:'Senior Choice', type:'Final expense whole life',
    ages:[50,85], face:[2500,50000], fee:'$30', best:'immediate',
    req:['App + MIB','Rx database','Build chart'],
    note:'Plan assigned by health questions: Immediate / Graded / ROP.'},
 
-  {id:'ic',    carrier:'AmAm', lane:'aa_iul',  name:'Intelligent Choice IUL', type:'Simplified issue IUL',
+  {id:'ic', kind:'iul',    carrier:'AmAm', lane:'aa_iul',  name:'Intelligent Choice IUL', type:'Simplified issue IUL',
    ages:[18,75], face:[25000,500000], fee:'n/a', best:'std',
    req:['App + MIB','Rx database','MVR'],
    note:'Standard through Table 4. Interview only if Underwriting requests it.'},
 
-  {id:'tsuper',carrier:'TransAm', lane:'ta_full', name:'Trendsetter Super', type:'Fully underwritten term',
+  {id:'tsuper', kind:'term',carrier:'TransAm', lane:'ta_full', name:'Trendsetter Super', type:'Fully underwritten term',
    ages:[18,80], face:[25000,10000000], fee:'—', best:'pref_plus',
    req:['Full underwriting','Fluidless eligible at many cells','APS by impairment'],
    note:'Preferred Plus / Preferred NS / Standard Plus / Standard NS + smoker classes.'},
 
-  {id:'tlb',   carrier:'TransAm', lane:'ta_full', name:'Trendsetter LB', type:'Term with living benefits',
+  {id:'tlb', kind:'term',   carrier:'TransAm', lane:'ta_full', name:'Trendsetter LB', type:'Term with living benefits',
    ages:[18,80], face:[25000,10000000], fee:'—', best:'pref_plus',
    req:['Full underwriting','Fluidless eligible'],
    note:'Living benefit riders underwrite separately from the base policy.'},
 
-  {id:'ffiul', carrier:'TransAm', lane:'ta_full', name:'Financial Foundation IUL II', type:'IUL',
+  {id:'ffiul', kind:'iul', carrier:'TransAm', lane:'ta_full', name:'Financial Foundation IUL II', type:'IUL',
    ages:[0,85], face:[25000,10000000], fee:'—', best:'pref_plus',
    req:['Full underwriting','Fluidless eligible'],
    note:'Preferred Elite = Preferred Plus tier naming.'},
 
-  {id:'life',  carrier:'TransAm', lane:'ta_full', name:'Transamerica Lifetime', type:'Whole life',
+  {id:'life', kind:'wl',  carrier:'TransAm', lane:'ta_full', name:'Transamerica Lifetime', type:'Whole life',
    ages:[0,80], face:[25000,5000000], fee:'—', best:'pref_plus',
    req:['Express Protect underwriting'],
    note:'$2M max in CA.'},
 
-  {id:'ffexp', carrier:'TransAm', lane:'ta_exp', name:'FFIUL II Express', type:'Instant-decision IUL',
+  {id:'ffexp', kind:'iul', carrier:'TransAm', lane:'ta_exp', name:'FFIUL II Express', type:'Instant-decision IUL',
    ages:[18,70], face:[50000,500000], fee:'—', best:'std',
    req:['100% instant decision','Single-condition chart','No labs'],
    note:'Select NT / Select Tobacco only. Max $500K to 60, $300K 61-70.'},
 
-  {id:'imm',   carrier:'TransAm', lane:'ta_fe',  name:'Immediate Solution', type:'FE whole life, level day one',
+  {id:'imm', kind:'wl',   carrier:'TransAm', lane:'ta_fe',  name:'Immediate Solution', type:'FE whole life, level day one',
    ages:[0,85], face:[1000,50000], fee:'—', best:'pref',
    req:['Digital app','Rx + medical data','Real-time decision'],
    note:'Max $50K to 55, $40K 56-65, $30K 66-75, $25K 76-85.'},
 
-  {id:'easysol',carrier:'TransAm', lane:'ta_fe', name:'Easy Solution', type:'FE graded death benefit',
+  {id:'easysol', kind:'wl',carrier:'TransAm', lane:'ta_fe', name:'Easy Solution', type:'FE graded death benefit',
    ages:[18,80], face:[1000,25000], fee:'—', best:'graded',
    req:['Digital app','Rx + medical data'],
    note:'First 2 years: accidental only or 110% of premiums paid.'},
 
-  {id:'feexp', carrier:'TransAm', lane:'ta_fex', name:'FE Express Solution', type:'FE whole life, immediate level DB',
+  {id:'feexp', kind:'wl', carrier:'TransAm', lane:'ta_fex', name:'FE Express Solution', type:'FE whole life, immediate level DB',
    ages:[18,85], face:[5000,100000], fee:'—', best:'pref',
    req:['Digital app','Rx data','Single-condition chart'],
    note:'Not available in GU, NY, PR, VI. Max $100K to 75, $25K 76-85.'}
@@ -438,181 +445,181 @@ const TA_FE_BMI = {minBmi:18.5, pref:40, std:45, graded:48};
    rather than guessing.                                                      */
 const CONDITIONS = [
  /* ---- Cardiovascular ---- */
- {id:'htn_ok', cat:'Cardiovascular', label:'High blood pressure — controlled, 2 or fewer meds',
+ {id:'htn_ok', a:['high blood pressure','hypertension','bp','htn'], cat:'Cardiovascular', label:'High blood pressure — controlled, 2 or fewer meds',
   out:{aa_term:{o:'std',n:'Standard; blocks Preferred unless it is the only impairment'},
        aa_iul:'std', aa_fe:'immediate',
        ta_full:{o:'pref',n:'Preferred if readings inside 145/85 (age ≤70)'},
        ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
- {id:'htn_bad', cat:'Cardiovascular', label:'High blood pressure — uncontrolled or 3+ meds',
+ {id:'htn_bad', a:['uncontrolled blood pressure','high bp 3 meds','severe hypertension'], cat:'Cardiovascular', label:'High blood pressure — uncontrolled or 3+ meds',
   out:{aa_term:{o:'decline',n:'3+ BP medications is an auto-decline'}, aa_iul:'decline',
        aa_fe:'immediate', ta_full:{o:'table',n:'Rated on last readings'}, ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'chol', cat:'Cardiovascular', label:'High cholesterol — controlled with medication',
+ {id:'chol', a:['high cholesterol','cholesterol','statin','hyperlipidemia'], cat:'Cardiovascular', label:'High cholesterol — controlled with medication',
   out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
        ta_full:{o:'pref_plus',n:'Alone it does not block Preferred'}, ta_exp:'std',
        ta_fe:'pref', ta_fex:'pref'}},
- {id:'cad', cat:'Cardiovascular', label:'Heart attack, angina, or coronary artery disease',
+ {id:'cad', a:['heart attack','mi','angina','coronary artery disease','cad','chest pain'], cat:'Cardiovascular', label:'Heart attack, angina, or coronary artery disease',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Within 3 yrs → Graded; within 2 yrs → ROP'},
        ta_full:{o:'table',n:'Table 2-8 by age at event and time since'}, ta_exp:'decline',
        ta_fe:{o:'std',n:'Standard if outside the recent window'}, ta_fex:'std'}},
- {id:'stent', cat:'Cardiovascular', label:'Stent, angioplasty, or bypass surgery',
+ {id:'stent', a:['stent','bypass','cabg','angioplasty','open heart'], cat:'Cardiovascular', label:'Stent, angioplasty, or bypass surgery',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Cardiac surgery within 3 yrs → Graded'},
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'chf', cat:'Cardiovascular', label:'Congestive heart failure (CHF)',
+ {id:'chf', a:['chf','congestive heart failure','heart failure'], cat:'Cardiovascular', label:'Congestive heart failure (CHF)',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible for any plan'},
        ta_full:{o:'decline',n:'No riders available'}, ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'afib', cat:'Cardiovascular', label:'Atrial fibrillation / irregular heartbeat',
+ {id:'afib', a:['afib','a-fib','atrial fibrillation','irregular heartbeat','arrhythmia','flutter'], cat:'Cardiovascular', label:'Atrial fibrillation / irregular heartbeat',
   out:{aa_term:{o:'decline',n:'Any arrhythmia, A-fib or flutter'}, aa_iul:'decline', aa_fe:'immediate',
        ta_full:{o:'std',n:'Standard to Table 4 depending on control and anticoagulation'},
        ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'pacemaker', cat:'Cardiovascular', label:'Pacemaker or defibrillator',
+ {id:'pacemaker', a:['pacemaker','defibrillator','icd'], cat:'Cardiovascular', label:'Pacemaker or defibrillator',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Device insertion within 3 yrs → Graded'},
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'pvd', cat:'Cardiovascular', label:'Peripheral vascular / carotid artery disease',
+ {id:'pvd', a:['pvd','pad','peripheral artery disease','carotid'], cat:'Cardiovascular', label:'Peripheral vascular / carotid artery disease',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'dvt1', cat:'Cardiovascular', label:'DVT — single episode, fully recovered, off meds',
+ {id:'dvt1', a:['dvt','blood clot','clot'], cat:'Cardiovascular', label:'DVT — single episode, fully recovered, off meds',
   out:{aa_term:{o:'std',n:'Single episode with full recovery is Standard'}, aa_iul:'std',
        aa_fe:'immediate', ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
- {id:'dvt2', cat:'Cardiovascular', label:'DVT — 2+ episodes or still on anticoagulant',
+ {id:'dvt2', a:['dvt recurrent','multiple clots','on blood thinner','anticoagulant'], cat:'Cardiovascular', label:'DVT — 2+ episodes or still on anticoagulant',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'aneurysm', cat:'Cardiovascular', label:'Aneurysm',
+ {id:'aneurysm', a:['aneurysm','aortic aneurysm'], cat:'Cardiovascular', label:'Aneurysm',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
 
  /* ---- Neurological ---- */
- {id:'stroke', cat:'Neurological', label:'Stroke / CVA',
+ {id:'stroke', a:['stroke','cva','brain bleed'], cat:'Neurological', label:'Stroke / CVA',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Within 3 yrs → Graded; within 2 yrs → ROP'},
        ta_full:{o:'table',n:'Table 2+ by age and time since; APS ordered'}, ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'tia', cat:'Neurological', label:'TIA — 6+ months ago, no residuals, non-smoker',
+ {id:'tia', a:['tia','mini stroke','transient ischemic attack'], cat:'Neurological', label:'TIA — 6+ months ago, no residuals, non-smoker',
   out:{aa_term:{o:'std',n:'Standard; DIR and CIR riders decline'}, aa_iul:'std', aa_fe:'rop',
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'seizure', cat:'Neurological', label:'Seizures / epilepsy (other than absence)',
+ {id:'seizure', a:['seizure','epilepsy','convulsions'], cat:'Neurological', label:'Seizures / epilepsy (other than absence)',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'migraine', cat:'Neurological', label:'Migraines — investigated and controlled',
+ {id:'migraine', a:['migraine','headaches'], cat:'Neurological', label:'Migraines — investigated and controlled',
   out:{aa_term:{o:'std',n:'DIR rider declines'}, aa_iul:'std', aa_fe:'immediate',
        ta_full:'std', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
- {id:'ms', cat:'Neurological', label:'Multiple sclerosis',
+ {id:'ms', a:['ms','multiple sclerosis'], cat:'Neurological', label:'Multiple sclerosis',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'parkinsons', cat:'Neurological', label:"Parkinson's disease",
+ {id:'parkinsons', a:['parkinsons','parkinson','tremor'], cat:'Neurological', label:"Parkinson's disease",
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'dementia', cat:'Neurological', label:'Dementia, Alzheimer’s, or memory loss',
+ {id:'dementia', a:['dementia','alzheimers','memory loss','cognitive impairment'], cat:'Neurological', label:'Dementia, Alzheimer’s, or memory loss',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
 
  /* ---- Endocrine ---- */
- {id:'dm2_oral', cat:'Endocrine / metabolic', label:'Type 2 diabetes — oral medication, diagnosed after 35',
+ {id:'dm2_oral', a:['diabetes','type 2 diabetes','sugar','t2d','a1c','metformin diabetes'], cat:'Endocrine / metabolic', label:'Type 2 diabetes — oral medication, diagnosed after 35',
   out:{aa_term:{o:'std',n:'Standard; declines if combined with tobacco, overweight, gout, retinopathy or protein in urine'},
        aa_iul:'std', aa_fe:'immediate',
        ta_full:{o:'std',n:'Standard to Table 8 by A1C, onset age and comorbidities'},
        ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
- {id:'dm_insulin', cat:'Endocrine / metabolic', label:'Diabetes — insulin within past 6 months',
+ {id:'dm_insulin', a:['insulin','insulin dependent','type 1 diabetes','t1d'], cat:'Endocrine / metabolic', label:'Diabetes — insulin within past 6 months',
   out:{aa_term:{o:'decline',n:'Insulin inside 6 months is an auto-decline'}, aa_iul:'decline',
        aa_fe:'immediate', ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'dm_early', cat:'Endocrine / metabolic', label:'Diabetes — diagnosed before age 35',
+ {id:'dm_early', a:['juvenile diabetes','early onset diabetes','diabetes young'], cat:'Endocrine / metabolic', label:'Diabetes — diagnosed before age 35',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate',
        ta_full:{o:'table',n:'Type 1 under 20 is a knockout; Type 2 under 30 with 15+ yrs duration is a knockout'},
        ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'dm_comp', cat:'Endocrine / metabolic', label:'Diabetic complications (retinopathy, neuropathy, nephropathy)',
+ {id:'dm_comp', a:['neuropathy','retinopathy','nephropathy','diabetic complications'], cat:'Endocrine / metabolic', label:'Diabetic complications (retinopathy, neuropathy, nephropathy)',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q4 — ROP plan'},
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'thyroid', cat:'Endocrine / metabolic', label:'Thyroid disorder — controlled',
+ {id:'thyroid', a:['thyroid','hypothyroid','hyperthyroid','synthroid'], cat:'Endocrine / metabolic', label:'Thyroid disorder — controlled',
   out:{aa_term:{o:'std',n:'CIR rider declines when combined with hypertension'}, aa_iul:'std',
        aa_fe:'immediate', ta_full:'pref_plus', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
 
  /* ---- Respiratory ---- */
- {id:'asthma_mild', cat:'Respiratory', label:'Asthma — mild / seasonal',
+ {id:'asthma_mild', a:['asthma','inhaler','seasonal asthma'], cat:'Respiratory', label:'Asthma — mild / seasonal',
   out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate', ta_full:'pref', ta_exp:'std',
        ta_fe:'pref', ta_fex:'pref'}},
- {id:'asthma_bad', cat:'Respiratory', label:'Asthma — ER or hospital within 12 months, or steroid maintenance',
+ {id:'asthma_bad', a:['severe asthma','asthma hospital','steroid asthma'], cat:'Respiratory', label:'Asthma — ER or hospital within 12 months, or steroid maintenance',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'copd', cat:'Respiratory', label:'COPD, emphysema, or chronic bronchitis',
+ {id:'copd', a:['copd','emphysema','chronic bronchitis'], cat:'Respiratory', label:'COPD, emphysema, or chronic bronchitis',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Senior Choice Q8 — Graded plan'},
        ta_full:{o:'table',n:'Table rating by severity; decline if smoking continues'}, ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'apnea', cat:'Respiratory', label:'Sleep apnea — treated with CPAP',
+ {id:'apnea', a:['sleep apnea','cpap','apnea'], cat:'Respiratory', label:'Sleep apnea — treated with CPAP',
   out:{aa_term:{o:'std',n:'Declines if build exceeds Table 2 or BP is poorly controlled'}, aa_iul:'std',
        aa_fe:'immediate', ta_full:'std', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
- {id:'oxygen', cat:'Respiratory', label:'Currently using oxygen equipment',
+ {id:'oxygen', a:['oxygen','o2','oxygen tank'], cat:'Respiratory', label:'Currently using oxygen equipment',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q1 — not eligible'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
 
  /* ---- Cancer ---- */
- {id:'skin_ca', cat:'Cancer', label:'Basal or squamous cell skin cancer — single occurrence',
+ {id:'skin_ca', a:['skin cancer','basal cell','squamous'], cat:'Cancer', label:'Basal or squamous cell skin cancer — single occurrence',
   out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate', ta_full:'pref', ta_exp:'std',
        ta_fe:'pref', ta_fex:'pref'}},
- {id:'ca_old', cat:'Cancer', label:'Cancer — 7+ years since treatment, no recurrence',
+ {id:'ca_old', a:['cancer remission','old cancer','cancer 7 years'], cat:'Cancer', label:'Cancer — 7+ years since treatment, no recurrence',
   out:{aa_term:{o:'std',n:'Standard; CIR rider declines'}, aa_iul:'std', aa_fe:'immediate',
        ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
- {id:'ca_recent', cat:'Cancer', label:'Cancer — treated within the last 7 years',
+ {id:'ca_recent', a:['cancer','recent cancer','chemo','radiation','tumor'], cat:'Cancer', label:'Cancer — treated within the last 7 years',
   out:{aa_term:{o:'decline',n:'Cancer Rx filled within 8 years is an auto-decline'}, aa_iul:'decline',
        aa_fe:{o:'graded',n:'Within 3 yrs → Graded; 2 or more occurrences → ROP'},
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'ca_multi', cat:'Cancer', label:'More than one cancer occurrence, or metastatic',
+ {id:'ca_multi', a:['metastatic','multiple cancers','cancer spread'], cat:'Cancer', label:'More than one cancer occurrence, or metastatic',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q5 — ROP plan'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
- {id:'leukemia', cat:'Cancer', label:'Leukemia, lymphoma, or multiple myeloma',
+ {id:'leukemia', a:['leukemia','lymphoma','myeloma','hodgkins'], cat:'Cancer', label:'Leukemia, lymphoma, or multiple myeloma',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
 
  /* ---- Mental health ---- */
- {id:'anx_mild', cat:'Mental health', label:'Anxiety or depression — 2 or fewer medications',
+ {id:'anx_mild', a:['anxiety','depression','ptsd','adhd','antidepressant'], cat:'Mental health', label:'Anxiety or depression — 2 or fewer medications',
   out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
        ta_full:{o:'pref',n:'Situational or mild is Preferred-eligible'}, ta_exp:'std',
        ta_fe:'pref', ta_fex:'pref'}},
- {id:'mdd', cat:'Mental health', label:'Major depressive disorder or 3+ psych medications',
+ {id:'mdd', a:['major depression','mdd','severe depression'], cat:'Mental health', label:'Major depressive disorder or 3+ psych medications',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'bipolar', cat:'Mental health', label:'Bipolar disorder or schizophrenia',
+ {id:'bipolar', a:['bipolar','schizophrenia','manic'], cat:'Mental health', label:'Bipolar disorder or schizophrenia',
   out:{aa_term:{o:'decline',n:'Abilify, Lithium, Seroquel, Risperdal etc. are auto-declines'},
        aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'suicide', cat:'Mental health', label:'Suicide attempt within 5 years or more than one ever',
+ {id:'suicide', a:['suicide','self harm'], cat:'Mental health', label:'Suicide attempt within 5 years or more than one ever',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'decline', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
 
  /* ---- Liver / kidney / GI ---- */
- {id:'hepc', cat:'Liver / kidney / GI', label:'Hepatitis B or C — any history',
+ {id:'hepc', a:['hepatitis','hep c','hep b','liver infection'], cat:'Liver / kidney / GI', label:'Hepatitis B or C — any history',
   out:{aa_term:{o:'decline',n:'Any history of diagnosis or treatment'}, aa_iul:'decline',
        aa_fe:{o:'rop',n:'Senior Choice Q7a — ROP plan'}, ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'cirrhosis', cat:'Liver / kidney / GI', label:'Cirrhosis of the liver',
+ {id:'cirrhosis', a:['cirrhosis','liver failure','fatty liver severe'], cat:'Liver / kidney / GI', label:'Cirrhosis of the liver',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'decline', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'ckd', cat:'Liver / kidney / GI', label:'Chronic kidney disease or renal insufficiency',
+ {id:'ckd', a:['kidney disease','ckd','renal','kidney failure'], cat:'Liver / kidney / GI', label:'Chronic kidney disease or renal insufficiency',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q5 — ROP plan'},
        ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
- {id:'dialysis', cat:'Liver / kidney / GI', label:'Dialysis or organ transplant (had or advised)',
+ {id:'dialysis', a:['dialysis','transplant','organ transplant'], cat:'Liver / kidney / GI', label:'Dialysis or organ transplant (had or advised)',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
- {id:'crohns', cat:'Liver / kidney / GI', label:"Crohn's or ulcerative colitis",
+ {id:'crohns', a:['crohns','ulcerative colitis','ibd','colitis'], cat:'Liver / kidney / GI', label:"Crohn's or ulcerative colitis",
   out:{aa_term:{o:'std',n:'Declines if diagnosed before 20 or within the past 12 months'},
        aa_iul:'std', aa_fe:'graded', ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
 
  /* ---- Other ---- */
- {id:'lupus', cat:'Other', label:'Systemic lupus (SLE)',
+ {id:'lupus', a:['lupus','sle'], cat:'Other', label:'Systemic lupus (SLE)',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'ra', cat:'Other', label:'Rheumatoid arthritis',
+ {id:'ra', a:['rheumatoid arthritis','ra','arthritis'], cat:'Other', label:'Rheumatoid arthritis',
   out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
        ta_full:{o:'std',n:'Standard to table by severity and treatment'}, ta_exp:'std',
        ta_fe:'std', ta_fex:'std'}},
- {id:'hiv', cat:'Other', label:'HIV / AIDS',
+ {id:'hiv', a:['hiv','aids'], cat:'Other', label:'HIV / AIDS',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q3 — not eligible'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
- {id:'substance', cat:'Other', label:'Alcohol or drug treatment / counseling',
+ {id:'substance', a:['alcohol','drugs','rehab','substance abuse','opioid'], cat:'Other', label:'Alcohol or drug treatment / counseling',
   out:{aa_term:{o:'decline',n:'Rx fill for dependence within 4 years is a decline'}, aa_iul:'decline',
        aa_fe:{o:'rop',n:'Senior Choice Q7d — ROP plan'}, ta_full:'table', ta_exp:'decline',
        ta_fe:'std', ta_fex:'std'}},
- {id:'nursing', cat:'Other', label:'Hospitalized, nursing home, bed or wheelchair confined',
+ {id:'nursing', a:['nursing home','wheelchair','bedridden','confined','hospice'], cat:'Other', label:'Hospitalized, nursing home, bed or wheelchair confined',
   out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q1 — not eligible'},
        ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
- {id:'pending', cat:'Other', label:'Diagnostic testing or surgery advised but not completed',
+ {id:'pending', a:['pending tests','awaiting results','undiagnosed','scheduled surgery'], cat:'Other', label:'Diagnostic testing or surgery advised but not completed',
   out:{aa_term:{o:'decline',n:'Undiagnosed pending workup'}, aa_iul:'decline',
        aa_fe:{o:'rop',n:'Senior Choice Q6 — ROP plan'}, ta_full:'ic', ta_exp:'decline',
        ta_fe:'ic', ta_fex:'ic'}}
@@ -702,8 +709,8 @@ const $$ = s => [...document.querySelectorAll(s)];
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const STATE = {
-  step:0, age:null, sex:'m', face:null, state:'', tob:'never', mj:'no',
-  ft:5, in:9, wt:null, conds:new Set(), meds:[]
+  step:0, age:null, sex:'m', face:null, state:'', tob:'never', kind:'all',
+  ft:5, in:9, wt:null, conds:new Set(), free:[], meds:[]
 };
 const STEP_NAMES = ['Client','Build','Conditions','Medications','Results'];
 
@@ -773,6 +780,7 @@ function tobaccoVerdict(lane){
 function activeConditions(){
   const map = new Map();
   STATE.conds.forEach(id=>map.set(id,{id, via:'selected'}));
+  STATE.free.forEach(t=>map.set('free:'+t,{id:'free:'+t, via:'typed', free:true, label:t}));
   STATE.meds.forEach(m=>m.c.forEach(id=>{
     // a drug treating more than one condition is a question, not a diagnosis
     if(!map.has(id)) map.set(id,{id, via:'med:'+m.n, ambiguous:m.c.length>1, use:m.u});
@@ -783,7 +791,7 @@ function activeConditions(){
 /* Evaluate one product */
 function evaluate(p){
   const why=[], reqs=[...(p.req||[])];
-  let out = p.best;
+  let out = p.best, pending = 0;
 
   // age
   if(STATE.age!=null){
@@ -804,12 +812,15 @@ function evaluate(p){
   // tobacco
   const tv = tobaccoVerdict(p.lane);
   if(tv){ out = worse(out, tv.o); why.push({t:'Tobacco: '+tv.why, tag:'NICOTINE', res:tv.o}); }
-  // marijuana
-  if(STATE.mj==='yes' && p.carrier==='TransAm')
-    why.push({t:'Marijuana: nonsmoker rates, eligible up to Preferred Plus on IUL', tag:'MJ'});
   // conditions
   const acts = activeConditions();
   acts.forEach(a=>{
+    if(a.free){
+      pending++;
+      why.push({t:`"${a.label}" is not in the loaded rules — the class below does not account for it. Confirm with the carrier's risk desk before quoting`,
+                tag:'UNLISTED', res:'ic'});
+      return;
+    }
     const c = CONDITIONS.find(x=>x.id===a.id); if(!c) return;
     const raw = c.out[p.lane];
     if(raw===undefined){
@@ -832,12 +843,19 @@ function evaluate(p){
   if(p.id==='sc' && STATE.age>=71) reqs.push('Interview if not in Rx database');
   if(p.lane==='ta_full' && (STATE.face>=1000000 || STATE.age>=61)) reqs.push('Labs / paramed likely');
   if(na) out='decline';
-  return {p, out, why, reqs, na, smoker:['current','quit1'].includes(STATE.tob)};
+  return {p, out, why, reqs, na, pending, smoker:['current','quit1'].includes(STATE.tob)};
 }
 
+const KIND_LABEL={all:'all products',term:'term',wl:'whole life',iul:'IUL'};
 function runEngine(){
-  return PRODUCTS.map(evaluate).sort((a,b)=>
+  const pool = STATE.kind==='all' ? PRODUCTS : PRODUCTS.filter(p=>p.kind===STATE.kind);
+  return pool.map(evaluate).sort((a,b)=>
     (a.na?1:0)-(b.na?1:0) || RANK.indexOf(a.out)-RANK.indexOf(b.out));
+}
+function kindNote(){
+  if(STATE.kind==='all') return '';
+  const n = PRODUCTS.length - PRODUCTS.filter(p=>p.kind===STATE.kind).length;
+  return ` · filtered to ${KIND_LABEL[STATE.kind]} (${n} other product${n===1?'':'s'} hidden)`;
 }
 
 /* ---------- UI ---------- */
@@ -879,6 +897,21 @@ function paintBuild(){
 }
 
 /* conditions */
+function condSearch(q){
+  q=q.trim().toLowerCase(); if(!q) return [];
+  return CONDITIONS.filter(c=>{
+    if(STATE.conds.has(c.id)) return false;
+    if(c.label.toLowerCase().includes(q)) return true;
+    return (c.a||[]).some(a=>a.includes(q)||q.includes(a));
+  }).slice(0,8);
+}
+function paintCondPills(){
+  const picked=[...STATE.conds].map(id=>{
+    const c=CONDITIONS.find(x=>x.id===id); return c?`<span class="pill">${c.label}<button data-rc="${id}">✕</button></span>`:'';
+  }).join('');
+  const typed=STATE.free.map((t,i)=>`<span class="pill" style="border-color:rgba(255,200,60,.55);background:rgba(255,200,60,.10)">${t} <em>unlisted</em><button data-rf="${i}">✕</button></span>`).join('');
+  $('#condPills').innerHTML = (picked+typed) || '<div class="hint">Nothing selected yet — type above or pick from the list.</div>';
+}
 function paintConds(filter=''){
   const f=filter.toLowerCase();
   const cats=[...new Set(CONDITIONS.map(c=>c.cat))];
@@ -927,13 +960,14 @@ function paintResults(){
     head=`<div class="verdict" style="border-color:${m.color}55">
       <div class="vico" style="background:${m.color}22;color:${m.color}">✓</div>
       <div class="vtxt"><b>Best fit: ${best.p.name} — ${m.label}</b>
-      <span>${viable.length} of ${res.length} viable · ${limited.length} outside age/face limits · ${acts.length} condition${acts.length===1?'':'s'} in play${STATE.wt?` · BMI ${bmi()}`:''}</span></div></div>`;
+      <span>${viable.length} of ${res.length} viable · ${limited.length} outside age/face limits · ${acts.length} condition${acts.length===1?'':'s'} in play${STATE.wt?` · BMI ${bmi()}`:''}${kindNote()}${STATE.free.length?` · <b style="color:var(--am)">${STATE.free.length} unlisted, class not final</b>`:''}</span></div></div>`;
   }
 
   const cards=res.map((r,i)=>{
     const m = r.na ? {label:'Outside limits', color:'var(--ink-3)'} : OUTCOME_META[r.out];
-    const clsLabel = (!r.na && r.smoker && ['pref_plus','pref','std_plus','std','table'].includes(r.out))
+    let clsLabel = (!r.na && r.smoker && ['pref_plus','pref','std_plus','std','table'].includes(r.out))
       ? m.label + ' <span style="font-size:10px;opacity:.75">(TOBACCO)</span>' : m.label;
+    if(r.pending && !r.na) clsLabel += ` <span style="font-size:10px;color:var(--am)">+${r.pending} UNLISTED</span>`;
     const why=r.why.map(w=>`<li>${w.tag?`<b>${w.tag}</b> · `:''}${w.t}`
       + (w.src?` <em style="color:var(--pu);font-style:normal">(from ${w.src})</em>`:'')
       + (w.amb?` <em style="color:var(--am);font-style:normal">— ${w.use}; confirm which before you quote</em>`:'')
@@ -1004,7 +1038,7 @@ function finishScan(){
   // height selects
   $('#ft').innerHTML=[4,5,6,7].map(f=>`<option ${f===5?'selected':''}>${f}</option>`).join('');
   $('#in').innerHTML=[...Array(12).keys()].map(i=>`<option ${i===9?'selected':''}>${i}</option>`).join('');
-  paintStepper(); paintConds(); paintMeds();
+  paintStepper(); paintConds(); paintCondPills(); paintMeds();
 
   document.addEventListener('click',e=>{
     const g=e.target.closest('[data-go]');
@@ -1015,21 +1049,26 @@ function finishScan(){
       [...box.children].forEach(b=>b.classList.remove('on','warn'));
       seg.classList.add('on');
       if(box.id==='tob'){ STATE.tob=seg.dataset.v; if(['current','quit1'].includes(STATE.tob)) seg.classList.add('warn'); }
-      if(box.id==='mj') STATE.mj=seg.dataset.v;
+      if(box.id==='kind') STATE.kind=seg.dataset.v;
       return;
     }
     const chip=e.target.closest('.chip[data-c]');
     if(chip){
       const id=chip.dataset.c;
       STATE.conds.has(id) ? STATE.conds.delete(id) : STATE.conds.add(id);
-      chip.classList.toggle('on');
+      chip.classList.toggle('on'); paintCondPills();
       return;
     }
     const rm=e.target.closest('[data-rm]');
     if(rm){ STATE.meds.splice(+rm.dataset.rm,1); paintMeds(); return; }
+    const rc=e.target.closest('[data-rc]');
+    if(rc){ STATE.conds.delete(rc.dataset.rc); paintCondPills(); paintConds($('#condSearch').value); return; }
+    const rf=e.target.closest('[data-rf]');
+    if(rf){ STATE.free.splice(+rf.dataset.rf,1); paintCondPills(); return; }
     const ph=e.target.closest('.phead');
     if(ph){ ph.parentElement.classList.toggle('open'); return; }
     if(!e.target.closest('#medSearch')) $('#medAc').style.display='none';
+    if(!e.target.closest('#condSearch')) $('#condAc').style.display='none';
   });
 
   ['age','face','state'].forEach(id=>$('#'+id).addEventListener('input',e=>{
@@ -1039,7 +1078,30 @@ function finishScan(){
   ['ft','in','wt'].forEach(id=>$('#'+id).addEventListener('input',e=>{
     STATE[id]= e.target.value?+e.target.value:(id==='wt'?null:0); paintBuild();
   }));
-  $('#condSearch').addEventListener('input',e=>paintConds(e.target.value));
+  const cs=$('#condSearch'), cac=$('#condAc');
+  const paintCondAc=()=>{
+    const q=cs.value.trim(); const hits=condSearch(q);
+    if(!q){ cac.style.display='none'; return; }
+    let html=hits.map((c,i)=>`<div data-cond="${c.id}" class="${i===0?'sel':''}">
+      <b>${c.label}</b><small>${c.cat}${(c.a||[]).length?' · '+c.a.slice(0,3).join(', '):''}</small></div>`).join('');
+    if(q.length>2) html+=`<div data-free="1" style="border-top:1px solid rgba(255,200,60,.3)">
+      <b style="color:var(--am)">+ Add "${q}"</b><small>not in the loaded rules — will be flagged for the carrier</small></div>`;
+    cac.innerHTML=html; cac.style.display=html?'block':'none';
+  };
+  cs.addEventListener('input',()=>{ paintCondAc(); paintConds(cs.value); });
+  cac.addEventListener('click',e=>{
+    const d=e.target.closest('[data-cond]');
+    if(d){ STATE.conds.add(d.dataset.cond); }
+    else if(e.target.closest('[data-free]')){
+      const t=cs.value.trim();
+      if(t && !STATE.free.includes(t)) STATE.free.push(t);
+    } else return;
+    cs.value=''; cac.style.display='none'; paintCondPills(); paintConds('');
+  });
+  cs.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ const first=cac.querySelector('[data-cond],[data-free]'); if(first) first.click(); e.preventDefault(); }
+    if(e.key==='Escape') cac.style.display='none';
+  });
 
   const ms=$('#medSearch'), ac=$('#medAc');
   ms.addEventListener('input',()=>{
@@ -1062,9 +1124,9 @@ function finishScan(){
 
   $('#runBtn').addEventListener('click',runScan);
   $('#restart').addEventListener('click',()=>{
-    STATE.conds.clear(); STATE.meds=[]; STATE.wt=null;
+    STATE.conds.clear(); STATE.free=[]; STATE.meds=[]; STATE.wt=null;
     $('#wt').value=''; $('#age').value=''; $('#face').value=''; STATE.age=null; STATE.face=null;
-    paintConds(); paintMeds(); paintBuild(); go(0);
+    paintConds(); paintCondPills(); paintMeds(); paintBuild(); go(0);
   });
 })();
 
