@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T1P Underwriting Wizard</title>
+<style>
+:root{
+  --bg:#04070a; --panel:#0a1016; --panel-2:#0d151d; --edge:rgba(120,200,255,.14);
+  --edge-hot:rgba(90,220,255,.55);
+  --ink:#E6F2F7; --ink-2:#9FB6C4; --ink-3:#5E7484;
+  --cy:#3DD9F5; --gr:#00E676; --am:#FFC83C; --rd:#FF5F6D; --pu:#A98BFF;
+  --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1100px 620px at 15% -10%,rgba(61,217,245,.10),transparent 60%),
+             radial-gradient(900px 560px at 110% 8%,rgba(169,139,255,.08),transparent 60%)}
+#grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(120,200,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(120,200,255,.045) 1px,transparent 1px);
+  background-size:52px 52px;mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%)}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 20px 90px}
+
+/* header */
+header{padding:26px 0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-family:var(--mono);font-size:19px;letter-spacing:.16em;color:var(--ink)}
+.logo b{color:var(--cy);text-shadow:0 0 14px rgba(61,217,245,.6)}
+.tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+.carriers{margin-left:auto;display:flex;gap:8px}
+.cbadge{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:6px 11px;border-radius:20px;
+  border:1px solid var(--edge);color:var(--ink-2);background:rgba(255,255,255,.02)}
+
+/* stepper */
+.steps{display:flex;align-items:center;gap:0;margin:22px 0 26px;padding:0;list-style:none}
+.steps li{flex:1;display:flex;align-items:center;gap:9px;min-width:0}
+.sdot{width:26px;height:26px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;border:1px solid var(--edge);color:var(--ink-3);background:var(--panel);
+  transition:.35s cubic-bezier(.2,.8,.3,1)}
+.steps li.on .sdot{border-color:var(--cy);color:var(--cy);box-shadow:0 0 0 4px rgba(61,217,245,.12),0 0 18px rgba(61,217,245,.45)}
+.steps li.done .sdot{border-color:var(--gr);color:#04070a;background:var(--gr);box-shadow:0 0 16px rgba(0,230,118,.5)}
+.slabel{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps li.on .slabel{color:var(--ink)}
+.sbar{flex:1;height:1px;background:var(--edge);margin:0 12px;position:relative;overflow:hidden}
+.sbar i{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--gr),var(--cy));transition:width .5s ease}
+.steps li.done .sbar i{width:100%}
+@media(max-width:760px){.slabel{display:none}.sbar{margin:0 6px}}
+
+/* cards */
+.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);border-radius:14px;
+  padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.step{display:none}
+.step.on{display:block;animation:stepIn .45s cubic-bezier(.2,.8,.3,1)}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+h2{margin:0 0 4px;font-size:23px;letter-spacing:-.01em}
+.sub{margin:0 0 20px;color:var(--ink-2);font-size:13.5px;line-height:1.6}
+.k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--cy);margin:20px 0 9px}
+.k:first-child{margin-top:0}
+
+/* fields */
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+label.f{display:block}
+label.f span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+input,select{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--edge);border-radius:8px;color:var(--ink);
+  padding:11px 12px;font-family:var(--mono);font-size:14px;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--edge-hot);box-shadow:0 0 0 3px rgba(61,217,245,.12)}
+select option{background:#0a1016}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:96px;padding:11px 10px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.02);
+  border:1px solid var(--edge);color:var(--ink-2);font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;transition:.2s}
+.seg button:hover{border-color:var(--edge-hot);color:var(--ink)}
+.seg button.on{background:rgba(61,217,245,.14);border-color:var(--cy);color:#fff;box-shadow:0 0 16px rgba(61,217,245,.3)}
+.seg button.on.warn{background:rgba(255,95,109,.13);border-color:var(--rd);box-shadow:0 0 16px rgba(255,95,109,.28)}
+
+/* build meter */
+.meter{margin-top:16px;padding:16px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.015)}
+.mtop{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bmi{font-family:var(--mono);font-size:30px;color:var(--ink)}
+.bmi small{font-size:11px;color:var(--ink-3);letter-spacing:.14em;margin-left:6px}
+.mtag{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:5px 10px;border-radius:5px;border:1px solid currentColor}
+.track{position:relative;height:9px;border-radius:5px;margin-top:14px;overflow:hidden;
+  background:linear-gradient(90deg,#2b3a44 0 8%,var(--gr) 8% 38%,var(--am) 38% 62%,#ff9a3c 62% 80%,var(--rd) 80% 100%);opacity:.75}
+.pin{position:absolute;top:-5px;width:3px;height:19px;border-radius:2px;background:#fff;box-shadow:0 0 10px #fff;
+  transition:left .7s cubic-bezier(.2,.8,.3,1)}
+.mscale{display:flex;justify-content:space-between;margin-top:7px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3)}
+
+/* chips */
+.search{position:relative;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:9px 13px;border-radius:20px;cursor:pointer;background:rgba(255,255,255,.02);border:1px solid var(--edge);
+  color:var(--ink-2);font-size:12.5px;transition:.18s;display:inline-flex;align-items:center;gap:7px}
+.chip:hover{border-color:var(--edge-hot);color:var(--ink);transform:translateY(-1px)}
+.chip.on{background:rgba(61,217,245,.15);border-color:var(--cy);color:#fff}
+.chip.on::before{content:'✓';color:var(--cy);font-size:11px}
+.cat{margin:18px 0 8px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  display:flex;align-items:center;gap:10px}
+.cat i{flex:1;height:1px;background:var(--edge)}
+.hint{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:10px;line-height:1.6}
+
+/* med autocomplete */
+.ac{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 6px);background:#0b131a;border:1px solid var(--edge-hot);
+  border-radius:10px;max-height:280px;overflow:auto;box-shadow:0 22px 50px rgba(0,0,0,.65)}
+.ac div{padding:11px 13px;cursor:pointer;font-size:13px;border-bottom:1px solid rgba(120,200,255,.07)}
+.ac div:hover,.ac div.sel{background:rgba(61,217,245,.12)}
+.ac b{color:var(--cy)}
+.ac small{display:block;font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:rgba(169,139,255,.12);
+  border:1px solid rgba(169,139,255,.5);font-family:var(--mono);font-size:12px;color:#DCD2FF;animation:pillIn .3s}
+@keyframes pillIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.pill button{background:none;border:none;color:#DCD2FF;cursor:pointer;font-size:14px;padding:0;line-height:1}
+.pill em{font-style:normal;color:var(--ink-3);font-size:10.5px}
+
+/* nav */
+.nav{display:flex;gap:12px;margin-top:26px}
+.btn{padding:13px 24px;border-radius:9px;cursor:pointer;font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;
+  border:1px solid var(--edge);background:rgba(255,255,255,.02);color:var(--ink-2);transition:.2s}
+.btn:hover{border-color:var(--edge-hot);color:var(--ink)}
+.btn.go{margin-left:auto;border-color:var(--cy);color:#04070a;font-weight:600;
+  background:linear-gradient(100deg,var(--cy),#5FE6C0);box-shadow:0 0 22px rgba(61,217,245,.4)}
+.btn.go:hover{box-shadow:0 0 34px rgba(61,217,245,.7);transform:translateY(-1px)}
+
+/* scan */
+#scan{display:none;padding:40px 24px;text-align:center}
+#scan.on{display:block}
+.radar{width:132px;height:132px;margin:0 auto 22px;border-radius:50%;position:relative;
+  border:1px solid rgba(61,217,245,.3);box-shadow:inset 0 0 40px rgba(61,217,245,.12)}
+.radar::after{content:'';position:absolute;inset:-1px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0deg 300deg,rgba(61,217,245,.55) 360deg);
+  animation:sweep 1.1s linear infinite;mask:radial-gradient(circle,transparent 30%,#000 31%)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.radar b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:26px;color:var(--cy);text-shadow:0 0 18px rgba(61,217,245,.7)}
+.log{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);line-height:2;text-align:left;max-width:400px;margin:0 auto}
+.log div{opacity:0;animation:logIn .3s forwards}
+@keyframes logIn{to{opacity:1}}
+.log span{color:var(--gr)}
+
+/* results */
+.verdict{display:flex;gap:14px;align-items:center;padding:18px 20px;border-radius:12px;margin-bottom:18px;
+  border:1px solid var(--edge);background:rgba(255,255,255,.02)}
+.vico{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px}
+.vtxt b{display:block;font-size:16px;margin-bottom:3px}
+.vtxt span{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.prod{border:1px solid var(--edge);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));
+  opacity:0;transform:translateY(16px);animation:cardIn .5s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes cardIn{to{opacity:1;transform:none}}
+.phead{display:flex;align-items:center;gap:13px;padding:15px 18px;cursor:pointer;border-left:3px solid var(--pc,var(--ink-3))}
+.phead:hover{background:rgba(255,255,255,.02)}
+.pcar{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;padding:4px 8px;border-radius:4px;border:1px solid var(--edge);color:var(--ink-3);flex:none}
+.pname{font-weight:600;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmeta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px}
+.pcls{margin-left:auto;text-align:right;flex:none}
+.pcls b{display:block;font-family:var(--mono);font-size:14px;color:var(--pc)}
+.pcls span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--ink-3)}
+.parrow{flex:none;color:var(--ink-3);font-size:11px;transition:transform .25s}
+.prod.open .parrow{transform:rotate(90deg)}
+.pbody{display:none;padding:0 18px 18px 21px;border-top:1px solid var(--edge)}
+.prod.open .pbody{display:block;animation:stepIn .3s}
+.why{margin:14px 0 0;padding:0;list-style:none}
+.why li{position:relative;padding:6px 0 6px 20px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.why li::before{content:'▸';position:absolute;left:0;color:var(--pc)}
+.why li b{color:var(--ink)}
+.req{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.req span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:5px 9px;border-radius:5px;
+  border:1px solid var(--edge);color:var(--ink-2);background:rgba(255,255,255,.02)}
+.disclaim{margin-top:26px;padding:15px 17px;border-radius:10px;border:1px solid rgba(255,200,60,.3);
+  background:rgba(255,200,60,.05);font-size:12px;color:#E8D9AE;line-height:1.65}
+.disclaim b{color:var(--am)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="grid"></div>
+<div class="wrap">
+<header>
+  <div>
+    <div class="logo">T1P <b>UNDERWRITING WIZARD</b></div>
+    <div class="tagline">field guidance · rough sketch v0.1</div>
+  </div>
+  <div class="carriers">
+    <span class="cbadge">AMERICAN AMICABLE</span>
+    <span class="cbadge">TRANSAMERICA</span>
+  </div>
+</header>
+
+<ul class="steps" id="stepper"></ul>
+
+<div class="card">
+  <!-- 1 -->
+  <section class="step on" data-step="0">
+    <h2>Who are we underwriting?</h2>
+    <p class="sub">Start with the basics. Everything downstream — issue ages, face limits, phone interviews — keys off these.</p>
+    <div class="k">The basics</div>
+    <div class="row">
+      <label class="f"><span>Age</span><input id="age" type="number" min="0" max="99" placeholder="58"></label>
+      <label class="f"><span>Sex</span><select id="sex"><option value="m">Male</option><option value="f">Female</option></select></label>
+      <label class="f"><span>Face amount</span><input id="face" type="number" step="1000" placeholder="150000"></label>
+      <label class="f"><span>State</span><input id="state" maxlength="2" placeholder="UT" style="text-transform:uppercase"></label>
+    </div>
+    <div class="k">Nicotine — any form, including vape, patch, chew, cigars</div>
+    <div class="seg" id="tob">
+      <button data-v="never" class="on">NEVER</button>
+      <button data-v="quit5">QUIT 5+ YRS</button>
+      <button data-v="quit2">QUIT 2-5 YRS</button>
+      <button data-v="quit1">QUIT 1-2 YRS</button>
+      <button data-v="current">CURRENT</button>
+    </div>
+    <div class="k">Marijuana</div>
+    <div class="seg" id="mj">
+      <button data-v="no" class="on">NO</button>
+      <button data-v="yes">YES</button>
+    </div>
+    <div class="nav"><button class="btn go" data-go="1">BUILD →</button></div>
+  </section>
+
+  <!-- 2 -->
+  <section class="step" data-step="1">
+    <h2>Height &amp; weight</h2>
+    <p class="sub">Build is checked against each carrier's chart. American Amicable uses pounds-per-height tables; Transamerica runs on BMI.</p>
+    <div class="row">
+      <label class="f"><span>Feet</span><select id="ft"></select></label>
+      <label class="f"><span>Inches</span><select id="in"></select></label>
+      <label class="f"><span>Weight (lb)</span><input id="wt" type="number" placeholder="210"></label>
+    </div>
+    <div class="meter">
+      <div class="mtop">
+        <div class="bmi" id="bmiVal">—<small>BMI</small></div>
+        <div class="mtag" id="bmiTag" style="color:var(--ink-3)">ENTER BUILD</div>
+      </div>
+      <div class="track"><div class="pin" id="pin" style="left:0"></div></div>
+      <div class="mscale"><span>16</span><span>25</span><span>30</span><span>35</span><span>40</span><span>46+</span></div>
+      <div class="hint" id="buildNote">Build alone can cap a class before a single health question is asked.</div>
+    </div>
+    <div class="nav"><button class="btn" data-go="0">← BACK</button><button class="btn go" data-go="2">CONDITIONS →</button></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="step" data-step="2">
+    <h2>Health conditions</h2>
+    <p class="sub">Tap everything that applies. Diagnosed, treated, or medicated — the carriers see the Rx database either way.</p>
+    <div class="search"><input id="condSearch" placeholder="Search conditions — diabetes, a-fib, COPD…"></div>
+    <div id="condList"></div>
+    <div class="nav"><button class="btn" data-go="1">← BACK</button><button class="btn go" data-go="3">MEDICATIONS →</button></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="step" data-step="3">
+    <h2>Medications</h2>
+    <p class="sub">Type a drug and it maps itself to the condition underwriting will assume. This is how the Rx database reads your client.</p>
+    <div class="search">
+      <input id="medSearch" placeholder="Start typing — Eliquis, metformin, Lisinopril…" autocomplete="off">
+      <div class="ac" id="medAc" style="display:none"></div>
+    </div>
+    <div class="chips" id="medList" style="margin-top:14px"></div>
+    <div class="hint">A medication is a signal the condition exists even if the client didn't mention it. Anything it implies is added to the analysis automatically.</div>
+    <div class="nav"><button class="btn" data-go="2">← BACK</button><button class="btn go" id="runBtn">RUN UNDERWRITING →</button></div>
+  </section>
+
+  <!-- scan -->
+  <div id="scan">
+    <div class="radar"><b id="radarPct">0%</b></div>
+    <div class="log" id="scanLog"></div>
+  </div>
+
+  <!-- 5 -->
+  <section class="step" data-step="4">
+    <div id="results"></div>
+    <div class="nav"><button class="btn" data-go="3">← EDIT INTAKE</button><button class="btn go" id="restart">START OVER</button></div>
+  </section>
+</div>
+</div>
+<script>
+/* ===========================================================================
+   T1P UNDERWRITING WIZARD — RULE DATA
+   ---------------------------------------------------------------------------
+   Everything the engine knows lives here. To extend: add a product to PRODUCTS,
+   a condition to CONDITIONS (with an outcome per lane), or a drug to MEDS.
+   No engine changes required.
+
+   Sources seeded from:
+     • American Amicable Field Underwriting Reference (compiled 09/2026) —
+       Term Made Simple 3237(10/25), SafeCare Term 3785(11/25), Easy Term
+       3341(9/25), Senior Choice 3079(11/25), Intelligent Choice 3851.
+     • Transamerica Underwriting Wizard Knowledge Base (compiled 09/2026).
+   Agent-use field guidance only. Final offers come from the carrier.
+   ========================================================================= */
+
+/* LANES — a lane is a group of products that share an underwriting chart.
+   This is exactly how the carrier guides are organized. */
+const LANES = {
+  aa_term : 'AmAm simplified term (Term Made Simple / SafeCare / Easy Term)',
+  aa_iul  : 'AmAm Intelligent Choice IUL',
+  aa_fe   : 'AmAm Senior Choice (final expense, plan assignment)',
+  ta_full : 'TA fully underwritten (Trendsetter, FFIUL II, Lifetime)',
+  ta_exp  : 'TA FFIUL II Express (instant decision)',
+  ta_fe   : 'TA final expense (Immediate / 10-Pay / Easy Solution)',
+  ta_fex  : 'TA FE Express Solution'
+};
+
+/* OUTCOME VOCABULARY — ranked best to worst. The engine always keeps the worst. */
+const RANK = ['pref_plus','pref','std_plus','std','table','immediate','rop','graded','ic','decline'];
+const OUTCOME_META = {
+  pref_plus:{label:'Preferred Plus',  color:'var(--gr)', tone:'best'},
+  pref     :{label:'Preferred',       color:'var(--gr)', tone:'good'},
+  std_plus :{label:'Standard Plus',   color:'var(--cy)', tone:'good'},
+  std      :{label:'Standard',        color:'var(--cy)', tone:'ok'},
+  table    :{label:'Table rated',     color:'var(--am)', tone:'ok'},
+  immediate:{label:'Immediate DB',    color:'var(--gr)', tone:'good'},
+  rop      :{label:'Return of Premium',color:'var(--am)',tone:'ok'},
+  graded   :{label:'Graded DB',       color:'var(--am)', tone:'ok'},
+  ic       :{label:'Individual consideration',color:'var(--pu)',tone:'ok'},
+  decline  :{label:'Decline',         color:'var(--rd)', tone:'bad'}
+};
+
+/* PRODUCTS */
+const PRODUCTS = [
+  {id:'tms',   carrier:'AmAm', lane:'aa_term', name:'Term Made Simple', type:'Simplified term to 95',
+   ages:[18,75], face:[50000,500000], fee:'$70', best:'pref',
+   termAges:{10:[18,75],15:[18,70],20:[18,65],30:[18,55]},
+   req:['App + MIB','Rx database','MVR','No exam / no labs'],
+   note:'Accept/reject through Table 4 — no table ratings. Phone interview ages 65-75.'},
+
+  {id:'safe',  carrier:'AmAm', lane:'aa_term', name:'SafeCare Term', type:'Simplified term to 95 (FFL)',
+   ages:[18,75], face:[25000,500000], fee:'$70', best:'pref',
+   termAges:{10:[18,75],15:[18,70],20:[18,65],30:[18,55]},
+   req:['App + MIB','Rx database','MVR','No exam / no labs'],
+   note:'ROP available on 20/30 yr. Phone interview ages 65-75.'},
+
+  {id:'easy',  carrier:'AmAm', lane:'aa_term', name:'Easy Term', type:'Simplified term to 95',
+   ages:[18,70], face:[25000,500000], fee:'$60', best:'std',
+   termAges:{10:[18,70],20:[18,65],30:[18,55]},
+   req:['App + MIB','Rx database','MVR'],
+   note:'NT / Tobacco only — no Preferred. $500K to age 45, $300K ages 46-70.'},
+
+  {id:'sc',    carrier:'AmAm', lane:'aa_fe',   name:'Senior Choice', type:'Final expense whole life',
+   ages:[50,85], face:[2500,50000], fee:'$30', best:'immediate',
+   req:['App + MIB','Rx database','Build chart'],
+   note:'Plan assigned by health questions: Immediate / Graded / ROP.'},
+
+  {id:'ic',    carrier:'AmAm', lane:'aa_iul',  name:'Intelligent Choice IUL', type:'Simplified issue IUL',
+   ages:[18,75], face:[25000,500000], fee:'n/a', best:'std',
+   req:['App + MIB','Rx database','MVR'],
+   note:'Standard through Table 4. Interview only if Underwriting requests it.'},
+
+  {id:'tsuper',carrier:'TransAm', lane:'ta_full', name:'Trendsetter Super', type:'Fully underwritten term',
+   ages:[18,80], face:[25000,10000000], fee:'—', best:'pref_plus',
+   req:['Full underwriting','Fluidless eligible at many cells','APS by impairment'],
+   note:'Preferred Plus / Preferred NS / Standard Plus / Standard NS + smoker classes.'},
+
+  {id:'tlb',   carrier:'TransAm', lane:'ta_full', name:'Trendsetter LB', type:'Term with living benefits',
+   ages:[18,80], face:[25000,10000000], fee:'—', best:'pref_plus',
+   req:['Full underwriting','Fluidless eligible'],
+   note:'Living benefit riders underwrite separately from the base policy.'},
+
+  {id:'ffiul', carrier:'TransAm', lane:'ta_full', name:'Financial Foundation IUL II', type:'IUL',
+   ages:[0,85], face:[25000,10000000], fee:'—', best:'pref_plus',
+   req:['Full underwriting','Fluidless eligible'],
+   note:'Preferred Elite = Preferred Plus tier naming.'},
+
+  {id:'life',  carrier:'TransAm', lane:'ta_full', name:'Transamerica Lifetime', type:'Whole life',
+   ages:[0,80], face:[25000,5000000], fee:'—', best:'pref_plus',
+   req:['Express Protect underwriting'],
+   note:'$2M max in CA.'},
+
+  {id:'ffexp', carrier:'TransAm', lane:'ta_exp', name:'FFIUL II Express', type:'Instant-decision IUL',
+   ages:[18,70], face:[50000,500000], fee:'—', best:'std',
+   req:['100% instant decision','Single-condition chart','No labs'],
+   note:'Select NT / Select Tobacco only. Max $500K to 60, $300K 61-70.'},
+
+  {id:'imm',   carrier:'TransAm', lane:'ta_fe',  name:'Immediate Solution', type:'FE whole life, level day one',
+   ages:[0,85], face:[1000,50000], fee:'—', best:'pref',
+   req:['Digital app','Rx + medical data','Real-time decision'],
+   note:'Max $50K to 55, $40K 56-65, $30K 66-75, $25K 76-85.'},
+
+  {id:'easysol',carrier:'TransAm', lane:'ta_fe', name:'Easy Solution', type:'FE graded death benefit',
+   ages:[18,80], face:[1000,25000], fee:'—', best:'graded',
+   req:['Digital app','Rx + medical data'],
+   note:'First 2 years: accidental only or 110% of premiums paid.'},
+
+  {id:'feexp', carrier:'TransAm', lane:'ta_fex', name:'FE Express Solution', type:'FE whole life, immediate level DB',
+   ages:[18,85], face:[5000,100000], fee:'—', best:'pref',
+   req:['Digital app','Rx data','Single-condition chart'],
+   note:'Not available in GU, NY, PR, VI. Max $100K to 75, $25K 76-85.'}
+];
+
+/* BUILD CHARTS ------------------------------------------------------------ */
+/* AmAm simplified term: [minWeight, maxTable2, maxTable4] by total inches */
+const AA_TERM_BUILD = {
+  58:[86,182,199], 59:[88,188,205], 60:[90,195,212], 61:[93,201,220], 62:[95,208,227],
+  63:[99,215,234], 64:[101,221,242], 65:[104,228,249], 66:[106,235,257], 67:[110,243,265],
+  68:[113,250,273], 69:[117,257,281], 70:[120,265,289], 71:[125,272,298], 72:[129,280,306],
+  73:[133,288,315], 74:[136,296,323], 75:[140,304,332], 76:[143,312,341], 77:[146,320,350],
+  78:[149,329,359], 79:[153,337,368], 80:[157,346,378], 81:[160,355,387]
+};
+/* AmAm Preferred build: [min, max] */
+const AA_PREF_BUILD = {
+  56:[88,144], 57:[90,149], 58:[92,154], 59:[94,160], 60:[96,165], 61:[99,171], 62:[101,177],
+  63:[105,182], 64:[107,188], 65:[110,194], 66:[112,200], 67:[116,206], 68:[119,212], 69:[123,219],
+  70:[126,225], 71:[131,231], 72:[135,238], 73:[139,245], 74:[142,251], 75:[146,258], 76:[149,265],
+  77:[152,272], 78:[155,279], 79:[158,287]
+};
+/* AmAm Senior Choice: [maxImmediate, maxGraded, maxROP, minImmediate] */
+const AA_SC_BUILD = {
+  53:[173,180,190,82], 54:[180,188,198,84], 55:[187,196,206,86], 56:[197,204,214,88],
+  57:[204,212,222,90], 58:[211,220,230,92], 59:[218,228,238,94], 60:[225,236,246,96],
+  61:[233,244,254,99], 62:[241,252,262,101], 63:[248,260,271,105], 64:[256,268,280,107],
+  65:[264,276,288,110], 66:[273,285,297,112], 67:[281,294,306,116], 68:[289,303,316,119],
+  69:[298,312,325,123], 70:[307,321,335,126], 71:[315,330,344,130], 72:[324,339,354,135],
+  73:[334,349,364,139], 74:[343,359,374,142], 75:[352,368,384,146], 76:[361,378,394,149],
+  77:[370,388,404,152], 78:[379,398,414,156], 79:[388,408,424,160], 80:[397,418,434,164],
+  81:[406,428,440,168]
+};
+/* Transamerica BMI ladder (ages 16-59; 60+ noted in engine) */
+const TA_BMI = [
+  {max:16.0,   cls:'decline'},
+  {max:17.0,   cls:'std'},
+  {max:28.0,   cls:'pref_plus'},
+  {max:30.0,   cls:'pref'},
+  {max:32.0,   cls:'std_plus'},
+  {max:35.0,   cls:'std'},
+  {max:37.0,   cls:'table', tbl:'A'},
+  {max:39.0,   cls:'table', tbl:'B'},
+  {max:41.0,   cls:'table', tbl:'C'},
+  {max:42.0,   cls:'table', tbl:'D'},
+  {max:43.0,   cls:'table', tbl:'E'},
+  {max:44.0,   cls:'table', tbl:'F'},
+  {max:46.0,   cls:'table', tbl:'H'},
+  {max:999,    cls:'decline'}
+];
+/* TA final expense is BMI-banded: Preferred <40, Standard <45, Graded <48, min BMI 18.5 */
+const TA_FE_BMI = {minBmi:18.5, pref:40, std:45, graded:48};
+
+/* CONDITIONS --------------------------------------------------------------
+   out: outcome per lane. Value is a string outcome or {o:outcome, n:'note'}.
+   A lane left undefined means "no specific rule loaded yet" — the engine says so
+   rather than guessing.                                                      */
+const CONDITIONS = [
+ /* ---- Cardiovascular ---- */
+ {id:'htn_ok', cat:'Cardiovascular', label:'High blood pressure — controlled, 2 or fewer meds',
+  out:{aa_term:{o:'std',n:'Standard; blocks Preferred unless it is the only impairment'},
+       aa_iul:'std', aa_fe:'immediate',
+       ta_full:{o:'pref',n:'Preferred if readings inside 145/85 (age ≤70)'},
+       ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
+ {id:'htn_bad', cat:'Cardiovascular', label:'High blood pressure — uncontrolled or 3+ meds',
+  out:{aa_term:{o:'decline',n:'3+ BP medications is an auto-decline'}, aa_iul:'decline',
+       aa_fe:'immediate', ta_full:{o:'table',n:'Rated on last readings'}, ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'chol', cat:'Cardiovascular', label:'High cholesterol — controlled with medication',
+  out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
+       ta_full:{o:'pref_plus',n:'Alone it does not block Preferred'}, ta_exp:'std',
+       ta_fe:'pref', ta_fex:'pref'}},
+ {id:'cad', cat:'Cardiovascular', label:'Heart attack, angina, or coronary artery disease',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Within 3 yrs → Graded; within 2 yrs → ROP'},
+       ta_full:{o:'table',n:'Table 2-8 by age at event and time since'}, ta_exp:'decline',
+       ta_fe:{o:'std',n:'Standard if outside the recent window'}, ta_fex:'std'}},
+ {id:'stent', cat:'Cardiovascular', label:'Stent, angioplasty, or bypass surgery',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Cardiac surgery within 3 yrs → Graded'},
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'chf', cat:'Cardiovascular', label:'Congestive heart failure (CHF)',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible for any plan'},
+       ta_full:{o:'decline',n:'No riders available'}, ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'afib', cat:'Cardiovascular', label:'Atrial fibrillation / irregular heartbeat',
+  out:{aa_term:{o:'decline',n:'Any arrhythmia, A-fib or flutter'}, aa_iul:'decline', aa_fe:'immediate',
+       ta_full:{o:'std',n:'Standard to Table 4 depending on control and anticoagulation'},
+       ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'pacemaker', cat:'Cardiovascular', label:'Pacemaker or defibrillator',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Device insertion within 3 yrs → Graded'},
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'pvd', cat:'Cardiovascular', label:'Peripheral vascular / carotid artery disease',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'dvt1', cat:'Cardiovascular', label:'DVT — single episode, fully recovered, off meds',
+  out:{aa_term:{o:'std',n:'Single episode with full recovery is Standard'}, aa_iul:'std',
+       aa_fe:'immediate', ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
+ {id:'dvt2', cat:'Cardiovascular', label:'DVT — 2+ episodes or still on anticoagulant',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'aneurysm', cat:'Cardiovascular', label:'Aneurysm',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+
+ /* ---- Neurological ---- */
+ {id:'stroke', cat:'Neurological', label:'Stroke / CVA',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Within 3 yrs → Graded; within 2 yrs → ROP'},
+       ta_full:{o:'table',n:'Table 2+ by age and time since; APS ordered'}, ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'tia', cat:'Neurological', label:'TIA — 6+ months ago, no residuals, non-smoker',
+  out:{aa_term:{o:'std',n:'Standard; DIR and CIR riders decline'}, aa_iul:'std', aa_fe:'rop',
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'seizure', cat:'Neurological', label:'Seizures / epilepsy (other than absence)',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'migraine', cat:'Neurological', label:'Migraines — investigated and controlled',
+  out:{aa_term:{o:'std',n:'DIR rider declines'}, aa_iul:'std', aa_fe:'immediate',
+       ta_full:'std', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
+ {id:'ms', cat:'Neurological', label:'Multiple sclerosis',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'parkinsons', cat:'Neurological', label:"Parkinson's disease",
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'dementia', cat:'Neurological', label:'Dementia, Alzheimer’s, or memory loss',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+
+ /* ---- Endocrine ---- */
+ {id:'dm2_oral', cat:'Endocrine / metabolic', label:'Type 2 diabetes — oral medication, diagnosed after 35',
+  out:{aa_term:{o:'std',n:'Standard; declines if combined with tobacco, overweight, gout, retinopathy or protein in urine'},
+       aa_iul:'std', aa_fe:'immediate',
+       ta_full:{o:'std',n:'Standard to Table 8 by A1C, onset age and comorbidities'},
+       ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
+ {id:'dm_insulin', cat:'Endocrine / metabolic', label:'Diabetes — insulin within past 6 months',
+  out:{aa_term:{o:'decline',n:'Insulin inside 6 months is an auto-decline'}, aa_iul:'decline',
+       aa_fe:'immediate', ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'dm_early', cat:'Endocrine / metabolic', label:'Diabetes — diagnosed before age 35',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate',
+       ta_full:{o:'table',n:'Type 1 under 20 is a knockout; Type 2 under 30 with 15+ yrs duration is a knockout'},
+       ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'dm_comp', cat:'Endocrine / metabolic', label:'Diabetic complications (retinopathy, neuropathy, nephropathy)',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q4 — ROP plan'},
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'thyroid', cat:'Endocrine / metabolic', label:'Thyroid disorder — controlled',
+  out:{aa_term:{o:'std',n:'CIR rider declines when combined with hypertension'}, aa_iul:'std',
+       aa_fe:'immediate', ta_full:'pref_plus', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
+
+ /* ---- Respiratory ---- */
+ {id:'asthma_mild', cat:'Respiratory', label:'Asthma — mild / seasonal',
+  out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate', ta_full:'pref', ta_exp:'std',
+       ta_fe:'pref', ta_fex:'pref'}},
+ {id:'asthma_bad', cat:'Respiratory', label:'Asthma — ER or hospital within 12 months, or steroid maintenance',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'copd', cat:'Respiratory', label:'COPD, emphysema, or chronic bronchitis',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'graded',n:'Senior Choice Q8 — Graded plan'},
+       ta_full:{o:'table',n:'Table rating by severity; decline if smoking continues'}, ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'apnea', cat:'Respiratory', label:'Sleep apnea — treated with CPAP',
+  out:{aa_term:{o:'std',n:'Declines if build exceeds Table 2 or BP is poorly controlled'}, aa_iul:'std',
+       aa_fe:'immediate', ta_full:'std', ta_exp:'std', ta_fe:'pref', ta_fex:'pref'}},
+ {id:'oxygen', cat:'Respiratory', label:'Currently using oxygen equipment',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q1 — not eligible'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+
+ /* ---- Cancer ---- */
+ {id:'skin_ca', cat:'Cancer', label:'Basal or squamous cell skin cancer — single occurrence',
+  out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate', ta_full:'pref', ta_exp:'std',
+       ta_fe:'pref', ta_fex:'pref'}},
+ {id:'ca_old', cat:'Cancer', label:'Cancer — 7+ years since treatment, no recurrence',
+  out:{aa_term:{o:'std',n:'Standard; CIR rider declines'}, aa_iul:'std', aa_fe:'immediate',
+       ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
+ {id:'ca_recent', cat:'Cancer', label:'Cancer — treated within the last 7 years',
+  out:{aa_term:{o:'decline',n:'Cancer Rx filled within 8 years is an auto-decline'}, aa_iul:'decline',
+       aa_fe:{o:'graded',n:'Within 3 yrs → Graded; 2 or more occurrences → ROP'},
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'ca_multi', cat:'Cancer', label:'More than one cancer occurrence, or metastatic',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q5 — ROP plan'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+ {id:'leukemia', cat:'Cancer', label:'Leukemia, lymphoma, or multiple myeloma',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'graded', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+
+ /* ---- Mental health ---- */
+ {id:'anx_mild', cat:'Mental health', label:'Anxiety or depression — 2 or fewer medications',
+  out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
+       ta_full:{o:'pref',n:'Situational or mild is Preferred-eligible'}, ta_exp:'std',
+       ta_fe:'pref', ta_fex:'pref'}},
+ {id:'mdd', cat:'Mental health', label:'Major depressive disorder or 3+ psych medications',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'bipolar', cat:'Mental health', label:'Bipolar disorder or schizophrenia',
+  out:{aa_term:{o:'decline',n:'Abilify, Lithium, Seroquel, Risperdal etc. are auto-declines'},
+       aa_iul:'decline', aa_fe:'immediate', ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'suicide', cat:'Mental health', label:'Suicide attempt within 5 years or more than one ever',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'immediate', ta_full:'decline', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+
+ /* ---- Liver / kidney / GI ---- */
+ {id:'hepc', cat:'Liver / kidney / GI', label:'Hepatitis B or C — any history',
+  out:{aa_term:{o:'decline',n:'Any history of diagnosis or treatment'}, aa_iul:'decline',
+       aa_fe:{o:'rop',n:'Senior Choice Q7a — ROP plan'}, ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'cirrhosis', cat:'Liver / kidney / GI', label:'Cirrhosis of the liver',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'decline', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'ckd', cat:'Liver / kidney / GI', label:'Chronic kidney disease or renal insufficiency',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'rop',n:'Senior Choice Q5 — ROP plan'},
+       ta_full:'table', ta_exp:'decline', ta_fe:'std', ta_fex:'std'}},
+ {id:'dialysis', cat:'Liver / kidney / GI', label:'Dialysis or organ transplant (had or advised)',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q2 — not eligible'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+ {id:'crohns', cat:'Liver / kidney / GI', label:"Crohn's or ulcerative colitis",
+  out:{aa_term:{o:'std',n:'Declines if diagnosed before 20 or within the past 12 months'},
+       aa_iul:'std', aa_fe:'graded', ta_full:'std', ta_exp:'std', ta_fe:'std', ta_fex:'std'}},
+
+ /* ---- Other ---- */
+ {id:'lupus', cat:'Other', label:'Systemic lupus (SLE)',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:'rop', ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'ra', cat:'Other', label:'Rheumatoid arthritis',
+  out:{aa_term:'std', aa_iul:'std', aa_fe:'immediate',
+       ta_full:{o:'std',n:'Standard to table by severity and treatment'}, ta_exp:'std',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'hiv', cat:'Other', label:'HIV / AIDS',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q3 — not eligible'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+ {id:'substance', cat:'Other', label:'Alcohol or drug treatment / counseling',
+  out:{aa_term:{o:'decline',n:'Rx fill for dependence within 4 years is a decline'}, aa_iul:'decline',
+       aa_fe:{o:'rop',n:'Senior Choice Q7d — ROP plan'}, ta_full:'table', ta_exp:'decline',
+       ta_fe:'std', ta_fex:'std'}},
+ {id:'nursing', cat:'Other', label:'Hospitalized, nursing home, bed or wheelchair confined',
+  out:{aa_term:'decline', aa_iul:'decline', aa_fe:{o:'decline',n:'Senior Choice Q1 — not eligible'},
+       ta_full:'decline', ta_exp:'decline', ta_fe:'decline', ta_fex:'decline'}},
+ {id:'pending', cat:'Other', label:'Diagnostic testing or surgery advised but not completed',
+  out:{aa_term:{o:'decline',n:'Undiagnosed pending workup'}, aa_iul:'decline',
+       aa_fe:{o:'rop',n:'Senior Choice Q6 — ROP plan'}, ta_full:'ic', ta_exp:'decline',
+       ta_fe:'ic', ta_fex:'ic'}}
+];
+
+/* MEDICATIONS — drug → conditions it signals.
+   Add rows freely; the engine folds implied conditions into the analysis. */
+const MEDS = [
+ {n:'Lisinopril',   alt:'Zestril',   c:['htn_ok'],      u:'Hypertension'},
+ {n:'Losartan',     alt:'Cozaar',    c:['htn_ok'],      u:'Hypertension'},
+ {n:'Amlodipine',   alt:'Norvasc',   c:['htn_ok'],      u:'Hypertension'},
+ {n:'Metoprolol',   alt:'Lopressor', c:['htn_ok'],      u:'Hypertension / rate control — ask why'},
+ {n:'Carvedilol',   alt:'Coreg',     c:['htn_ok'],      u:'Also used post-MI, CHF, A-fib — ask why'},
+ {n:'Hydrochlorothiazide', alt:'HCTZ', c:['htn_ok'],    u:'Hypertension'},
+ {n:'Atorvastatin', alt:'Lipitor',   c:['chol'],        u:'High cholesterol'},
+ {n:'Rosuvastatin', alt:'Crestor',   c:['chol'],        u:'High cholesterol'},
+ {n:'Simvastatin',  alt:'Zocor',     c:['chol'],        u:'High cholesterol'},
+ {n:'Clopidogrel',  alt:'Plavix',    c:['cad'],         u:'CAD, stent, or heart attack'},
+ {n:'Ticagrelor',   alt:'Brilinta',  c:['cad'],         u:'CAD / post-stent'},
+ {n:'Nitroglycerin',alt:'Nitrostat', c:['cad'],         u:'Angina'},
+ {n:'Isosorbide',   alt:'Imdur',     c:['cad'],         u:'Angina / CAD'},
+ {n:'Apixaban',     alt:'Eliquis',   c:['afib','dvt2'], u:'A-fib or clot — ask which'},
+ {n:'Rivaroxaban',  alt:'Xarelto',   c:['afib','dvt2'], u:'A-fib or clot — ask which'},
+ {n:'Warfarin',     alt:'Coumadin',  c:['afib','dvt2'], u:'A-fib, clot, or valve'},
+ {n:'Amiodarone',   alt:'Pacerone',  c:['afib'],        u:'Arrhythmia'},
+ {n:'Sotalol',      alt:'Betapace',  c:['afib'],        u:'Arrhythmia'},
+ {n:'Digoxin',      alt:'Lanoxin',   c:['afib','chf'],  u:'Arrhythmia or CHF'},
+ {n:'Furosemide',   alt:'Lasix',     c:['chf'],         u:'CHF (also used for edema — ask)'},
+ {n:'Entresto',     alt:'sacubitril/valsartan', c:['chf'], u:'Congestive heart failure'},
+ {n:'Metformin',    alt:'Glucophage',c:['dm2_oral'],    u:'Type 2 diabetes'},
+ {n:'Glipizide',    alt:'Glucotrol', c:['dm2_oral'],    u:'Type 2 diabetes'},
+ {n:'Jardiance',    alt:'empagliflozin', c:['dm2_oral'],u:'Type 2 diabetes (also CHF — ask)'},
+ {n:'Januvia',      alt:'sitagliptin',c:['dm2_oral'],   u:'Type 2 diabetes'},
+ {n:'Ozempic',      alt:'semaglutide',c:['dm2_oral'],   u:'Type 2 diabetes / weight'},
+ {n:'Trulicity',    alt:'dulaglutide',c:['dm2_oral'],   u:'Type 2 diabetes'},
+ {n:'Lantus',       alt:'insulin glargine', c:['dm_insulin'], u:'Insulin-dependent diabetes'},
+ {n:'Humalog',      alt:'insulin lispro',  c:['dm_insulin'], u:'Insulin-dependent diabetes'},
+ {n:'Levothyroxine',alt:'Synthroid', c:['thyroid'],     u:'Hypothyroidism'},
+ {n:'Albuterol',    alt:'ProAir / Ventolin', c:['asthma_mild'], u:'Asthma — or COPD, ask which'},
+ {n:'Advair',       alt:'fluticasone/salmeterol', c:['asthma_mild'], u:'Asthma — or COPD, ask which'},
+ {n:'Symbicort',    alt:'budesonide/formoterol', c:['asthma_mild'], u:'Asthma or COPD'},
+ {n:'Spiriva',      alt:'tiotropium',c:['copd'],        u:'COPD'},
+ {n:'Trelegy',      alt:'',          c:['copd'],        u:'COPD'},
+ {n:'Prednisone',   alt:'',          c:['asthma_bad'],  u:'Steroid — ask what it treats'},
+ {n:'Sertraline',   alt:'Zoloft',    c:['anx_mild'],    u:'Anxiety / depression'},
+ {n:'Escitalopram', alt:'Lexapro',   c:['anx_mild'],    u:'Anxiety / depression'},
+ {n:'Fluoxetine',   alt:'Prozac',    c:['anx_mild'],    u:'Depression — Standard at AmAm'},
+ {n:'Alprazolam',   alt:'Xanax',     c:['anx_mild'],    u:'Anxiety'},
+ {n:'Lithium',      alt:'',          c:['bipolar'],     u:'Bipolar — auto-decline at AmAm'},
+ {n:'Abilify',      alt:'aripiprazole', c:['bipolar'],  u:'Bipolar / schizophrenia — auto-decline'},
+ {n:'Seroquel',     alt:'quetiapine',c:['bipolar'],     u:'Bipolar / schizophrenia — auto-decline'},
+ {n:'Lamictal',     alt:'lamotrigine',c:['bipolar','seizure'], u:'Bipolar or seizures — ask which'},
+ {n:'Levetiracetam',alt:'Keppra',    c:['seizure'],     u:'Seizure disorder'},
+ {n:'Donepezil',    alt:'Aricept',   c:['dementia'],    u:'Alzheimer’s / dementia'},
+ {n:'Memantine',    alt:'Namenda',   c:['dementia'],    u:'Dementia'},
+ {n:'Carbidopa-Levodopa', alt:'Sinemet', c:['parkinsons'], u:'Parkinson’s'},
+ {n:'Tamoxifen',    alt:'',          c:['ca_recent'],   u:'Cancer — fill within 8 yrs declines at AmAm'},
+ {n:'Anastrozole',  alt:'Arimidex',  c:['ca_recent'],   u:'Cancer — fill within 8 yrs declines'},
+ {n:'Letrozole',    alt:'Femara',    c:['ca_recent'],   u:'Cancer — fill within 8 yrs declines'},
+ {n:'Methotrexate', alt:'',          c:['ra'],          u:'RA (also cancer — ask)'},
+ {n:'Humira',       alt:'adalimumab',c:['ra','crohns'], u:'RA, Crohn’s, or psoriasis'},
+ {n:'Hydroxychloroquine', alt:'Plaquenil', c:['lupus','ra'], u:'Lupus or RA'},
+ {n:'Prednisolone', alt:'',          c:['asthma_bad'],  u:'Steroid — ask what it treats'},
+ {n:'Suboxone',     alt:'buprenorphine', c:['substance'], u:'Opioid dependence — 4 yr lookback'},
+ {n:'Naltrexone',   alt:'Vivitrol',  c:['substance'],   u:'Alcohol / opioid dependence'},
+ {n:'Truvada',      alt:'emtricitabine/tenofovir', c:['hiv'], u:'HIV treatment or PrEP — ask which'},
+ {n:'Biktarvy',     alt:'',          c:['hiv'],         u:'HIV'},
+ {n:'Eliquis',      alt:'apixaban',  c:['afib','dvt2'], u:'A-fib or clot'},
+ {n:'Xarelto',      alt:'rivaroxaban',c:['afib','dvt2'],u:'A-fib or clot'},
+ {n:'Allopurinol',  alt:'Zyloprim',  c:[],              u:'Gout — see impairment guide'},
+ {n:'Gabapentin',   alt:'Neurontin', c:[],              u:'Nerve pain / seizures — ask why'},
+ {n:'Oxycodone',    alt:'Percocet',  c:['substance'],   u:'Opioid — ask duration and reason'},
+ {n:'Tresiba',      alt:'insulin degludec', c:['dm_insulin'], u:'Insulin-dependent diabetes'},
+ {n:'Farxiga',      alt:'dapagliflozin', c:['dm2_oral','chf'], u:'Diabetes or CHF — ask which'},
+ {n:'Plavix',       alt:'clopidogrel',c:['cad'],        u:'CAD / stent'},
+ {n:'Pletal',       alt:'cilostazol',c:['pvd'],         u:'Peripheral artery disease'}
+];
+
+/* ===========================================================================
+   ENGINE + UI
+   The engine is deliberately dumb and transparent: it collects every rule that
+   fires, keeps the worst outcome per product, and shows its work. Add data in
+   underwriting-data.js and it appears here automatically.
+   ========================================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const STATE = {
+  step:0, age:null, sex:'m', face:null, state:'', tob:'never', mj:'no',
+  ft:5, in:9, wt:null, conds:new Set(), meds:[]
+};
+const STEP_NAMES = ['Client','Build','Conditions','Medications','Results'];
+
+/* ---------- helpers ---------- */
+const inches = () => STATE.ft*12 + STATE.in;
+const bmi = () => { const h=inches(), w=STATE.wt; return (h&&w) ? +(w*703/(h*h)).toFixed(1) : null; };
+const worse = (a,b) => RANK.indexOf(a) >= RANK.indexOf(b) ? a : b;
+const money = n => '$'+Number(n).toLocaleString();
+
+/* Build verdict per lane, returned as {o, why} */
+function buildVerdict(lane){
+  const h=inches(), w=STATE.wt, b=bmi();
+  if(!w) return null;
+  if(lane==='aa_term' || lane==='aa_iul'){
+    const row = AA_TERM_BUILD[h];
+    if(!row) return {o:'ic', why:`Height ${STATE.ft}'${STATE.in}" is off the published chart — call the Home Office`};
+    const [min,t2,t4]=row;
+    if(w<min)  return {o:'decline', why:`${w} lb is under the ${min} lb minimum for ${STATE.ft}'${STATE.in}"`};
+    if(w>t4)   return {o:'decline', why:`${w} lb exceeds the Table 4 maximum of ${t4} lb — auto-decline, do not submit`};
+    if(w>t2)   return {o:'std', why:`${w} lb is between Table 2 (${t2}) and Table 4 (${t4}) — acceptable only with no other impairment`, fragile:true};
+    const pref = AA_PREF_BUILD[h];
+    if(pref && w>=pref[0] && w<=pref[1]) return {o:'pref', why:`${w} lb is inside the Preferred range (${pref[0]}-${pref[1]} lb)`};
+    return {o:'std', why:`${w} lb is inside the Standard range (max ${t2} lb at Table 2)`};
+  }
+  if(lane==='aa_fe'){
+    const row = AA_SC_BUILD[h];
+    if(!row) return {o:'ic', why:`Height off the Senior Choice chart`};
+    const [mi,mg,mr,minI]=row;
+    if(w>mr) return {o:'decline', why:`${w} lb exceeds the ROP maximum of ${mr} lb`};
+    if(w>mg) return {o:'rop', why:`${w} lb falls in the ROP band (${mg+1}-${mr} lb)`};
+    if(w>mi) return {o:'graded', why:`${w} lb falls in the Graded band (${mi+1}-${mg} lb)`};
+    if(w<minI) return {o:'rop', why:`${w} lb is under the Immediate minimum of ${minI} lb`};
+    return {o:'immediate', why:`${w} lb qualifies for Immediate (max ${mi} lb)`};
+  }
+  if(lane==='ta_full' || lane==='ta_exp'){
+    const band = TA_BMI.find(r=>b<=r.max);
+    const note = band.tbl ? `BMI ${b} → Table ${band.tbl}` : `BMI ${b} → ${OUTCOME_META[band.cls].label}`;
+    if(STATE.age>=60 && b>16 && b<=18) return {o:'ic', why:`BMI ${b} at age 60+ is Individual Consideration`};
+    return {o:band.cls, why:note, tbl:band.tbl};
+  }
+  if(lane==='ta_fe' || lane==='ta_fex'){
+    if(b < TA_FE_BMI.minBmi) return {o:'graded', why:`BMI ${b} is under the ${TA_FE_BMI.minBmi} minimum for Preferred/Standard`};
+    if(b < TA_FE_BMI.pref)   return {o:'pref',   why:`BMI ${b} is inside the Preferred band (under ${TA_FE_BMI.pref})`};
+    if(b < TA_FE_BMI.std)    return {o:'std',    why:`BMI ${b} is inside the Standard band (under ${TA_FE_BMI.std})`};
+    if(b < TA_FE_BMI.graded) return {o:'graded', why:`BMI ${b} falls in the Graded band (under ${TA_FE_BMI.graded})`};
+    return {o:'decline', why:`BMI ${b} is over the ${TA_FE_BMI.graded} maximum`};
+  }
+  return null;
+}
+
+/* Tobacco effect per lane */
+function tobaccoVerdict(lane){
+  const t=STATE.tob;
+  if(t==='never') return null;
+  if(lane==='ta_full'){
+    if(t==='current'||t==='quit1') return {o:'std', why:'Nicotine inside 2 years — tobacco rates', cls:'Tobacco'};
+    if(t==='quit2') return {o:'pref', why:'Nicotine 2-5 years ago — nonsmoker, but not Preferred Plus (needs 5 years)'};
+    return null;
+  }
+  if(t==='current'||t==='quit1'){
+    return {o:'std', why:'Tobacco within 12 months — tobacco rate class', cls:'Tobacco'};
+  }
+  return null;
+}
+
+/* All conditions in play = explicitly selected + implied by medications */
+function activeConditions(){
+  const map = new Map();
+  STATE.conds.forEach(id=>map.set(id,{id, via:'selected'}));
+  STATE.meds.forEach(m=>m.c.forEach(id=>{
+    // a drug treating more than one condition is a question, not a diagnosis
+    if(!map.has(id)) map.set(id,{id, via:'med:'+m.n, ambiguous:m.c.length>1, use:m.u});
+  }));
+  return [...map.values()];
+}
+
+/* Evaluate one product */
+function evaluate(p){
+  const why=[], reqs=[...(p.req||[])];
+  let out = p.best;
+
+  // age
+  if(STATE.age!=null){
+    if(STATE.age < p.ages[0] || STATE.age > p.ages[1]){
+      return {p, out:'decline', na:true,
+              why:[{t:`Age ${STATE.age} is outside the ${p.ages[0]}-${p.ages[1]} issue range`, tag:'LIMITS'}], reqs};
+    }
+  }
+  // face amount
+  let na=false;
+  if(STATE.face){
+    if(STATE.face < p.face[0]){ why.push({t:`${money(STATE.face)} is below the ${money(p.face[0])} minimum face`, tag:'LIMITS'}); na=true; }
+    else if(STATE.face > p.face[1]){ why.push({t:`${money(STATE.face)} is above the ${money(p.face[1])} maximum face — lower the face or use another product`, tag:'LIMITS'}); na=true; }
+  }
+  // build
+  const bv = buildVerdict(p.lane);
+  if(bv){ out = worse(out, bv.o); why.push({t:'Build: '+bv.why, tag:'BUILD', res:bv.o}); }
+  // tobacco
+  const tv = tobaccoVerdict(p.lane);
+  if(tv){ out = worse(out, tv.o); why.push({t:'Tobacco: '+tv.why, tag:'NICOTINE', res:tv.o}); }
+  // marijuana
+  if(STATE.mj==='yes' && p.carrier==='TransAm')
+    why.push({t:'Marijuana: nonsmoker rates, eligible up to Preferred Plus on IUL', tag:'MJ'});
+  // conditions
+  const acts = activeConditions();
+  acts.forEach(a=>{
+    const c = CONDITIONS.find(x=>x.id===a.id); if(!c) return;
+    const raw = c.out[p.lane];
+    if(raw===undefined){
+      why.push({t:`${c.label} — no rule loaded for this product yet`, tag:'GAP', res:'ic'});
+      out = worse(out,'ic'); return;
+    }
+    const o = typeof raw==='string' ? raw : raw.o;
+    const n = typeof raw==='string' ? '' : raw.n;
+    out = worse(out, o);
+    why.push({t:c.label + (n?` — ${n}`:''), tag: a.via==='selected' ? 'CONDITION' : 'VIA RX', res:o,
+              src: a.via.startsWith('med:') ? a.via.slice(4) : null, amb:a.ambiguous, use:a.use});
+  });
+  // build+impairment interaction (AmAm rule)
+  if(bv && bv.fragile && acts.length && (p.lane==='aa_term'||p.lane==='aa_iul')){
+    out = 'decline';
+    why.push({t:'Build over Table 2 combined with a medical condition is not eligible at American Amicable', tag:'STACKING', res:'decline'});
+  }
+  // requirements
+  if(p.lane==='aa_term' && STATE.age>=65) reqs.push('Phone interview (65-75)');
+  if(p.id==='sc' && STATE.age>=71) reqs.push('Interview if not in Rx database');
+  if(p.lane==='ta_full' && (STATE.face>=1000000 || STATE.age>=61)) reqs.push('Labs / paramed likely');
+  if(na) out='decline';
+  return {p, out, why, reqs, na, smoker:['current','quit1'].includes(STATE.tob)};
+}
+
+function runEngine(){
+  return PRODUCTS.map(evaluate).sort((a,b)=>
+    (a.na?1:0)-(b.na?1:0) || RANK.indexOf(a.out)-RANK.indexOf(b.out));
+}
+
+/* ---------- UI ---------- */
+function paintStepper(){
+  $('#stepper').innerHTML = STEP_NAMES.map((n,i)=>`
+    <li class="${i===STATE.step?'on':''} ${i<STATE.step?'done':''}">
+      <span class="sdot">${i<STATE.step?'✓':i+1}</span>
+      <span class="slabel">${n}</span>
+      ${i<STEP_NAMES.length-1?'<span class="sbar"><i></i></span>':''}
+    </li>`).join('');
+}
+function go(n){
+  STATE.step=n;
+  $$('.step').forEach(s=>s.classList.toggle('on', +s.dataset.step===n));
+  paintStepper();
+  window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
+}
+
+/* build meter */
+function paintBuild(){
+  const b=bmi();
+  if(!b){ $('#bmiVal').innerHTML='—<small>BMI</small>'; return; }
+  $('#bmiVal').innerHTML=b+'<small>BMI</small>';
+  const pct=Math.max(0,Math.min(100,(b-16)/30*100));
+  $('#pin').style.left=pct+'%';
+  let tag='HEALTHY', col='var(--gr)';
+  if(b<18.5){tag='UNDERWEIGHT';col='var(--am)';}
+  else if(b<25){tag='OPTIMAL';col='var(--gr)';}
+  else if(b<30){tag='OVERWEIGHT';col='var(--cy)';}
+  else if(b<35){tag='OBESE I';col='var(--am)';}
+  else if(b<40){tag='OBESE II';col='#ff9a3c';}
+  else {tag='OBESE III';col='var(--rd)';}
+  const t=$('#bmiTag'); t.textContent=tag; t.style.color=col;
+  const notes=[];
+  ['aa_term','aa_fe','ta_full'].forEach(l=>{
+    const v=buildVerdict(l); if(v) notes.push(`<b style="color:${OUTCOME_META[v.o].color}">${LANES[l].split('(')[0].trim()}</b> → ${v.why}`);
+  });
+  $('#buildNote').innerHTML = notes.join('<br>');
+}
+
+/* conditions */
+function paintConds(filter=''){
+  const f=filter.toLowerCase();
+  const cats=[...new Set(CONDITIONS.map(c=>c.cat))];
+  let html='';
+  cats.forEach(cat=>{
+    const items=CONDITIONS.filter(c=>c.cat===cat && (!f || c.label.toLowerCase().includes(f)));
+    if(!items.length) return;
+    html+=`<div class="cat">${cat}<i></i></div><div class="chips">`;
+    items.forEach(c=>{ html+=`<div class="chip ${STATE.conds.has(c.id)?'on':''}" data-c="${c.id}">${c.label}</div>`; });
+    html+='</div>';
+  });
+  $('#condList').innerHTML = html || '<div class="hint">No match. Anything not listed still needs to go to the carrier.</div>';
+}
+
+/* medications */
+function paintMeds(){
+  $('#medList').innerHTML = STATE.meds.map((m,i)=>{
+    const implies = m.c.map(id=>(CONDITIONS.find(c=>c.id===id)||{}).label).filter(Boolean);
+    const amb = m.c.length>1;
+    return `<span class="pill" ${amb?'style="border-color:rgba(255,200,60,.55);background:rgba(255,200,60,.10)"':''}>${m.n}${m.alt?` <em>(${m.alt})</em>`:''}
+      <em>→ ${amb?'?? '+m.u:(implies.length?implies[0]:m.u)}</em>
+      <button data-rm="${i}">✕</button></span>`;
+  }).join('') || '<div class="hint">No medications added yet.</div>';
+}
+function acSearch(q){
+  q=q.trim().toLowerCase(); if(q.length<2) return [];
+  return MEDS.filter(m=>m.n.toLowerCase().includes(q)||(m.alt||'').toLowerCase().includes(q)).slice(0,8);
+}
+
+/* results */
+function paintResults(){
+  const res=runEngine();
+  const best=res[0];
+  const viable=res.filter(r=>r.out!=='decline' && !r.na);
+  const limited=res.filter(r=>r.na);
+  const acts=activeConditions();
+
+  let head;
+  if(!viable.length){
+    head=`<div class="verdict" style="border-color:rgba(255,95,109,.4)">
+      <div class="vico" style="background:rgba(255,95,109,.15);color:var(--rd)">⚠</div>
+      <div class="vtxt"><b>Nothing clears on the loaded rules</b>
+      <span>${limited.length?`${limited.length} product${limited.length===1?' is':'s are'} only blocked by age or face amount — try a different face. `:''}Send it to the carrier's risk desk before you tell the client no.</span></div></div>`;
+  } else {
+    const m=OUTCOME_META[best.out];
+    head=`<div class="verdict" style="border-color:${m.color}55">
+      <div class="vico" style="background:${m.color}22;color:${m.color}">✓</div>
+      <div class="vtxt"><b>Best fit: ${best.p.name} — ${m.label}</b>
+      <span>${viable.length} of ${res.length} viable · ${limited.length} outside age/face limits · ${acts.length} condition${acts.length===1?'':'s'} in play${STATE.wt?` · BMI ${bmi()}`:''}</span></div></div>`;
+  }
+
+  const cards=res.map((r,i)=>{
+    const m = r.na ? {label:'Outside limits', color:'var(--ink-3)'} : OUTCOME_META[r.out];
+    const clsLabel = (!r.na && r.smoker && ['pref_plus','pref','std_plus','std','table'].includes(r.out))
+      ? m.label + ' <span style="font-size:10px;opacity:.75">(TOBACCO)</span>' : m.label;
+    const why=r.why.map(w=>`<li>${w.tag?`<b>${w.tag}</b> · `:''}${w.t}`
+      + (w.src?` <em style="color:var(--pu);font-style:normal">(from ${w.src})</em>`:'')
+      + (w.amb?` <em style="color:var(--am);font-style:normal">— ${w.use}; confirm which before you quote</em>`:'')
+      + '</li>').join('');
+    return `<div class="prod" style="--pc:${m.color};animation-delay:${i*55}ms">
+      <div class="phead">
+        <span class="pcar">${r.p.carrier.toUpperCase()}</span>
+        <div style="min-width:0">
+          <div class="pname">${r.p.name}</div>
+          <div class="pmeta">${r.p.type} · ages ${r.p.ages[0]}-${r.p.ages[1]} · ${money(r.p.face[0])}-${money(r.p.face[1])}</div>
+        </div>
+        <div class="pcls"><b>${clsLabel}</b><span>${r.why.length} RULE${r.why.length===1?'':'S'}</span></div>
+        <span class="parrow">▶</span>
+      </div>
+      <div class="pbody">
+        <ul class="why">${why||'<li>No impairments matched — clean file on the loaded rules.</li>'}</ul>
+        <div class="req">${r.reqs.map(q=>`<span>${q}</span>`).join('')}</div>
+        ${r.p.note?`<div class="hint">${r.p.note}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  $('#results').innerHTML = head + cards + `
+    <div class="disclaim"><b>Rough sketch — field guidance only.</b> Seeded from the American Amicable
+    field reference and the Transamerica knowledge base (both compiled 09/2026). Rules are partial:
+    ${CONDITIONS.length} conditions, ${MEDS.length} medications, ${PRODUCTS.length} products loaded.
+    Every offer is subject to full underwriting, state availability, and the carrier's final decision.
+    Anything borderline goes to the risk desk.</div>`;
+}
+
+/* scan animation, then results */
+const SCAN_LINES=[
+  'reading intake',
+  'checking issue ages and face limits',
+  'running build against carrier charts',
+  'mapping medications to conditions',
+  'applying impairment rules per lane',
+  'stacking build against impairments',
+  'ranking products'
+];
+function runScan(){
+  $$('.step').forEach(s=>s.classList.remove('on'));
+  $('#scan').classList.add('on');
+  $('#scanLog').innerHTML=''; $('#radarPct').textContent='0%';
+  STATE.step=4; paintStepper();
+  if(reduceMotion){ finishScan(); return; }
+  let i=0;
+  const tick=setInterval(()=>{
+    if(i<SCAN_LINES.length){
+      const d=document.createElement('div');
+      d.innerHTML=`<span>▸</span> ${SCAN_LINES[i]}<span style="float:right">ok</span>`;
+      $('#scanLog').appendChild(d);
+    }
+    $('#radarPct').textContent=Math.min(100,Math.round((i+1)/SCAN_LINES.length*100))+'%';
+    if(++i>SCAN_LINES.length){ clearInterval(tick); finishScan(); }
+  },170);
+}
+function finishScan(){
+  $('#scan').classList.remove('on');
+  paintResults();
+  $$('.step').forEach(s=>s.classList.toggle('on', +s.dataset.step===4));
+  paintStepper();
+  window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
+}
+
+/* ---------- wiring ---------- */
+(function init(){
+  // height selects
+  $('#ft').innerHTML=[4,5,6,7].map(f=>`<option ${f===5?'selected':''}>${f}</option>`).join('');
+  $('#in').innerHTML=[...Array(12).keys()].map(i=>`<option ${i===9?'selected':''}>${i}</option>`).join('');
+  paintStepper(); paintConds(); paintMeds();
+
+  document.addEventListener('click',e=>{
+    const g=e.target.closest('[data-go]');
+    if(g){ go(+g.dataset.go); return; }
+    const seg=e.target.closest('.seg button');
+    if(seg){
+      const box=seg.parentElement;
+      [...box.children].forEach(b=>b.classList.remove('on','warn'));
+      seg.classList.add('on');
+      if(box.id==='tob'){ STATE.tob=seg.dataset.v; if(['current','quit1'].includes(STATE.tob)) seg.classList.add('warn'); }
+      if(box.id==='mj') STATE.mj=seg.dataset.v;
+      return;
+    }
+    const chip=e.target.closest('.chip[data-c]');
+    if(chip){
+      const id=chip.dataset.c;
+      STATE.conds.has(id) ? STATE.conds.delete(id) : STATE.conds.add(id);
+      chip.classList.toggle('on');
+      return;
+    }
+    const rm=e.target.closest('[data-rm]');
+    if(rm){ STATE.meds.splice(+rm.dataset.rm,1); paintMeds(); return; }
+    const ph=e.target.closest('.phead');
+    if(ph){ ph.parentElement.classList.toggle('open'); return; }
+    if(!e.target.closest('#medSearch')) $('#medAc').style.display='none';
+  });
+
+  ['age','face','state'].forEach(id=>$('#'+id).addEventListener('input',e=>{
+    STATE[id] = id==='state' ? e.target.value.toUpperCase() : (e.target.value?+e.target.value:null);
+  }));
+  $('#sex').addEventListener('change',e=>STATE.sex=e.target.value);
+  ['ft','in','wt'].forEach(id=>$('#'+id).addEventListener('input',e=>{
+    STATE[id]= e.target.value?+e.target.value:(id==='wt'?null:0); paintBuild();
+  }));
+  $('#condSearch').addEventListener('input',e=>paintConds(e.target.value));
+
+  const ms=$('#medSearch'), ac=$('#medAc');
+  ms.addEventListener('input',()=>{
+    const hits=acSearch(ms.value);
+    if(!hits.length){ ac.style.display='none'; return; }
+    ac.innerHTML=hits.map((m,i)=>`<div data-med="${MEDS.indexOf(m)}" class="${i===0?'sel':''}">
+      <b>${m.n}</b>${m.alt?` <span style="color:var(--ink-3)">· ${m.alt}</span>`:''}<small>${m.u}</small></div>`).join('');
+    ac.style.display='block';
+  });
+  ac.addEventListener('click',e=>{
+    const d=e.target.closest('[data-med]'); if(!d) return;
+    const m=MEDS[+d.dataset.med];
+    if(!STATE.meds.some(x=>x.n===m.n)) STATE.meds.push(m);
+    ms.value=''; ac.style.display='none'; paintMeds();
+  });
+  ms.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ const first=ac.querySelector('[data-med]'); if(first) first.click(); e.preventDefault(); }
+    if(e.key==='Escape') ac.style.display='none';
+  });
+
+  $('#runBtn').addEventListener('click',runScan);
+  $('#restart').addEventListener('click',()=>{
+    STATE.conds.clear(); STATE.meds=[]; STATE.wt=null;
+    $('#wt').value=''; $('#age').value=''; $('#face').value=''; STATE.age=null; STATE.face=null;
+    paintConds(); paintMeds(); paintBuild(); go(0);
+  });
+})();
+
+</script>
+</body>
+</html>
