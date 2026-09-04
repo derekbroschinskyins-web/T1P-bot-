@@ -4,20 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>T1P Underwriting Wizard</title>
+<link rel="preconnect" href="https://obtlrivpgdrxgydcpnqo.supabase.co" crossorigin>
 <style>
+@font-face{font-family:'Clash Display';font-weight:600;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-600.woff2') format('woff2')}
+@font-face{font-family:'Clash Display';font-weight:700;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-700.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:400;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-400.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:500;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-500.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:600;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-600.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:700;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-700.woff2') format('woff2')}
 :root{
   --bg:#04070a; --panel:#0a1016; --panel-2:#0d151d; --edge:rgba(120,200,255,.14);
   --edge-hot:rgba(90,220,255,.55);
   --ink:#E6F2F7; --ink-2:#9FB6C4; --ink-3:#5E7484;
   --cy:#3DD9F5; --gr:#00E676; --am:#FFC83C; --rd:#FF5F6D; --pu:#A98BFF;
   --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;
-  --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --sans:'General Sans','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --disp:'Clash Display','General Sans',system-ui,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(1100px 620px at 15% -10%,rgba(61,217,245,.10),transparent 60%),
-             radial-gradient(900px 560px at 110% 8%,rgba(169,139,255,.08),transparent 60%)}
+/* aurora: three slow-drifting light bodies, adapted from the 21st.dev aurora background family */
+#aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.55}
+#aurora i{position:absolute;display:block;border-radius:50%;mix-blend-mode:screen}
+#aurora i:nth-child(1){width:52vw;height:52vw;left:-8%;top:-12%;background:radial-gradient(circle,rgba(61,217,245,.55),transparent 65%);animation:au1 24s ease-in-out infinite}
+#aurora i:nth-child(2){width:44vw;height:44vw;right:-6%;top:-4%;background:radial-gradient(circle,rgba(169,139,255,.45),transparent 65%);animation:au2 31s ease-in-out infinite}
+#aurora i:nth-child(3){width:40vw;height:40vw;left:32%;bottom:-18%;background:radial-gradient(circle,rgba(0,230,180,.35),transparent 65%);animation:au3 27s ease-in-out infinite}
+@keyframes au1{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(9vw,6vh,0) scale(1.15)}}
+@keyframes au2{0%,100%{transform:translate3d(0,0,0) scale(1.05)}50%{transform:translate3d(-7vw,9vh,0) scale(.92)}}
+@keyframes au3{0%,100%{transform:translate3d(0,0,0) scale(.95)}50%{transform:translate3d(6vw,-7vh,0) scale(1.12)}}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(120% 90% at 50% 0%,transparent 40%,rgba(4,7,10,.85) 100%)}
 #grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
   background-image:linear-gradient(rgba(120,200,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(120,200,255,.045) 1px,transparent 1px);
   background-size:52px 52px;mask-image:radial-gradient(circle at 50% 0%,#000 30%,transparent 78%)}
@@ -25,7 +42,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 /* header */
 header{padding:26px 0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.logo{font-family:var(--mono);font-size:19px;letter-spacing:.16em;color:var(--ink)}
+.logo{font-family:var(--disp);font-weight:700;font-size:24px;letter-spacing:.02em;color:var(--ink)}
 .logo b{color:var(--cy);text-shadow:0 0 14px rgba(61,217,245,.6)}
 .tagline{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
 .carriers{margin-left:auto;display:flex;gap:8px}
@@ -48,12 +65,26 @@ header{padding:26px 0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wra
 @media(max-width:760px){.slabel{display:none}.sbar{margin:0 6px}}
 
 /* cards */
-.card{background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);border-radius:14px;
-  padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+/* spotlight card: a light that follows the pointer, in the spirit of the 21st.dev spotlight cards */
+.card{position:relative;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);
+  border-radius:18px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter:blur(6px)}
+.card::before{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(61,217,245,.10),transparent 42%)}
+.card:hover::before{opacity:1}
+.card::after{content:'';position:absolute;inset:-1px;border-radius:19px;pointer-events:none;padding:1px;
+  background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(120,230,255,.55),transparent 45%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s}
+.card:hover::after{opacity:1}
 .step{display:none}
 .step.on{display:block;animation:stepIn .45s cubic-bezier(.2,.8,.3,1)}
 @keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-h2{margin:0 0 4px;font-size:23px;letter-spacing:-.01em}
+h2{margin:0 0 4px;font-family:var(--disp);font-weight:600;font-size:27px;letter-spacing:-.015em;
+  background:linear-gradient(92deg,#fff 20%,var(--cy) 55%,#fff 80%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:220% 100%;animation:shimmerTxt 7s linear infinite}
+@keyframes shimmerTxt{to{background-position:220% 0}}
 .sub{margin:0 0 20px;color:var(--ink-2);font-size:13.5px;line-height:1.6}
 .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--cy);margin:20px 0 9px}
 .k:first-child{margin-top:0}
@@ -76,7 +107,8 @@ select option{background:#0a1016}
 /* build meter */
 .meter{margin-top:16px;padding:16px;border:1px solid var(--edge);border-radius:10px;background:rgba(255,255,255,.015)}
 .mtop{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.bmi{font-family:var(--mono);font-size:30px;color:var(--ink)}
+.bmi{font-family:var(--disp);font-weight:700;font-size:38px;letter-spacing:-.02em;color:var(--ink);
+  text-shadow:0 0 28px rgba(61,217,245,.28)}
 .bmi small{font-size:11px;color:var(--ink-3);letter-spacing:.14em;margin-left:6px}
 .mtag{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:5px 10px;border-radius:5px;border:1px solid currentColor}
 .track{position:relative;height:9px;border-radius:5px;margin-top:14px;overflow:hidden;
@@ -116,21 +148,32 @@ select option{background:#0a1016}
 .btn{padding:13px 24px;border-radius:9px;cursor:pointer;font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;
   border:1px solid var(--edge);background:rgba(255,255,255,.02);color:var(--ink-2);transition:.2s}
 .btn:hover{border-color:var(--edge-hot);color:var(--ink)}
-.btn.go{margin-left:auto;border-color:var(--cy);color:#04070a;font-weight:600;
-  background:linear-gradient(100deg,var(--cy),#5FE6C0);box-shadow:0 0 22px rgba(61,217,245,.4)}
-.btn.go:hover{box-shadow:0 0 34px rgba(61,217,245,.7);transform:translateY(-1px)}
+/* shimmer button, in the spirit of the 21st.dev shimmer/gradient button family */
+.btn{position:relative;overflow:hidden;transition:transform .25s var(--ease),box-shadow .25s,border-color .2s,color .2s}
+.btn.go{margin-left:auto;border-color:transparent;color:#04070a;font-weight:600;
+  background:linear-gradient(100deg,var(--cy),#5FE6C0 45%,var(--cy));background-size:220% 100%;
+  box-shadow:0 0 24px rgba(61,217,245,.4), inset 0 1px 0 rgba(255,255,255,.5);
+  animation:btnFlow 6s linear infinite}
+@keyframes btnFlow{to{background-position:220% 0}}
+.btn.go::after{content:'';position:absolute;top:0;bottom:0;width:38%;left:-60%;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:btnSheen 3.2s ease-in-out infinite}
+@keyframes btnSheen{0%,55%{left:-60%}100%{left:150%}}
+.btn.go:hover{box-shadow:0 0 40px rgba(61,217,245,.75), inset 0 1px 0 rgba(255,255,255,.6);transform:translateY(-2px) scale(1.015)}
+.btn:active{transform:translateY(0) scale(.985)}
 
 /* scan */
 #scan{display:none;padding:40px 24px;text-align:center}
 #scan.on{display:block}
-.radar{width:132px;height:132px;margin:0 auto 22px;border-radius:50%;position:relative;
-  border:1px solid rgba(61,217,245,.3);box-shadow:inset 0 0 40px rgba(61,217,245,.12)}
+.radar{width:150px;height:150px;margin:0 auto 24px;border-radius:50%;position:relative;
+  border:1px solid rgba(61,217,245,.3);box-shadow:inset 0 0 46px rgba(61,217,245,.14),0 0 44px rgba(61,217,245,.18)}
+.radar::before{content:'';position:absolute;inset:14px;border-radius:50%;border:1px dashed rgba(61,217,245,.22);
+  animation:sweep 9s linear infinite reverse}
 .radar::after{content:'';position:absolute;inset:-1px;border-radius:50%;
   background:conic-gradient(from 0deg,transparent 0deg 300deg,rgba(61,217,245,.55) 360deg);
   animation:sweep 1.1s linear infinite;mask:radial-gradient(circle,transparent 30%,#000 31%)}
 @keyframes sweep{to{transform:rotate(360deg)}}
 .radar b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:26px;color:var(--cy);text-shadow:0 0 18px rgba(61,217,245,.7)}
+  font-family:var(--disp);font-weight:700;font-size:32px;color:var(--cy);text-shadow:0 0 22px rgba(61,217,245,.8)}
 .log{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);line-height:2;text-align:left;max-width:400px;margin:0 auto}
 .log div{opacity:0;animation:logIn .3s forwards}
 @keyframes logIn{to{opacity:1}}
@@ -139,20 +182,32 @@ select option{background:#0a1016}
 /* results */
 .verdict{display:flex;gap:14px;align-items:center;padding:18px 20px;border-radius:12px;margin-bottom:18px;
   border:1px solid var(--edge);background:rgba(255,255,255,.02)}
-.vico{width:46px;height:46px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px}
+.verdict{position:relative;overflow:hidden}
+.verdict::after{content:'';position:absolute;top:0;bottom:0;width:32%;left:-50%;transform:skewX(-18deg);pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:btnSheen 5s ease-in-out infinite}
+.vico{width:48px;height:48px;flex:none;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;
+  animation:vpulse 2.6s ease-in-out infinite}
+@keyframes vpulse{0%,100%{box-shadow:0 0 0 0 currentColor;opacity:.95}50%{box-shadow:0 0 22px 2px currentColor;opacity:1}}
+.vtxt b{font-family:var(--disp);font-weight:600;letter-spacing:-.01em}
 .vtxt b{display:block;font-size:16px;margin-bottom:3px}
 .vtxt span{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
 .prod{border:1px solid var(--edge);border-radius:12px;padding:0;margin-bottom:12px;overflow:hidden;
   background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.008));
   opacity:0;transform:translateY(16px);animation:cardIn .5s cubic-bezier(.2,.8,.3,1) forwards}
 @keyframes cardIn{to{opacity:1;transform:none}}
-.phead{display:flex;align-items:center;gap:13px;padding:15px 18px;cursor:pointer;border-left:3px solid var(--pc,var(--ink-3))}
-.phead:hover{background:rgba(255,255,255,.02)}
+.prod{transition:transform .35s var(--ease),box-shadow .35s,border-color .3s;transform-style:preserve-3d}
+.prod:hover{border-color:color-mix(in srgb,var(--pc) 45%,var(--edge));
+  box-shadow:0 18px 46px rgba(0,0,0,.55), 0 0 26px color-mix(in srgb,var(--pc) 22%,transparent)}
+.phead{position:relative;display:flex;align-items:center;gap:13px;padding:16px 18px;cursor:pointer;
+  border-left:3px solid var(--pc,var(--ink-3));overflow:hidden}
+.phead::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .35s;
+  background:radial-gradient(340px circle at var(--px,50%) 50%,color-mix(in srgb,var(--pc) 16%,transparent),transparent 60%)}
+.phead:hover::before{opacity:1}
 .pcar{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;padding:4px 8px;border-radius:4px;border:1px solid var(--edge);color:var(--ink-3);flex:none}
-.pname{font-weight:600;font-size:14.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pname{font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:-.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmeta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px}
 .pcls{margin-left:auto;text-align:right;flex:none}
-.pcls b{display:block;font-family:var(--mono);font-size:14px;color:var(--pc)}
+.pcls b{display:block;font-family:var(--mono);font-size:14px;color:var(--pc);text-shadow:0 0 14px color-mix(in srgb,var(--pc) 45%,transparent)}
 .pcls span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--ink-3)}
 .parrow{flex:none;color:var(--ink-3);font-size:11px;transition:transform .25s}
 .prod.open .parrow{transform:rotate(90deg)}
@@ -172,6 +227,7 @@ select option{background:#0a1016}
 </style>
 </head>
 <body>
+<div id="aurora"><i></i><i></i><i></i></div>
 <div id="grid"></div>
 <div class="wrap">
 <header>
@@ -212,7 +268,6 @@ select option{background:#0a1016}
       <button data-v="all" class="on">ALL</button>
       <button data-v="term">TERM</button>
       <button data-v="wl">WHOLE LIFE</button>
-      <button data-v="iul">IUL</button>
     </div>
     <div class="nav"><button class="btn go" data-go="1">BUILD →</button></div>
   </section>
@@ -247,8 +302,8 @@ select option{background:#0a1016}
       <div class="ac" id="condAc" style="display:none"></div>
     </div>
     <div class="chips" id="condPills" style="margin-top:14px"></div>
-    <div class="hint">Type it how you'd say it. Anything not on file can still be entered — it gets flagged for the carrier instead of guessed at.</div>
-    <div id="condList"></div>
+    <div class="hint">Type it how you'd say it — <b>sugar</b>, <b>a-fib</b>, <b>high bp</b>, <b>cpap</b>, <b>mini stroke</b>, <b>chemo</b>.
+      Anything not on file can still be entered; it gets flagged for the carrier instead of guessed at.</div>
     <div class="nav"><button class="btn" data-go="1">← BACK</button><button class="btn go" data-go="3">MEDICATIONS →</button></div>
   </section>
 
@@ -344,9 +399,14 @@ const PRODUCTS = [
   {id:'sc', kind:'wl',    carrier:'AmAm', lane:'aa_fe',   name:'Senior Choice', type:'Final expense whole life',
    ages:[50,85], face:[2500,50000], fee:'$30', best:'immediate',
    req:['App + MIB','Rx database','Build chart'],
-   note:'Plan assigned by health questions: Immediate / Graded / ROP.'},
+   note:'Plan assigned by the health questions — Immediate or Graded. A Yes in the ROP section routes to Senior Choice ROP.'},
 
-  {id:'ic', kind:'iul',    carrier:'AmAm', lane:'aa_iul',  name:'Intelligent Choice IUL', type:'Simplified issue IUL',
+  {id:'scrop', kind:'wl', carrier:'AmAm', lane:'aa_fe', name:'Senior Choice ROP', type:'Final expense — Return of Premium plan',
+   ages:[50,85], face:[2500,25000], fee:'$30', best:'rop', capTo:'rop',
+   req:['App + MIB','Rx database','Build chart','No phone interview on the ROP plan'],
+   note:'The plan to write when a Yes lands in the ROP section (application questions 4-7).'},
+
+  {id:'ic', kind:'term',    carrier:'AmAm', lane:'aa_iul',  name:'Intelligent Choice IUL', type:'Simplified issue IUL',
    ages:[18,75], face:[25000,500000], fee:'n/a', best:'std',
    req:['App + MIB','Rx database','MVR'],
    note:'Standard through Table 4. Interview only if Underwriting requests it.'},
@@ -361,17 +421,17 @@ const PRODUCTS = [
    req:['Full underwriting','Fluidless eligible'],
    note:'Living benefit riders underwrite separately from the base policy.'},
 
-  {id:'ffiul', kind:'iul', carrier:'TransAm', lane:'ta_full', name:'Financial Foundation IUL II', type:'IUL',
+  {id:'ffiul', kind:'term', carrier:'TransAm', lane:'ta_full', name:'Financial Foundation IUL II', type:'IUL',
    ages:[0,85], face:[25000,10000000], fee:'—', best:'pref_plus',
    req:['Full underwriting','Fluidless eligible'],
    note:'Preferred Elite = Preferred Plus tier naming.'},
 
-  {id:'life', kind:'wl',  carrier:'TransAm', lane:'ta_full', name:'Transamerica Lifetime', type:'Whole life',
+  {id:'life', kind:'term',  carrier:'TransAm', lane:'ta_full', name:'Transamerica Lifetime', type:'Whole life',
    ages:[0,80], face:[25000,5000000], fee:'—', best:'pref_plus',
    req:['Express Protect underwriting'],
    note:'$2M max in CA.'},
 
-  {id:'ffexp', kind:'iul', carrier:'TransAm', lane:'ta_exp', name:'FFIUL II Express', type:'Instant-decision IUL',
+  {id:'ffexp', kind:'term', carrier:'TransAm', lane:'ta_exp', name:'FFIUL II Express', type:'Instant-decision IUL',
    ages:[18,70], face:[50000,500000], fee:'—', best:'std',
    req:['100% instant decision','Single-condition chart','No labs'],
    note:'Select NT / Select Tobacco only. Max $500K to 60, $300K 61-70.'},
@@ -381,7 +441,7 @@ const PRODUCTS = [
    req:['Digital app','Rx + medical data','Real-time decision'],
    note:'Max $50K to 55, $40K 56-65, $30K 66-75, $25K 76-85.'},
 
-  {id:'easysol', kind:'wl',carrier:'TransAm', lane:'ta_fe', name:'Easy Solution', type:'FE graded death benefit',
+  {id:'easysol', kind:'term',carrier:'TransAm', lane:'ta_fe', name:'Easy Solution', type:'FE graded death benefit',
    ages:[18,80], face:[1000,25000], fee:'—', best:'graded',
    req:['Digital app','Rx + medical data'],
    note:'First 2 years: accidental only or 110% of premiums paid.'},
@@ -842,11 +902,14 @@ function evaluate(p){
   if(p.lane==='aa_term' && STATE.age>=65) reqs.push('Phone interview (65-75)');
   if(p.id==='sc' && STATE.age>=71) reqs.push('Interview if not in Rx database');
   if(p.lane==='ta_full' && (STATE.face>=1000000 || STATE.age>=61)) reqs.push('Labs / paramed likely');
+  // A plan-specific product (Senior Choice ROP) reports its own plan for anything
+  // it does not decline — the guide gives the ROP section precedence over Graded.
+  if(p.capTo && out!=='decline' && RANK.indexOf(out) < RANK.indexOf('decline')) out = p.capTo;
   if(na) out='decline';
   return {p, out, why, reqs, na, pending, smoker:['current','quit1'].includes(STATE.tob)};
 }
 
-const KIND_LABEL={all:'all products',term:'term',wl:'whole life',iul:'IUL'};
+const KIND_LABEL={all:'all products',term:'term',wl:'whole life'};
 function runEngine(){
   const pool = STATE.kind==='all' ? PRODUCTS : PRODUCTS.filter(p=>p.kind===STATE.kind);
   return pool.map(evaluate).sort((a,b)=>
@@ -912,20 +975,6 @@ function paintCondPills(){
   const typed=STATE.free.map((t,i)=>`<span class="pill" style="border-color:rgba(255,200,60,.55);background:rgba(255,200,60,.10)">${t} <em>unlisted</em><button data-rf="${i}">✕</button></span>`).join('');
   $('#condPills').innerHTML = (picked+typed) || '<div class="hint">Nothing selected yet — type above or pick from the list.</div>';
 }
-function paintConds(filter=''){
-  const f=filter.toLowerCase();
-  const cats=[...new Set(CONDITIONS.map(c=>c.cat))];
-  let html='';
-  cats.forEach(cat=>{
-    const items=CONDITIONS.filter(c=>c.cat===cat && (!f || c.label.toLowerCase().includes(f)));
-    if(!items.length) return;
-    html+=`<div class="cat">${cat}<i></i></div><div class="chips">`;
-    items.forEach(c=>{ html+=`<div class="chip ${STATE.conds.has(c.id)?'on':''}" data-c="${c.id}">${c.label}</div>`; });
-    html+='</div>';
-  });
-  $('#condList').innerHTML = html || '<div class="hint">No match. Anything not listed still needs to go to the carrier.</div>';
-}
-
 /* medications */
 function paintMeds(){
   $('#medList').innerHTML = STATE.meds.map((m,i)=>{
@@ -1028,17 +1077,46 @@ function runScan(){
 function finishScan(){
   $('#scan').classList.remove('on');
   paintResults();
+  requestAnimationFrame(scrambleResults);
   $$('.step').forEach(s=>s.classList.toggle('on', +s.dataset.step===4));
   paintStepper();
   window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
 }
 
+/* text scramble, adapted from 21st.dev ibelick/text-scramble — used on the rate class */
+const SCR='ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&+=*0123456789';
+function scramble(el, txt, dur=520){
+  if(reduceMotion){ el.textContent=txt; return; }
+  const steps=Math.max(6,dur/38); let i=0;
+  const iv=setInterval(()=>{
+    const p=i/steps;
+    el.textContent=[...txt].map((ch,n)=> ch===' '?' ' : (p*txt.length>n?ch:SCR[Math.floor(Math.random()*SCR.length)])).join('');
+    if(++i>steps||!el.isConnected){ clearInterval(iv); el.textContent=txt; }
+  },38);
+}
+function scrambleResults(){
+  document.querySelectorAll('.pcls b').forEach((el,i)=>{
+    const t=el.textContent; setTimeout(()=>scramble(el,t),120+i*60);
+  });
+}
+
 /* ---------- wiring ---------- */
 (function init(){
+  // spotlight follows the pointer across the card and product rows
+  if(!reduceMotion){
+    document.addEventListener('pointermove',e=>{
+      const c=e.target.closest('.card');
+      if(c){ const r=c.getBoundingClientRect();
+        c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+        c.style.setProperty('--my',(e.clientY-r.top)+'px'); }
+      const h=e.target.closest('.phead');
+      if(h){ const r=h.getBoundingClientRect(); h.style.setProperty('--px',(e.clientX-r.left)+'px'); }
+    },{passive:true});
+  }
   // height selects
   $('#ft').innerHTML=[4,5,6,7].map(f=>`<option ${f===5?'selected':''}>${f}</option>`).join('');
   $('#in').innerHTML=[...Array(12).keys()].map(i=>`<option ${i===9?'selected':''}>${i}</option>`).join('');
-  paintStepper(); paintConds(); paintCondPills(); paintMeds();
+  paintStepper(); paintCondPills(); paintMeds();
 
   document.addEventListener('click',e=>{
     const g=e.target.closest('[data-go]');
@@ -1062,7 +1140,7 @@ function finishScan(){
     const rm=e.target.closest('[data-rm]');
     if(rm){ STATE.meds.splice(+rm.dataset.rm,1); paintMeds(); return; }
     const rc=e.target.closest('[data-rc]');
-    if(rc){ STATE.conds.delete(rc.dataset.rc); paintCondPills(); paintConds($('#condSearch').value); return; }
+    if(rc){ STATE.conds.delete(rc.dataset.rc); paintCondPills(); return; }
     const rf=e.target.closest('[data-rf]');
     if(rf){ STATE.free.splice(+rf.dataset.rf,1); paintCondPills(); return; }
     const ph=e.target.closest('.phead');
@@ -1088,7 +1166,7 @@ function finishScan(){
       <b style="color:var(--am)">+ Add "${q}"</b><small>not in the loaded rules — will be flagged for the carrier</small></div>`;
     cac.innerHTML=html; cac.style.display=html?'block':'none';
   };
-  cs.addEventListener('input',()=>{ paintCondAc(); paintConds(cs.value); });
+  cs.addEventListener('input',paintCondAc);
   cac.addEventListener('click',e=>{
     const d=e.target.closest('[data-cond]');
     if(d){ STATE.conds.add(d.dataset.cond); }
@@ -1096,7 +1174,7 @@ function finishScan(){
       const t=cs.value.trim();
       if(t && !STATE.free.includes(t)) STATE.free.push(t);
     } else return;
-    cs.value=''; cac.style.display='none'; paintCondPills(); paintConds('');
+    cs.value=''; cac.style.display='none'; paintCondPills(); cs.focus();
   });
   cs.addEventListener('keydown',e=>{
     if(e.key==='Enter'){ const first=cac.querySelector('[data-cond],[data-free]'); if(first) first.click(); e.preventDefault(); }
@@ -1126,7 +1204,7 @@ function finishScan(){
   $('#restart').addEventListener('click',()=>{
     STATE.conds.clear(); STATE.free=[]; STATE.meds=[]; STATE.wt=null;
     $('#wt').value=''; $('#age').value=''; $('#face').value=''; STATE.age=null; STATE.face=null;
-    paintConds(); paintCondPills(); paintMeds(); paintBuild(); go(0);
+    paintCondPills(); paintMeds(); paintBuild(); go(0);
   });
 })();
 
