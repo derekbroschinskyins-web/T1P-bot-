@@ -65,18 +65,9 @@ header{padding:26px 0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wra
 @media(max-width:760px){.slabel{display:none}.sbar{margin:0 6px}}
 
 /* cards */
-/* spotlight card: a light that follows the pointer, in the spirit of the 21st.dev spotlight cards */
 .card{position:relative;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--edge);
   border-radius:18px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.045);
   backdrop-filter:blur(6px)}
-.card::before{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;opacity:0;transition:opacity .4s;
-  background:radial-gradient(420px circle at var(--mx,50%) var(--my,0%),rgba(61,217,245,.10),transparent 42%)}
-.card:hover::before{opacity:1}
-.card::after{content:'';position:absolute;inset:-1px;border-radius:19px;pointer-events:none;padding:1px;
-  background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(120,230,255,.55),transparent 45%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s}
-.card:hover::after{opacity:1}
 .step{display:none}
 .step.on{display:block;animation:stepIn .45s cubic-bezier(.2,.8,.3,1)}
 @keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -200,9 +191,6 @@ select option{background:#0a1016}
   box-shadow:0 18px 46px rgba(0,0,0,.55), 0 0 26px color-mix(in srgb,var(--pc) 22%,transparent)}
 .phead{position:relative;display:flex;align-items:center;gap:13px;padding:16px 18px;cursor:pointer;
   border-left:3px solid var(--pc,var(--ink-3));overflow:hidden}
-.phead::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .35s;
-  background:radial-gradient(340px circle at var(--px,50%) 50%,color-mix(in srgb,var(--pc) 16%,transparent),transparent 60%)}
-.phead:hover::before{opacity:1}
 .pcar{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;padding:4px 8px;border-radius:4px;border:1px solid var(--edge);color:var(--ink-3);flex:none}
 .pname{font-family:var(--disp);font-weight:600;font-size:16px;letter-spacing:-.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmeta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:2px}
@@ -223,11 +211,41 @@ select option{background:#0a1016}
 .disclaim{margin-top:26px;padding:15px 17px;border-radius:10px;border:1px solid rgba(255,200,60,.3);
   background:rgba(255,200,60,.05);font-size:12px;color:#E8D9AE;line-height:1.65}
 .disclaim b{color:var(--am)}
+/* ---------- the FATTY alarm ---------- */
+#fatty{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;pointer-events:none}
+#fatty.on{display:flex}
+#fatty .veil{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(255,95,109,.16),rgba(4,7,10,.72));
+  animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#fatty .word{
+  position:relative;font-family:var(--disp);font-weight:700;font-size:clamp(64px,15vw,190px);letter-spacing:-.03em;
+  color:#fff;text-shadow:0 0 30px rgba(255,95,109,.9),0 0 90px rgba(255,95,109,.55),0 6px 0 rgba(0,0,0,.35);
+  background:linear-gradient(180deg,#FFD75E,#FF5F6D 60%,#FF2D55);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:fattyPop .5s cubic-bezier(.2,1.5,.4,1), fattyShake .42s ease-in-out .5s 3;
+}
+@keyframes fattyPop{0%{transform:scale(.2) rotate(-12deg);opacity:0}70%{transform:scale(1.14) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes fattyShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-9px,3px) rotate(-2.5deg)}
+  50%{transform:translate(8px,-4px) rotate(2deg)}75%{transform:translate(-5px,2px) rotate(-1.5deg)}}
+#fatty .sub{position:absolute;bottom:calc(50% - 130px);left:0;right:0;text-align:center;
+  font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#FFB4BA;
+  animation:fadeIn .4s ease .5s both}
+#fatty .food{position:absolute;font-size:44px;will-change:transform,opacity;animation:foodFloat 2.6s ease-out forwards}
+@keyframes foodFloat{
+  0%{transform:translate3d(0,40px,0) scale(.4) rotate(0);opacity:0}
+  15%{opacity:1}
+  100%{transform:translate3d(var(--dx),var(--dy),0) scale(1.15) rotate(var(--rot));opacity:0}
+}
+#fattyMute{position:fixed;right:14px;bottom:14px;z-index:210;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  padding:7px 11px;border-radius:6px;cursor:pointer;background:rgba(10,16,22,.9);border:1px solid var(--edge);color:var(--ink-3)}
+#fattyMute:hover{color:var(--ink);border-color:var(--edge-hot)}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="aurora"><i></i><i></i><i></i></div>
+<div id="fatty"><div class="veil"></div><div class="word">FATTY!</div><div class="sub">that build is doing the underwriting for you</div></div>
+<button id="fattyMute" type="button" title="Silence the BMI alarm before a client sees it">ALARM: ON</button>
 <div id="grid"></div>
 <div class="wrap">
 <header>
@@ -940,6 +958,7 @@ function go(n){
 /* build meter */
 function paintBuild(){
   const b=bmi();
+  fattyCheck(b);
   if(!b){ $('#bmiVal').innerHTML='—<small>BMI</small>'; return; }
   $('#bmiVal').innerHTML=b+'<small>BMI</small>';
   const pct=Math.max(0,Math.min(100,(b-16)/30*100));
@@ -1083,6 +1102,45 @@ function finishScan(){
   window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'});
 }
 
+/* the FATTY alarm — fires once when BMI crosses into the high band, re-arms
+   when it drops back under. Muteable, because this thing is a liability with a
+   client looking over your shoulder. */
+const FATTY_AT = 35;              // where the wizard already calls it Obese II
+const FOOD = ['🍔','🍟','🍕','🌭','🍩','🍰','🧁','🍫','🥓','🍗','🥤','🍦','🍪','🌮'];
+let fattyArmed = true, fattyMuted = false, fattyTimer = null;
+try{ fattyMuted = localStorage.getItem('t1p-fatty-mute')==='1'; }catch(e){}
+
+function fattyFire(){
+  if(fattyMuted) return;
+  const box=$('#fatty'); if(!box) return;
+  box.querySelectorAll('.food').forEach(f=>f.remove());
+  box.classList.add('on');
+  if(!reduceMotion){
+    for(let i=0;i<18;i++){
+      const f=document.createElement('div');
+      f.className='food';
+      f.textContent=FOOD[Math.floor(Math.random()*FOOD.length)];
+      const ang=Math.random()*Math.PI*2, dist=180+Math.random()*280;
+      f.style.left=(50+(Math.random()*40-20))+'%';
+      f.style.top =(50+(Math.random()*30-15))+'%';
+      f.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+      f.style.setProperty('--dy',(Math.sin(ang)*dist-120)+'px');
+      f.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+      f.style.animationDelay=(Math.random()*.45)+'s';
+      f.style.fontSize=(30+Math.random()*34)+'px';
+      box.appendChild(f);
+    }
+  }
+  clearTimeout(fattyTimer);
+  fattyTimer=setTimeout(fattyClose, reduceMotion?1400:2900);
+}
+function fattyClose(){ $('#fatty').classList.remove('on'); }
+function fattyCheck(b){
+  if(b==null){ fattyArmed=true; return; }
+  if(b>=FATTY_AT && fattyArmed){ fattyArmed=false; fattyFire(); }
+  else if(b<FATTY_AT-1) fattyArmed=true;   // 1-point hysteresis so it can't strobe
+}
+
 /* text scramble, adapted from 21st.dev ibelick/text-scramble — used on the rate class */
 const SCR='ABCDEFGHIJKLMNOPQRSTUVWXYZ$#%&+=*0123456789';
 function scramble(el, txt, dur=520){
@@ -1102,17 +1160,6 @@ function scrambleResults(){
 
 /* ---------- wiring ---------- */
 (function init(){
-  // spotlight follows the pointer across the card and product rows
-  if(!reduceMotion){
-    document.addEventListener('pointermove',e=>{
-      const c=e.target.closest('.card');
-      if(c){ const r=c.getBoundingClientRect();
-        c.style.setProperty('--mx',(e.clientX-r.left)+'px');
-        c.style.setProperty('--my',(e.clientY-r.top)+'px'); }
-      const h=e.target.closest('.phead');
-      if(h){ const r=h.getBoundingClientRect(); h.style.setProperty('--px',(e.clientX-r.left)+'px'); }
-    },{passive:true});
-  }
   // height selects
   $('#ft').innerHTML=[4,5,6,7].map(f=>`<option ${f===5?'selected':''}>${f}</option>`).join('');
   $('#in').innerHTML=[...Array(12).keys()].map(i=>`<option ${i===9?'selected':''}>${i}</option>`).join('');
@@ -1199,6 +1246,18 @@ function scrambleResults(){
     if(e.key==='Enter'){ const first=ac.querySelector('[data-med]'); if(first) first.click(); e.preventDefault(); }
     if(e.key==='Escape') ac.style.display='none';
   });
+
+  const mb=$('#fattyMute');
+  const paintMute=()=>{ mb.textContent='ALARM: '+(fattyMuted?'OFF':'ON'); mb.style.color=fattyMuted?'var(--ink-3)':'var(--am)'; };
+  paintMute();
+  mb.addEventListener('click',()=>{
+    fattyMuted=!fattyMuted;
+    try{ localStorage.setItem('t1p-fatty-mute',fattyMuted?'1':'0'); }catch(e){}
+    if(fattyMuted) fattyClose();
+    paintMute();
+  });
+  $('#fatty').addEventListener('click',fattyClose);
+  $('#fatty').style.pointerEvents='auto';
 
   $('#runBtn').addEventListener('click',runScan);
   $('#restart').addEventListener('click',()=>{
