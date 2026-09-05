@@ -114,3 +114,16 @@ alter publication supabase_realtime add table public.cash_journal;
 
 -- The roster roll-up. See README for why this is a function and not a view.
 -- The full body lives in migration cash_engine_cockpit; re-create it there.
+
+-- Lock the helpers down. Note CREATE OR REPLACE FUNCTION re-grants EXECUTE to
+-- PUBLIC, so revoking from anon/authenticated alone is not enough — revoke from
+-- PUBLIC too, and re-run this block after any change to these functions.
+revoke execute on function public.cash_touch_updated_at() from public, anon, authenticated;
+revoke execute on function public.cash_is_owner()         from public, anon, authenticated;
+revoke execute on function public.cash_team_pulse()       from public, anon;
+grant  execute on function public.cash_team_pulse()       to authenticated;
+
+-- Expected end state:
+--   cash_is_owner          anon=false authenticated=false   (internal helper only)
+--   cash_team_pulse        anon=false authenticated=true    (owner-gated inside)
+--   cash_touch_updated_at  anon=false authenticated=false   (trigger only)
