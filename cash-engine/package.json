@@ -1,0 +1,15 @@
+{
+  "name": "t1p-cash-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Policy income tracker for a Top One Percent book. Single HTML file, no build step.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "dev": "node serve.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {}
+}
