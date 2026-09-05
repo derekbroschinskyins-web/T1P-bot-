@@ -75,3 +75,42 @@ security headers, and stops `index.html` and `sw.js` from being cached stale.
 Open the site in Safari or Chrome and Add to Home Screen. `manifest.webmanifest` makes
 it standalone with the T1P mark, and `sw.js` caches the shell so it opens instantly and
 still works on a plane with the last synced book.
+
+## The Cockpit
+
+The money side is only half the job, so there are two more tabs.
+
+**Cockpit** is the daily leader view: who has gone too long without hearing from
+you, a daily checklist with a streak, one training rep, the month's selling and
+recruiting goals, and an advice panel that reads your actual numbers — team premium
+against target versus how much of the month is gone, how much of the premium is
+still yours, how many agents are sitting at zero, which new agents have not made a
+first sale. It is rules over real data, not horoscopes.
+
+**Team** lists every agent with their target, written premium, dials, appointments,
+when they were last seen doing anything, and when you last checked in. "Check in"
+logs a note and a read on how they are doing, and that history follows the agent.
+
+### Where the team data comes from
+
+Your agents already live in this Supabase project, fed by the WhatsApp bot — but
+across three different id systems: `agents.id` for points and targets,
+`agents.discord_id` for deals, and `agents.name` → `wa_agents.name` for activity.
+Rather than stitch that together in the browser across five tables, it is one
+Postgres function, `cash_team_pulse()`, called with `sb.rpc()`.
+
+That function is `security definer` and gated on `cash_is_owner()`, which checks
+your email against the `cash_owners` table. Two consequences worth knowing:
+
+- **No existing table's security was changed.** `deals`, `sales`, `wa_activity` and
+  `wa_agents` are still unreadable through the API by anyone; the function reads
+  them on your behalf and only after checking who is asking.
+- **Anyone else who signs up sees nothing.** They get their own empty policy book
+  and an empty roster. Verified by role-switching in Postgres: as the owner the
+  function returns the full roster, as any other authenticated user it returns zero
+  rows.
+
+Check-ins and the daily checklist are yours and use the same per-user RLS as the
+policy book, in `cash_checkins` and `cash_journal`. They ride the same `makeDb`
+shim — `db.collection('checkins')` and `db.doc('journal/2026-09-05')` — so adding
+them needed no new plumbing.

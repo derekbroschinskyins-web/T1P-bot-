@@ -245,6 +245,72 @@
   .authalt button{background:none;border:none;padding:0;font-size:12.5px;font-weight:700;color:var(--gold-2);text-decoration:underline;text-underline-offset:3px}
   .authalt button:hover{filter:brightness(1.2)}
   .btn[disabled]{opacity:.55;pointer-events:none}
+
+  /* --- tabs --- */
+  .tabs{display:flex;gap:6px;margin:0 0 18px;border-bottom:1px solid var(--line);padding-bottom:0;flex-wrap:wrap}
+  .tab{border:none;background:transparent;padding:10px 16px;font-size:13.5px;font-weight:700;color:var(--muted);
+    border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:7px;border-radius:8px 8px 0 0}
+  .tab:hover{color:var(--ink-2);background:rgba(255,255,255,.02)}
+  .tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+  .tabdot{width:7px;height:7px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 3px var(--warn-dim)}
+
+  /* --- cockpit --- */
+  .dayline{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+  .dayline h2{font-family:var(--display);font-size:var(--h1-size);font-weight:var(--display-weight);letter-spacing:var(--display-track);margin:2px 0 0}
+  .quote{margin:0;max-width:600px;border-left:2px solid var(--gold);padding:2px 0 2px 14px;color:var(--ink-2);font-size:13.5px;line-height:1.55;text-wrap:pretty}
+  .quote cite{display:block;color:var(--faint);font-style:normal;font-size:12px;margin-top:4px}
+
+  .who{display:flex;flex-direction:column;gap:8px}
+  .who .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 12px;border-radius:10px;background:var(--ground);border:1px solid var(--line)}
+  .who .row.hot{border-color:var(--warn);background:var(--warn-dim)}
+  .who .row.cold{border-color:var(--crit);background:var(--crit-dim)}
+  .who .nm{font-weight:700;font-size:13.5px}
+  .who .why{color:var(--muted);font-size:12px;margin-top:2px;white-space:normal}
+  .who .btn{padding:6px 11px;font-size:12px}
+
+  .checklist{display:flex;flex-direction:column;gap:4px}
+  .checklist label{display:flex;align-items:flex-start;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;font-size:13.5px;border:1px solid transparent}
+  .checklist label:hover{background:rgba(255,255,255,.025)}
+  .checklist input{width:auto;flex:0 0 auto;margin-top:1px;accent-color:var(--gold);width:17px;height:17px}
+  .checklist label.done{color:var(--muted)}
+  .checklist label.done .t{text-decoration:line-through;text-decoration-color:var(--faint)}
+  .checklist .t{line-height:1.4}
+  .checklist .t small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+
+  .advice{display:flex;flex-direction:column;gap:10px}
+  .advice .a{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:13px 14px;border-radius:11px;background:var(--ground);border:1px solid var(--line)}
+  .advice .a.now{border-color:var(--crit);background:var(--crit-dim)}
+  .advice .a.soon{border-color:var(--warn);background:var(--warn-dim)}
+  .advice .a.good{border-color:var(--accent-border);background:var(--gold-dim)}
+  .advice .k{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding-top:2px;white-space:nowrap}
+  .advice .a.now .k{color:var(--crit)} .advice .a.soon .k{color:var(--warn)} .advice .a.good .k{color:var(--gold-2)}
+  .advice h4{margin:0 0 3px;font-size:13.5px;font-weight:700}
+  .advice p{margin:0;color:var(--ink-2);font-size:12.5px;line-height:1.55;text-wrap:pretty}
+
+  .goals{display:flex;flex-direction:column;gap:12px}
+  .goals .g .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;margin-bottom:5px}
+  .goals .g .lab b{font-family:var(--mono);font-size:13px}
+  .goals .g .lab span{color:var(--muted)}
+
+  .rep{font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+  .rep h4{font-family:var(--display);font-weight:var(--display-weight);letter-spacing:var(--display-track);font-size:var(--h2-size);color:var(--ink);margin:0 0 6px}
+  .rep ul{margin:8px 0 0;padding-left:18px}
+  .rep li{margin:3px 0}
+
+  td.agent{font-weight:700}
+  .ago{font-family:var(--mono);font-size:12px}
+  .ago.warn{color:var(--warn)} .ago.bad{color:var(--crit)} .ago.ok{color:var(--good)}
+  #teamTable{min-width:960px}
+
+  .ci-hist{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .ci-hist .e{padding:9px 11px;border-radius:9px;background:var(--ground);border:1px solid var(--line);font-size:12.5px}
+  .ci-hist .e .m{color:var(--faint);font-family:var(--mono);font-size:11px;margin-bottom:3px}
+  .ci-hist .e p{margin:0;color:var(--ink-2);white-space:pre-wrap}
+  .sent{display:flex;gap:6px}
+  .sent button{flex:1;border:1px solid var(--line-2);background:var(--ground);border-radius:9px;padding:9px;font-size:12.5px;font-weight:700;color:var(--muted)}
+  .sent button.on[data-v=good]{border-color:var(--good);color:var(--good);background:var(--good-dim)}
+  .sent button.on[data-v=watch]{border-color:var(--warn);color:var(--warn);background:var(--warn-dim)}
+  .sent button.on[data-v=concern]{border-color:var(--crit);color:var(--crit);background:var(--crit-dim)}
 </style>
 </head>
 <body>
@@ -268,7 +334,9 @@
     <div class="foot" id="lockFoot"></div>
   </div>
 </div>
-<div class="app locked" id="app">ss="brand">
+<div class="app locked" id="app">
+  <div class="top">
+    <div class="brand">
       <div class="mark">T1P</div>
       <div>
         <h1>Cash <span>Engine</span></h1>
@@ -286,6 +354,13 @@
     </div>
   </div>
 
+
+  <nav class="tabs" id="tabs" role="tablist">
+    <button class="tab on" data-view="cash" role="tab">Cash Engine</button>
+    <button class="tab" data-view="cockpit" role="tab">Cockpit <span class="tabdot" id="tabDot" hidden></span></button>
+    <button class="tab" data-view="team" role="tab">Team</button>
+  </nav>
+  <div id="viewCash">
 
   <section class="bento" aria-label="Key numbers">
     <div class="tile hero">
@@ -389,6 +464,105 @@
     </div>
     <div class="note" style="margin-top:10px">Income goal is commission dollars in the account this month: advances already paid plus advances coming on submitted and approved business.</div>
   </div>
+  </div><!-- /viewCash -->
+
+  <div id="viewCockpit" hidden>
+    <div class="dayline">
+      <div>
+        <div class="eyebrow">Today</div>
+        <h2 id="ckDate">—</h2>
+      </div>
+      <blockquote class="quote" id="ckQuote"></blockquote>
+    </div>
+
+    <section class="bento" aria-label="Team at a glance">
+      <div class="tile hero">
+        <div class="eyebrow"><span>Team written · this month</span><span class="delta" id="ckTeamDelta"></span></div>
+        <div class="big" id="ckTeamAP">$0</div>
+        <div class="bar"><i id="ckTeamBar"></i></div>
+        <div class="foot"><span id="ckTeamFoot">—</span><span class="mono" id="ckTeamLeft"></span></div>
+      </div>
+      <div class="tile span3">
+        <div class="eyebrow"><span>Producing</span></div>
+        <div class="big" id="ckProducing">0</div>
+        <div class="foot"><span id="ckProducingFoot">agents with premium this month</span></div>
+      </div>
+      <div class="tile span4">
+        <div class="eyebrow"><span>Need a check-up</span><span class="delta warn" id="ckOverdueDelta"></span></div>
+        <div class="big" id="ckOverdue">0</div>
+        <div class="foot"><span id="ckOverdueFoot">Nobody is overdue</span></div>
+      </div>
+      <div class="tile span4">
+        <div class="eyebrow"><span>Carried by you</span></div>
+        <div class="big" id="ckShare">0%</div>
+        <div class="foot"><span id="ckShareFoot">of the team's premium is yours</span></div>
+      </div>
+      <div class="tile span4">
+        <div class="eyebrow"><span>Inside first 30 days</span><span class="delta info" id="ckNewDelta"></span></div>
+        <div class="big" id="ckNew">0</div>
+        <div class="foot"><span id="ckNewFoot">New agents need you weekly</span></div>
+      </div>
+      <div class="tile span4">
+        <div class="eyebrow"><span>Team activity · month</span></div>
+        <div class="big" id="ckDials">0</div>
+        <div class="foot"><span id="ckDialsFoot">dials logged</span><span class="mono" id="ckPres"></span></div>
+      </div>
+    </section>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-h"><div><h2>Who needs you today</h2><div class="hint">Ordered by how long it has been</div></div></div>
+        <div id="ckList"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>Daily checklist</h2><div class="hint" id="ckStreakHint"></div></div></div>
+        <div class="checklist" id="ckChecklist"></div>
+        <div class="cal-total"><span class="eyebrow">Done today</span><b id="ckDone">0 / 0</b></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-h"><div><h2>Where you are, and the next move</h2><div class="hint">Read off your real numbers, not a template</div></div></div>
+      <div id="ckAdvice"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-h"><div><h2>Today's rep</h2><div class="hint">One thing to drill</div></div></div>
+        <div id="ckTraining"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>The month</h2><div class="hint">Selling and recruiting against target</div></div></div>
+        <div id="ckGoals"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewTeam" hidden>
+    <div class="card">
+      <div class="card-h">
+        <div><h2>Your guys</h2><div class="hint" id="teamHint">—</div></div>
+        <div class="filters">
+          <button class="btn sm" id="teamRefresh">Refresh</button>
+          <div class="seg" id="teamSeg">
+            <button data-s="attention" class="on">Needs attention</button>
+            <button data-s="all">Everyone</button>
+            <button data-s="new">New agents</button>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table id="teamTable">
+          <thead><tr>
+            <th>Agent</th><th>Joined</th><th class="num">Target</th><th class="num">Written</th>
+            <th class="num">Dials</th><th class="num">Appts</th><th>Last seen</th><th>Last check-in</th><th></th>
+          </tr></thead>
+          <tbody id="teamBody"></tbody>
+          <tfoot id="teamFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="scrim" id="scrim"></div>
@@ -434,6 +608,27 @@
     <button class="btn primary" id="saveBtn">Save policy</button>
   </footer>
 </aside>
+<aside class="panel" id="ciPanel" aria-label="Log a check-in">
+  <header><h3 id="ciTitle">Check in</h3><button class="btn sm ghost" id="ciClose">Esc</button></header>
+  <div class="body">
+    <div class="field"><label>Why they came up</label><div class="note" id="ciWhy"></div></div>
+    <div class="field"><label>How are they doing</label>
+      <div class="sent" id="ciSent">
+        <button type="button" data-v="good" class="on">Good</button>
+        <button type="button" data-v="watch">Watch</button>
+        <button type="button" data-v="concern">Concern</button>
+      </div>
+    </div>
+    <div class="field"><label>What was said</label><textarea id="ciNote" rows="5" placeholder="What they are struggling with, what you agreed, what you promised to follow up on."></textarea></div>
+    <div class="field"><label>History</label><div id="ciHist"></div></div>
+  </div>
+  <footer>
+    <span style="flex:1"></span>
+    <button class="btn" id="ciCancel">Cancel</button>
+    <button class="btn primary" id="ciSave">Log check-in</button>
+  </footer>
+</aside>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -689,7 +884,9 @@ const auth=(()=>{
     try{ if(sb) await sb.auth.signOut(); }catch(e){}
     sync.stop();
     if(sb) clearLocalMirror();
-    policies=[]; settings={...DEFAULTS,advance:{}}; render();
+    policies=[]; checkins=[]; journal={}; pulse=[]; pulseErr=null;
+    try{localStorage.removeItem('t1p-cash-pulse')}catch(e){}
+    settings={...DEFAULTS,advance:{}}; render();
     show('signin',true); note('Signed out.');
   }
 
@@ -752,8 +949,9 @@ const LS_KEY='t1p-cash-engine-v1';
 
 const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 
-function localLoad(){try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);policies=o.policies||[];settings={...DEFAULTS,...(o.settings||{}),advance:{...(o.settings&&o.settings.advance||{})}};}}catch(e){}}
-function localSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({policies,settings}))}catch(e){}}
+function localLoad(){try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);policies=o.policies||[];checkins=o.checkins||[];journal=o.journal||{};settings={...DEFAULTS,...(o.settings||{}),advance:{...(o.settings&&o.settings.advance||{})}};}}catch(e){}
+  try{ const p=localStorage.getItem('t1p-cash-pulse'); if(p)pulse=JSON.parse(p)||[]; }catch(e){}}
+function localSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({policies,settings,checkins,journal}))}catch(e){}}
 
 const store={
   async savePolicy(p){ if(db){ await db.doc('policies/'+p.id).set(p);} else { const i=policies.findIndex(x=>x.id===p.id); if(i>=0)policies[i]=p; else policies.push(p); localSave(); render(); } },
@@ -764,7 +962,7 @@ const store={
 /* ---------- Supabase ----------
    makeDb() speaks the same doc()/collection()/onSnapshot() shape the app was
    already written against, so store{} and every caller above stay untouched. */
-const TABLES={policies:'cash_policies',settings:'cash_settings'};
+const TABLES={policies:'cash_policies',settings:'cash_settings',checkins:'cash_checkins',journal:'cash_journal'};
 
 function makeDb(client,uid){
   const chans=[];
@@ -818,6 +1016,15 @@ const sync=(()=>{
         if(snap.exists){ const s=snap.data(); settings={...DEFAULTS,...s,advance:{...(s.advance||{})}}; }
         localSave(); render();
       },drop));
+      offs.push(db.collection('checkins').onSnapshot(snap=>{
+        checkins=snap.docs.filter(x=>x.exists).map(x=>({...x.data()}));
+        localSave(); renderAux();
+      },drop));
+      offs.push(db.collection('journal').onSnapshot(snap=>{
+        journal={}; snap.docs.filter(x=>x.exists).forEach(x=>{ journal[x.id]=x.data()||{}; });
+        localSave(); renderAux();
+      },drop));
+      loadPulse();
     },
     stop(){ offs.forEach(f=>{try{f&&f()}catch(e){}}); offs=[]; db=null; forUser=null; setStore('local'); }
   };
@@ -921,6 +1128,7 @@ function render(){
   document.getElementById('expoPct').textContent=totalPaid?Math.round(exposure/totalPaid*100)+'% of paid':'';
 
   renderTable(C); renderCal(C); renderChart(all); renderGrid(); fillSettings();
+  renderAux();
 }
 
 function renderTable(C){
@@ -1060,6 +1268,345 @@ document.getElementById('saveBtn').addEventListener('click',async()=>{
 document.getElementById('deleteBtn').addEventListener('click',async()=>{ if(!editingId)return; const p=policies.find(x=>x.id===editingId); try{ await store.deletePolicy(editingId); toast('Deleted '+(p?p.client:'')); closePanel(); }catch(err){ toast('Could not delete: '+(err&&err.message||err)); } });
 
 
+/* ---------- cockpit: leading the agency, not just writing the business ---------- */
+let pulse=[], pulseErr=null, checkins=[], journal={}, view='cash', ciAgent=null, ciSent='good', teamFilter='attention';
+
+const CHECKLIST=[
+  ['dials','Make your own dials','You cannot ask for activity you are not doing.'],
+  ['newagent','Talk to every agent inside their first 30 days','Week one decides whether they last.'],
+  ['recruit','One recruiting conversation','The team only grows as fast as this number.'],
+  ['numbers','Review yesterday’s board','Know who moved before they tell you.'],
+  ['train','One training rep with a producer','Roleplay beats another video.'],
+  ['win','Call out one win publicly','Recognition is free and it compounds.'],
+  ['pending','Chase pending business','Money sitting in underwriting is not money.'],
+];
+
+const QUOTES=[
+  ['You are not behind. You are early in a long game that most people quit.',''],
+  ['The team copies what you do on your worst day, not what you say on your best.',''],
+  ['Activity cures anxiety. When the head gets loud, go make the calls.',''],
+  ['Do not confuse being busy with being in front of people.',''],
+  ['Your income is the average of the five habits you actually keep.',''],
+  ['A leader who never rests teaches the team that burnout is the price of entry.',''],
+  ['Recruit for character. You can teach the product; you cannot teach showing up.',''],
+  ['The month is not won on the 30th. It is won on the ordinary Tuesday.',''],
+  ['Ask more questions than you answer. The close is in what they tell you.',''],
+  ['Protect the morning. Whatever gets your first hour gets your year.',''],
+  ['Nobody quits because it was hard. They quit because they felt alone in it.',''],
+  ['If you are the only one producing, you have a job, not an agency.',''],
+  ['Slow is smooth, smooth is fast. Rushing a presentation costs you the sale.',''],
+  ['Check on your strong ones too. They are the easiest to neglect.',''],
+  ['You cannot pour from an empty cup, and your family gets the leftovers first.',''],
+  ['Consistency is a skill. Practise it on the days you do not feel like it.',''],
+  ['Coach the behaviour, praise the person. Never the other way round.',''],
+  ['The best time to recruit is when you do not need to.',''],
+  ['Rest is part of the work. Tired people make bad decisions and worse calls.',''],
+  ['Write the number down. Vague goals produce vague effort.',''],
+];
+
+const TRAINING=[
+  ['The opening 15 seconds','Say who you are, why you are calling, and give them an out. Rushing past this is why calls end early.',
+   ['Record one live open and play it back','Cut every word that is not needed','Land on a question, not a pitch']],
+  ['Objection: "I need to talk to my spouse"','Not a no. It is a request for a second conversation you have not scheduled yet.',
+   ['Agree with them out loud','Ask what their spouse would want to know','Book the exact time you both call back']],
+  ['The health questions','Speed here signals competence. Fumbling here costs the placement.',
+   ['Run the knockout questions from memory','Practise the diabetes and heart follow-ups','Know two carriers for each red flag']],
+  ['Presenting the price','Present one recommendation and a reason, not a menu.',
+   ['State the number and stop talking','Let the silence do the work','Have the down-sell ready but unspoken']],
+  ['Objection: "I cannot afford it"','Usually means it has not been made real yet.',
+   ['Go back to who it protects','Reduce coverage before reducing commitment','Never argue with the budget']],
+  ['The referral ask','The warmest lead you will get all week and most agents skip it.',
+   ['Ask at the point of relief, right after they sign','Ask for a name, not "anyone"','Ask permission to use their name']],
+  ['Closing the loop on pending','The book you already wrote is the cheapest premium you will ever place.',
+   ['Call every pending case once a week','Give the client one specific next step','Log the reason for every delay']],
+];
+
+const dayIndex=()=>{const d=new Date();return Math.floor((d-new Date(d.getFullYear(),0,0))/864e5)};
+const daysSince=v=>{ if(!v)return null; const d=new Date(v); if(isNaN(d))return null; return Math.floor((Date.now()-d.getTime())/864e5); };
+const agoText=n=>n==null?'never':n===0?'today':n===1?'yesterday':n+'d ago';
+
+function lastCheckin(agentId){
+  const mine=checkins.filter(c=>c.agentId===agentId).sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+  return mine[0]||null;
+}
+/* how long an agent has gone without you, and without producing anything */
+function attention(a){
+  const ci=lastCheckin(a.id);
+  // sinceCheck is the honest number and may be null; basis is what we score on,
+  // falling back to how long they have been on the team so a brand new agent is
+  // not instantly treated as maximally neglected.
+  const sinceCheck=ci?daysSince(ci.at):null;
+  const basis=sinceCheck!=null?sinceCheck:(a.date_joined?daysSince(a.date_joined):null);
+  const seen=[a.last_deal_at,a.last_activity_day,a.last_points_at].map(daysSince).filter(v=>v!=null);
+  const sinceSeen=seen.length?Math.min(...seen):null;
+  const isNew=a.date_joined?daysSince(a.date_joined)<=30:false;
+  // new agents need you weekly; everyone else every two weeks
+  const due=isNew?7:14;
+  const overdue=(basis==null)||(basis>=due);
+  const quiet=(sinceSeen==null)||(sinceSeen>=7);
+  let score=0;
+  score+=basis!=null?basis:30;
+  if(sinceCheck==null)score+=5;                 // never spoken to ranks above merely overdue
+  if(quiet)score+=20;
+  if(isNew)score+=15;
+  if(!(+a.mtd_ap>0))score+=10;
+  return {ci,sinceCheck,basis,sinceSeen,isNew,overdue,quiet,score,due};
+}
+
+function ckReasons(a,at){
+  const r=[];
+  if(at.sinceCheck==null)r.push('never checked in');
+  else if(at.overdue)r.push('last check-in '+agoText(at.sinceCheck));
+  if(at.sinceSeen==null)r.push('no activity on record');
+  else if(at.quiet)r.push('nothing logged in '+at.sinceSeen+' days');
+  if(at.isNew)r.push('first 30 days');
+  if(!(+a.mtd_ap>0)&&+a.target_ap>0)r.push('no premium yet this month');
+  return r;
+}
+
+function teamTotals(){
+  const t={ap:0,target:0,producing:0,mine:0,dials:0,pres:0,agents:pulse.length,newAgents:0,recruits:0};
+  for(const a of pulse){
+    const ap=+a.mtd_ap||0;
+    t.ap+=ap; t.target+=+a.target_ap||0; t.dials+=+a.mtd_dials||0; t.pres+=+a.mtd_pres||0;
+    t.recruits+=+a.recruits_total||0;
+    if(ap>0)t.producing++;
+    if(a.date_joined&&daysSince(a.date_joined)<=30)t.newAgents++;
+    if(isMe(a))t.mine+=ap;
+  }
+  return t;
+}
+const isMe=a=>/^derek/i.test(a.name||'')||a.id==='derek';
+
+function renderCockpit(){
+  const now=new Date();
+  document.getElementById('ckDate').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const q=QUOTES[dayIndex()%QUOTES.length];
+  document.getElementById('ckQuote').innerHTML=esc(q[0])+(q[1]?`<cite>${esc(q[1])}</cite>`:'');
+
+  const t=teamTotals();
+  const pct=t.target>0?t.ap/t.target*100:0;
+  document.getElementById('ckTeamAP').textContent=fmt(t.ap);
+  document.getElementById('ckTeamBar').style.width=Math.min(100,pct)+'%';
+  document.getElementById('ckTeamFoot').textContent=t.target>0?'of '+fmt(t.target)+' team target':'no targets set this month';
+  document.getElementById('ckTeamLeft').textContent=t.target>t.ap?fmt(t.target-t.ap)+' to go':t.target>0?'target hit':'';
+  const td=document.getElementById('ckTeamDelta'); td.textContent=Math.round(pct)+'%';
+  td.className='delta '+(pct>=100?'up':pct>=50?'warn':'crit');
+
+  document.getElementById('ckProducing').textContent=t.producing+' / '+t.agents;
+  document.getElementById('ckProducingFoot').textContent=t.agents-t.producing+' have written nothing this month';
+
+  // you do not check in on yourself
+  const needs=pulse.filter(a=>!isMe(a)).map(a=>({a,at:attention(a)})).filter(x=>x.at.overdue||x.at.quiet).sort((x,y)=>y.at.score-x.at.score);
+  document.getElementById('ckOverdue').textContent=needs.length;
+  document.getElementById('ckOverdueDelta').textContent=needs.length?'top: '+esc(needs[0].a.name):'clear';
+  document.getElementById('ckOverdueFoot').textContent=needs.length?'agents you have not touched lately':'Everyone has heard from you';
+  const dot=document.getElementById('tabDot'); dot.hidden=!needs.length;
+
+  const newOnes=pulse.filter(a=>a.date_joined&&daysSince(a.date_joined)<=30);
+  const newNoSale=newOnes.filter(a=>!(+a.mtd_ap>0));
+  document.getElementById('ckNew').textContent=newOnes.length;
+  document.getElementById('ckNewDelta').textContent=newNoSale.length?newNoSale.length+' no sale':'all selling';
+  document.getElementById('ckNewFoot').textContent=newOnes.length?'The first sale decides if they stay':'No new agents this month';
+  document.getElementById('ckDials').textContent=t.dials.toLocaleString('en-US');
+  const dialTarget=pulse.reduce((s2,a)=>s2+(+a.target_dials||0),0);
+  document.getElementById('ckDialsFoot').textContent=dialTarget?'of '+dialTarget.toLocaleString('en-US')+' dialled':'dials logged';
+  document.getElementById('ckPres').textContent=t.pres+' appts';
+
+  const share=t.ap>0?t.mine/t.ap*100:0;
+  document.getElementById('ckShare').textContent=Math.round(share)+'%';
+  document.getElementById('ckShareFoot').textContent=share>=60?'you are still the agency':share>=35?'team is starting to carry it':'the team is carrying the month';
+
+  // who needs you
+  const list=document.getElementById('ckList');
+  if(!pulse.length){
+    list.innerHTML='<div class="empty"><b>'+(pulseErr?'Team data unavailable':'No roster yet')+'</b>'+(pulseErr?esc(pulseErr):'Agents come from your leaderboard database.')+'</div>';
+  } else if(!needs.length){
+    list.innerHTML='<div class="empty"><b>Everyone has heard from you</b>Nothing is overdue. Use the time to recruit.</div>';
+  } else {
+    list.innerHTML='<div class="who">'+needs.slice(0,8).map(({a,at})=>{
+      const cls=at.basis==null||at.basis>=at.due*2?'cold':at.overdue?'hot':'';
+      return `<div class="row ${cls}">
+        <div><div class="nm">${esc(a.name)}${at.isNew?' <span class="pill sample">new</span>':''}</div>
+        <div class="why">${esc(ckReasons(a,at).join(' · ')||'due for a check-in')}</div></div>
+        <button class="btn" data-ci="${esc(a.id)}">Check in</button>
+      </div>`;
+    }).join('')+'</div>'+(needs.length>8?`<div class="note" style="text-align:center;padding:8px">+${needs.length-8} more on the Team tab</div>`:'');
+  }
+
+  renderChecklist();
+  renderAdvice(t,needs);
+
+  // training
+  const tr=TRAINING[dayIndex()%TRAINING.length];
+  document.getElementById('ckTraining').innerHTML=
+    `<div class="rep"><h4>${esc(tr[0])}</h4><div>${esc(tr[1])}</div><ul>${tr[2].map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
+
+  // goals
+  const gd=(label,val,target,fmtv)=>{
+    const p=target>0?Math.min(100,val/target*100):0;
+    return `<div class="g"><div class="lab"><span>${esc(label)}</span><b>${fmtv(val)}${target>0?' / '+fmtv(target):''}</b></div>
+      <div class="bar${p>=100?' good':''}"><i style="width:${p}%"></i></div></div>`;
+  };
+  const num=n=>Math.round(n).toLocaleString('en-US');
+  document.getElementById('ckGoals').innerHTML='<div class="goals">'+
+    gd('Team written premium',t.ap,t.target,fmt)+
+    gd('Your written premium',t.mine,+settings.monthlyGoal||0,fmt)+
+    gd('Team dials',t.dials,pulse.reduce((s,a)=>s+(+a.target_dials||0),0),num)+
+    gd('Team appointments',t.pres,pulse.reduce((s,a)=>s+(+a.target_appts||0),0),num)+
+    gd('Agents producing',t.producing,t.agents,num)+
+    '</div>';
+}
+
+function renderChecklist(){
+  const day=todayISO(); const j=journal[day]||{};
+  const el=document.getElementById('ckChecklist');
+  el.innerHTML=CHECKLIST.map(([k,label,sub])=>
+    `<label class="${j[k]?'done':''}"><input type="checkbox" data-ck="${k}"${j[k]?' checked':''}>
+      <span class="t">${esc(label)}<small>${esc(sub)}</small></span></label>`).join('');
+  const done=CHECKLIST.filter(([k])=>j[k]).length;
+  document.getElementById('ckDone').textContent=done+' / '+CHECKLIST.length;
+  // streak of days where at least half the list got done
+  let streak=0;
+  for(let i=0;i<180;i++){
+    const d=iso(addDays(new Date(),-i)); const dj=journal[d];
+    const n=dj?CHECKLIST.filter(([k])=>dj[k]).length:0;
+    if(n>=Math.ceil(CHECKLIST.length/2))streak++;
+    else if(i>0)break;              // today still in progress, do not break the streak
+    else if(i===0&&n<Math.ceil(CHECKLIST.length/2))continue;
+  }
+  document.getElementById('ckStreakHint').textContent=streak>0?streak+' day streak':'Tick them off as you go';
+}
+
+/* advice: rules over the real numbers, ordered by what actually matters today */
+function renderAdvice(t,needs){
+  const out=[];
+  const day=new Date().getDate();
+  const mEnd=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
+  const monthPct=day/mEnd, apPct=t.target>0?t.ap/t.target:0;
+  const share=t.ap>0?t.mine/t.ap:1;
+  const zero=t.agents-t.producing;
+  const newNoSale=pulse.filter(a=>a.date_joined&&daysSince(a.date_joined)<=45&&!(+a.mtd_ap>0));
+
+  if(needs.length>=Math.max(2,Math.ceil(t.agents*0.4)))
+    out.push(['now','People first',`${needs.length} of your ${t.agents} agents are overdue for a conversation. This is the highest leverage hour you have today — not dials, not paperwork. Start at the top of the list and work down.`]);
+
+  if(t.target>0&&apPct<monthPct-0.15)
+    out.push(['now','Behind pace',`The team is ${Math.round(apPct*100)}% to target with ${Math.round(monthPct*100)}% of the month gone. That gap is ${fmt(Math.max(0,t.target*monthPct-t.ap))}. Pace does not fix itself in the last week — add appointments this week, not next.`]);
+  else if(t.target>0&&apPct>=monthPct)
+    out.push(['good','On pace',`${Math.round(apPct*100)}% of target with ${Math.round(monthPct*100)}% of the month gone. You are ahead of the calendar. Protect the activity that got you here and start pulling next month's appointments forward.`]);
+
+  if(share>0.6&&t.agents>2)
+    out.push(['soon','You are the agency',`${Math.round(share*100)}% of this month's premium is yours. That is a ceiling, not a win — the business stops when you do. Your next hire matters more than your next sale. Pick one agent who is close and make them a producer this month.`]);
+  else if(share<0.35&&t.ap>0&&t.agents>2)
+    out.push(['good','The team is carrying it',`Only ${Math.round(share*100)}% of the premium is yours. That is what scaling looks like. Spend the time you win back on recruiting, not on taking calls back.`]);
+
+  if(zero>0)
+    out.push([zero>=t.agents/2?'now':'soon','Agents at zero',`${zero} ${zero===1?'agent has':'agents have'} written nothing this month. Zero is almost never a skill problem this early — it is a schedule problem. Find out what hours they are actually dialling before you coach product.`]);
+
+  if(newNoSale.length)
+    out.push(['now','New agents without a first sale',`${newNoSale.map(a=>a.name).join(', ')} ${newNoSale.length===1?'is':'are'} inside 45 days with no premium. The first sale is the single biggest predictor of whether they stay. Get on the phone with them live this week — do not send another video.`]);
+
+  if(t.recruits===0)
+    out.push(['soon','Nothing in the recruiting pipeline',`No recruits logged against anyone. A team this size needs a constant top of funnel or it shrinks by attrition alone. One conversation a day is the whole game.`]);
+
+  if(t.agents<5)
+    out.push(['soon','Where you are: owner-operator',`With ${t.agents} on the roster you are still the main producer and the main trainer. The move is not more of your own dials — it is getting two agents to consistent activity so your income stops being a function of your calendar.`]);
+  else if(t.agents<15)
+    out.push(['soon','Where you are: building the second layer',`At ${t.agents} agents the constraint stops being recruiting and becomes retention and training. Put a repeatable weekly rhythm in place — same day, same time, same agenda — before you add more people to a system that does not hold them.`]);
+  else
+    out.push(['soon','Where you are: leading leaders',`At ${t.agents} agents you cannot personally check on everyone. Start developing recruiters under you and manage through them, or you become the bottleneck for the whole organisation.`]);
+
+  const done=CHECKLIST.filter(([k])=>(journal[todayISO()]||{})[k]).length;
+  if(done===0&&new Date().getHours()>=11)
+    out.push(['soon','Nothing ticked yet today',`It is past eleven and the checklist is untouched. Pick the two that move money — your dials and one recruiting conversation — and do those before anything else.`]);
+
+  const order={now:0,soon:1,good:2};
+  out.sort((a,b)=>order[a[0]]-order[b[0]]);
+  document.getElementById('ckAdvice').innerHTML='<div class="advice">'+out.map(([k,h,p])=>
+    `<div class="a ${k}"><div class="k">${k==='now'?'Do now':k==='soon'?'This week':'Working'}</div>
+     <div><h4>${esc(h)}</h4><p>${esc(p)}</p></div></div>`).join('')+'</div>';
+}
+
+function renderTeam(){
+  const body=document.getElementById('teamBody'), foot=document.getElementById('teamFoot');
+  let rows=pulse.map(a=>({a,at:attention(a)}));
+  if(teamFilter==='attention')rows=rows.filter(x=>!isMe(x.a)&&(x.at.overdue||x.at.quiet)).sort((x,y)=>y.at.score-x.at.score);
+  else if(teamFilter==='new')rows=rows.filter(x=>x.at.isNew).sort((x,y)=>(x.a.date_joined||'').localeCompare(y.a.date_joined||''));
+  else rows.sort((x,y)=>(+y.a.mtd_ap||0)-(+x.a.mtd_ap||0));
+  document.getElementById('teamHint').textContent=pulse.length?rows.length+' of '+pulse.length+' agents'+(pulseErr?' · '+pulseErr:''):(pulseErr||'no roster loaded');
+  if(!rows.length){
+    body.innerHTML='<tr><td colspan="9"><div class="empty"><b>'+(pulse.length?'Nothing here':'No roster')+'</b>'+(pulse.length?'No agents match this filter.':'Agents are read from your leaderboard database.')+'</div></td></tr>';
+    foot.innerHTML=''; return;
+  }
+  const cls=n=>n==null?'bad':n<=2?'ok':n<=7?'':n<=14?'warn':'bad';
+  body.innerHTML=rows.map(({a,at})=>{
+    const ap=+a.mtd_ap||0, tgt=+a.target_ap||0;
+    return `<tr>
+      <td class="agent">${esc(a.name)}${at.isNew?' <span class="pill sample">new</span>':''}${isMe(a)?' <span class="pill sample">you</span>':''}
+        ${a.recruiter_id?`<span class="sub">recruited by ${esc(a.recruiter_id)}</span>`:''}</td>
+      <td class="mono" style="font-size:12px">${a.date_joined?shortDate(parseD(a.date_joined)):'—'}</td>
+      <td class="num">${tgt?fmt(tgt):'—'}</td>
+      <td class="num" style="color:${ap>0?'var(--good)':'var(--muted)'};font-weight:600">${fmt(ap)}${tgt?`<span class="sub">${Math.round(ap/tgt*100)}%</span>`:''}</td>
+      <td class="num">${(+a.mtd_dials||0).toLocaleString('en-US')}</td>
+      <td class="num">${(+a.mtd_pres||0).toLocaleString('en-US')}</td>
+      <td><span class="ago ${cls(at.sinceSeen)}">${agoText(at.sinceSeen)}</span></td>
+      <td><span class="ago ${cls(at.sinceCheck)}">${agoText(at.sinceCheck)}</span></td>
+      <td><div class="rowacts"><button class="btn" data-ci="${esc(a.id)}">Check in</button></div></td>
+    </tr>`;
+  }).join('');
+  const sum=k=>rows.reduce((n,x)=>n+(+x.a[k]||0),0);
+  foot.innerHTML=`<tr><td colspan="2">${rows.length} of ${pulse.length} agents</td>
+    <td class="num">${fmt(sum('target_ap'))}</td><td class="num">${fmt(sum('mtd_ap'))}</td>
+    <td class="num">${sum('mtd_dials').toLocaleString('en-US')}</td>
+    <td class="num">${sum('mtd_pres').toLocaleString('en-US')}</td><td colspan="3"></td></tr>`;
+}
+/* ---------- check-in panel ---------- */
+function openCheckin(agentId){
+  const a=pulse.find(x=>x.id===agentId); if(!a)return;
+  ciAgent=agentId; ciSent='good';
+  document.getElementById('ciTitle').textContent='Check in · '+a.name;
+  const at=attention(a);
+  document.getElementById('ciWhy').textContent=ckReasons(a,at).join(' · ')||'Routine check-in';
+  document.getElementById('ciNote').value='';
+  [...document.querySelectorAll('#ciSent button')].forEach(b=>b.classList.toggle('on',b.dataset.v==='good'));
+  const mine=checkins.filter(c=>c.agentId===agentId).sort((x,y)=>(y.at||'').localeCompare(x.at||'')).slice(0,6);
+  document.getElementById('ciHist').innerHTML=mine.length
+    ? '<div class="ci-hist">'+mine.map(c=>`<div class="e"><div class="m">${new Date(c.at).toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${esc(c.sentiment||'')}</div><p>${esc(c.note||'(no note)')}</p></div>`).join('')+'</div>'
+    : '<div class="note">No check-ins logged for '+esc(a.name)+' yet.</div>';
+  ciPanel.classList.add('open'); scrim.classList.add('open');
+  setTimeout(()=>document.getElementById('ciNote').focus(),250);
+}
+function closeCheckin(){ ciPanel.classList.remove('open'); scrim.classList.remove('open'); ciAgent=null; }
+
+/* ---------- tabs ---------- */
+function setView(v){
+  view=v;
+  document.getElementById('viewCash').hidden=v!=='cash';
+  document.getElementById('viewCockpit').hidden=v!=='cockpit';
+  document.getElementById('viewTeam').hidden=v!=='team';
+  [...document.querySelectorAll('#tabs .tab')].forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  try{ localStorage.setItem('t1p-cash-view',v); }catch(e){}
+  if(v!=='cash'&&!pulse.length&&!pulseErr)loadPulse();
+  renderAux();
+}
+function renderAux(){ try{ renderCockpit(); renderTeam(); }catch(e){ console.warn('cockpit render',e); } }
+
+/* ---------- team pulse ---------- */
+async function loadPulse(){
+  if(!sb||!db){ pulseErr='offline — showing last synced roster'; renderAux(); return; }
+  try{
+    const {data,error}=await sb.rpc('cash_team_pulse');
+    if(error)throw error;
+    pulse=data||[]; pulseErr=pulse.length?null:'no agents visible to this login';
+    try{ localStorage.setItem('t1p-cash-pulse',JSON.stringify(pulse)); }catch(e){}
+  }catch(e){
+    console.warn('pulse',e);
+    pulseErr=(e&&e.message)||'could not load the roster';
+  }
+  renderAux();
+}
+
 /* ---------- export ---------- */
 document.getElementById('exportBtn').addEventListener('click',async()=>{
   if(!policies.length){ toast('Nothing to export yet'); return; }
@@ -1079,6 +1626,46 @@ document.getElementById('exportBtn').addEventListener('click',async()=>{
 });
 
 let toastT; function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
+
+/* ---------- cockpit events ---------- */
+const ciPanel=document.getElementById('ciPanel');
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tab'); if(b)setView(b.dataset.view);
+});
+document.getElementById('teamSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  teamFilter=b.dataset.s; [...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b)); renderTeam();
+});
+document.getElementById('teamRefresh').addEventListener('click',()=>{ pulseErr=null; loadPulse(); toast('Refreshing the roster'); });
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-ci]'); if(b)openCheckin(b.dataset.ci); });
+document.getElementById('ciSent').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  ciSent=b.dataset.v; [...e.currentTarget.children].forEach(x=>x.classList.toggle('on',x===b));
+});
+document.getElementById('ciClose').addEventListener('click',closeCheckin);
+document.getElementById('ciCancel').addEventListener('click',closeCheckin);
+document.getElementById('ciSave').addEventListener('click',async()=>{
+  if(!ciAgent)return;
+  const a=pulse.find(x=>x.id===ciAgent);
+  const rec={id:uid(),agentId:ciAgent,agentName:a?a.name:ciAgent,at:new Date().toISOString(),
+             sentiment:ciSent,note:document.getElementById('ciNote').value.trim()};
+  try{
+    if(db){ await db.doc('checkins/'+rec.id).set(rec); }
+    else { checkins.push(rec); localSave(); renderAux(); }
+    toast('Checked in with '+rec.agentName); closeCheckin();
+  }catch(err){ toast('Could not save: '+((err&&err.message)||err)); }
+});
+document.getElementById('ckChecklist').addEventListener('change',async e=>{
+  const c=e.target.closest('[data-ck]'); if(!c)return;
+  const day=todayISO(); const j={...(journal[day]||{}), [c.dataset.ck]:c.checked};
+  journal[day]=j;
+  renderChecklist();
+  try{ if(db) await db.doc('journal/'+day).set(j); else { localSave(); } }
+  catch(err){ toast('Could not save: '+((err&&err.message)||err)); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&ciPanel.classList.contains('open'))closeCheckin(); });
+scrim.addEventListener('click',closeCheckin);
+try{ const v=localStorage.getItem('t1p-cash-view'); if(v)setView(v); }catch(e){}
 
 ocean.start();
 boot();

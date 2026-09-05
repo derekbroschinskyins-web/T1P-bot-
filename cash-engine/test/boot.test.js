@@ -65,6 +65,16 @@ test('the page boots, renders and locks', { skip: !CHROME && 'no Chromium availa
   assert.match(dom, /id="signOutBtn"/, 'sign out button missing');
   assert.match(dom, /id="authEmail"/, 'email field missing');
   assert.ok(!/id="pinRow"/.test(dom), 'old PIN row is still in the page');
+
+  // the three tabs exist and the cockpit rendered its day line and checklist
+  assert.match(dom, /data-view="cockpit"/, 'cockpit tab missing');
+  assert.match(dom, /data-view="team"/, 'team tab missing');
+  assert.match(dom, /id="ckDate"[^>]*>[A-Z][a-z]+day,/, 'cockpit date did not render');
+  assert.match(dom, /data-ck="dials"/, 'daily checklist did not render');
+  assert.match(dom, /id="ckDone"[^>]*>\d+ \/ \d+</, 'checklist counter did not render');
+
+  // with no roster reachable it must say so rather than render a broken shell
+  assert.match(dom, /id="ckTeamAP"[^>]*>\$[\d,]+</, 'team premium tile did not render');
 });
 
 test('no leftover claude.ai bridge calls ship in the bundle', () => {
