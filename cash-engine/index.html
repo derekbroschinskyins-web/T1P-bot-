@@ -635,7 +635,7 @@ const auth=(()=>{
     }
   }
 
-  function enter(){ el.classList.add('out'); app.classList.remove('locked'); setTimeout(()=>{el.hidden=true},400); }
+  function enter(){ mode='in'; el.classList.add('out'); app.classList.remove('locked'); setTimeout(()=>{el.hidden=true},400); }
 
   async function submit(e){
     if(e)e.preventDefault();
