@@ -1,0 +1,4 @@
+# toponepercent.team serves the vault and nothing else in this repo — no build
+# step, the site is one static page (plus the underwriting sketch).
+[build]
+  publish = "site"
