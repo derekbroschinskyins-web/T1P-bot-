@@ -158,6 +158,10 @@ Setup:
 4. If Metro spells someone differently than we do, point their login at the
    Metro name under *Name Links* on the same page.
 
+Everyone who logs in gets their own Metro line on **My Progress** — what the
+agency posted for them this month, this week and all time, where that puts them
+against the whole agency, and how far back the name above them is.
+
 Until the first import lands, the boards keep running on the Discord deal feed.
 The Gauntlet still seeds off Discord deals — Metro posts period totals, not the
 per-day detail a bracket needs.

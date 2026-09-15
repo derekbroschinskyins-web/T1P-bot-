@@ -476,6 +476,13 @@ body .board-ap{border-color:rgba(0,230,118,.32)}
 .mb-link{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,230,118,.1);flex-wrap:wrap}
 .mb-link:last-child{border-bottom:none}
 .mb-link .nm{min-width:140px;font-weight:600}
+.mm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:12px}
+.mm-card{padding:14px 16px;border:1px solid var(--edge-dim);border-radius:10px;background:rgba(0,230,118,.03)}
+.mm-card .k{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.mm-card .v{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:24px;font-variant-numeric:tabular-nums;color:var(--neon-bright,#00FF66);margin:7px 0 5px}
+.mm-card .v.dim{color:var(--ink-3);font-size:15px}
+.mm-card .s{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--ink-2)}
+.mm-card .s2{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:var(--neon-dim);margin-top:4px}
 .mb-paste{width:100%;min-height:150px;resize:vertical;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 @media(max-width:560px){
   .lb-row{grid-template-columns:22px 28px 1fr auto;gap:10px}
@@ -1409,6 +1416,12 @@ body.tv .page-h{font-size:64px}
       <select class="agent-pick" id="agentPick" aria-label="Select agent"></select>
     </div>
     <div class="stat-tiles rv" id="meStats"></div>
+    <div class="panel rv" id="metroMePanel" style="display:none">
+      <h3 class="disp" style="font-size:18px">Where You Stand At Metro</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">your line straight off the agency board — Metro's numbers, against the whole agency, not just this team</div>
+      <div class="rule"></div>
+      <div id="metroMe"></div>
+    </div>
     <div class="panel rv">
       <h3 class="disp" style="font-size:18px">Activity Log</h3>
       <div class="hint" style="font-size:11px;color:var(--neon-dim)">points earned per day — deeper green, bigger day</div>
@@ -2687,6 +2700,7 @@ function renderMe(){
     <div class="stat"><div class="v">${streakOf(a.id)}${streakOf(a.id)>=3?' 🔥':''}</div><div class="l">Day Streak</div></div>`;
   fxCountUp('#meStats');
   const acct=$('#acctPanel'); if(acct) acct.style.display=(AUTH&&viewAgent===AUTH.id)?'':'none';
+  renderMetroMe(a);
   renderContract(a);
   renderHeat(a.id);
   $('#meSteps').innerHTML=LADDER_STEPS.map((s,i)=>{
@@ -2703,6 +2717,34 @@ function renderMe(){
       <div class="side">${side}<div class="p">+${s.p}</div></div>
     </div>`;
   }).join('');
+}
+
+// Everybody who logs in gets their own Metro line: what the agency posted for
+// them, where that puts them against the whole agency, and how far back the
+// name above them is. Same numbers the Metro Board page shows, cut to one agent.
+function renderMetroMe(a){
+  const panel=$('#metroMePanel'), el=$('#metroMe'); if(!panel||!el) return;
+  const all=DATA.metroBoard||[];
+  if(!all.length){ panel.style.display='none'; return; }
+  panel.style.display='';
+  const cards=[['month','This Month'],['week','This Week'],['all','All Time']].map(([p,label])=>{
+    const rows=all.filter(r=>r.period===p).slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
+    if(!rows.length) return '';
+    const i=rows.findIndex(r=>r.agent_id===a.id);
+    if(i<0) return `<div class="mm-card"><div class="k">${label}</div>
+      <div class="v dim">no line posted</div>
+      <div class="s">nothing on Metro's board yet</div></div>`;
+    const me=rows[i], up=i>0?rows[i-1]:null, n=+me.policies||0;
+    return `<div class="mm-card">
+      <div class="k">${label}</div>
+      <div class="v">${fmtAP(+me.ap||0)}</div>
+      <div class="s">#${i+1} of ${rows.length} at Metro \u00b7 ${n} ${n===1?'policy':'policies'}</div>
+      <div class="s2">${up?`${fmtAP((+up.ap||0)-(+me.ap||0))} behind ${esc(up.metro_name)}`:'nobody ahead of you'}</div>
+    </div>`;
+  }).join('');
+  const onBoard=all.some(r=>r.agent_id===a.id);
+  el.innerHTML=`<div class="mm-grid">${cards}</div>`+(onBoard?''
+    :`<p class="hint" style="margin-top:12px">Metro posts under a different spelling than \u201c${esc(a.name)}\u201d \u2014 leadership can point this login at the right Metro name on the Metro Board page.</p>`);
 }
 
 /* ================= RENDER: BUILDING ================= */
