@@ -1726,6 +1726,7 @@ body.tv .page-h{font-size:64px}
     <div id="metroBox"></div>
     <div class="panel rv" id="metroAdmin" style="margin-top:18px;display:none">
       <h3 class="disp" style="font-size:15px">Import The Metro Board</h3>
+      <div id="metroSrc" class="log-msg ok" style="margin-bottom:8px"></div>
       <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">paste it straight off Metro — one producer per line, rank and policy count optional. today's paste replaces today's snapshot for that period</div>
       <div class="rule" style="margin:10px 0 12px"></div>
       <div class="log-row" style="margin-bottom:10px">
@@ -1853,6 +1854,11 @@ body.tv .page-h{font-size:64px}
 /* ================= CONFIG ================= */
 const SUPABASE_URL = 'https://obtlrivpgdrxgydcpnqo.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_sJSPpAp1-2IIpUDTuQTMHA_1nVUFbY1';
+// Metro's own project (METRO MAN) — the agency deal feed. Read-only, and the
+// only thing exposed to this key is t1p_metro_board(): names and premium
+// totals, no client names, no carriers, no per-deal rows.
+const METRO_URL = 'https://lykfmvgscybwcbgrkqno.supabase.co';
+const METRO_KEY = 'sb_publishable_Vl07wY3b1BzX_T2V3Sjz6Q_yUIsTpCC';
 
 const RANKS = [
   {name:'Recruit', min:0, max:99, cls:'r0', c:'#8B949E'},
@@ -1939,7 +1945,7 @@ function demoData(){
 }
 
 /* ================= STATE ================= */
-let db=null, demo=false;
+let db=null, metroDb=null, demo=false;
 let DATA={agents:[],log:[],skills:[],config:{},scripts:[],sales:[]};
 let SPECTATE=false;
 let AUTH=null; // {id, pin, admin}
@@ -2455,6 +2461,79 @@ function renderApBoard(){
 }
 
 /* ================= METRO BOARD ================= */
+// Metro posts under whatever name the agent goes by over there — "timmyv" and
+// "Derek Broschinsky" sit on the same board. A Metro line is matched to a login
+// by Discord id first (exact), then the Metro name leadership linked, then our
+// own name, and only then by a first name that belongs to exactly one person on
+// each side. Anything short of that stays unenrolled rather than guessing.
+const mNorm=s=>String(s||'').toLowerCase()
+  .replace(/[_.\-\/|]+/g,' ')
+  .replace(/[^a-z\s]/g,'')
+  .replace(/\s+/g,' ').trim();
+const mFirst=s=>mNorm(s).split(' ')[0]||'';
+// every name Metro has filed this person under, normalised
+function metroNames(row){
+  const all=[row.agent_name].concat(Array.isArray(row.aliases)?row.aliases:[]);
+  return [...new Set(all.map(mNorm).filter(Boolean))];
+}
+// "Alex B" is us, "Alex Brown" is Metro: same first name, and our surname is
+// the initial of theirs. Their convention, so it is worth matching on.
+function initialMatch(mine, theirs){
+  const a=mNorm(mine).split(' '), b=mNorm(theirs).split(' ');
+  if(a.length<2||b.length<2||a[0]!==b[0]) return false;
+  const last=a[a.length-1], their=b[b.length-1];
+  return last.length===1 && their.startsWith(last);
+}
+function matchMetroAgent(row){
+  const did=row.discord_id?String(row.discord_id):'';
+  if(did){
+    const a=DATA.agents.find(x=>x.discord_id&&String(x.discord_id)===did);
+    if(a) return {a,how:'discord id'};
+  }
+  const names=metroNames(row);
+  if(!names.length) return null;
+  let a=DATA.agents.find(x=>x.metro_name&&names.includes(mNorm(x.metro_name)));
+  if(a) return {a,how:'linked name'};
+  a=DATA.agents.find(x=>names.includes(mNorm(x.name)));
+  if(a) return {a,how:'name'};
+  a=DATA.agents.find(x=>names.some(n=>initialMatch(x.name,n)));
+  if(a) return {a,how:'name'};
+  return null;
+}
+const MATCH_RANK={'discord id':0,'linked name':1,'name':2,'first name':3};
+function buildMetroFromLive(rows){
+  const marks=rows.map(r=>({r,m:matchMetroAgent(r)}));
+  // one login per Metro line: the strongest match keeps it, a second line
+  // claiming the same person is left unenrolled instead of double counting
+  const taken=new Map();
+  for(const x of marks.slice().sort((p,q)=>(MATCH_RANK[p.m&&p.m.how]??9)-(MATCH_RANK[q.m&&q.m.how]??9))){
+    if(!x.m) continue;
+    if(taken.has(x.m.a.id)) x.m=null; else taken.set(x.m.a.id,x);
+  }
+  for(const x of marks){
+    if(x.m) continue;
+    const fs=metroNames(x.r).map(n=>n.split(' ')[0]).filter(Boolean);
+    if(!fs.length) continue;
+    const mine=DATA.agents.filter(a=>fs.includes(mFirst(a.name))&&!taken.has(a.id));
+    const theirs=marks.filter(y=>!y.m&&metroNames(y.r).some(n=>mine.some(a=>n.split(' ')[0]===mFirst(a.name))));
+    if(mine.length===1&&theirs.length===1){ x.m={a:mine[0],how:'first name'}; taken.set(mine[0].id,x); }
+  }
+  const today=new Date().toISOString().slice(0,10);
+  const board=[];
+  for(const [period,apK,nK] of [['month','ap_month','n_month'],['week','ap_week','n_week'],['all','ap_all','n_all']]){
+    const rs=marks.map(x=>({period,captured_on:today,pos:null,
+      metro_name:x.r.agent_name,ap:+x.r[apK]||0,policies:+x.r[nK]||0,
+      agent_id:x.m?x.m.a.id:null,enrolled:!!x.m,match:x.m?x.m.how:null}))
+      .filter(r=>r.ap>0||r.policies>0);
+    rs.sort((a,b)=>b.ap-a.ap).forEach((r,i)=>{ r.pos=i+1; });
+    board.push(...rs);
+  }
+  const ap=marks.filter(x=>x.m).map(x=>({agent_id:x.m.a.id,
+    ap_week:+x.r.ap_week||0, n_week:+x.r.n_week||0,
+    ap_month:+x.r.ap_month||0, n_month:+x.r.n_month||0,
+    ap_all:+x.r.ap_all||0,  n_all:+x.r.n_all||0}));
+  return {board, ap};
+}
 // Metro's board mirrored whole: everybody the agency posts, enrolled here or
 // not. Enrollment is what the T1P board ranks — this page is the raw source it
 // reads from, so the two can always be checked against each other.
@@ -2482,7 +2561,7 @@ function renderMetro(){
       <h3 style="margin:0"><span class="swatch" style="background:var(--neon,#00E676)"></span>Metro · ${esc(metroPeriodLabel(metroPeriod))}</h3>
       <span class="mb-tot"><b>${fmtAP(sum)}</b> agency ap · ${pol} ${pol===1?'policy':'policies'} · ${ours.length} of ${rows.length} enrolled here</span>
     </div>
-    <div class="hint">the agency's own numbers — greyed names produce at Metro but have no login here, so they are not on the T1P board</div>
+    <div class="hint">${DATA.metroSource==='live'?'live off Metro\u2019s deal feed':'last imported snapshot'} \u2014 greyed names produce at Metro but have no login here, so they are not on the T1P board</div>
     <div class="rule"></div>
     <ol class="lb">`+rows.map((r,i)=>{
       const a=r.agent_id?agentById(r.agent_id):null;
@@ -2499,7 +2578,7 @@ function renderMetro(){
       </li>`;
     }).join('')+`</ol>
     <div class="rule" style="margin:12px 0 8px"></div>
-    <span class="mb-stamp">snapshot captured ${esc(stamp||'')}</span>
+    <span class="mb-stamp">${DATA.metroSource==='live'?'live \u00b7 refreshes with the board':'snapshot captured '+esc(stamp||'')}</span>
   </div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     el.querySelectorAll('.lb-row').forEach(x=>{ x.style.setProperty('--share', x.dataset.share+'%'); });
@@ -2570,13 +2649,19 @@ function renderMetroAdmin(){
   const el=$('#metroLinks'); if(!el) return;
   const rows=metroRows();
   const loose=rows.filter(r=>!r.enrolled).map(r=>r.metro_name);
-  el.innerHTML=DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
+  const st=$('#metroSrc');
+  if(st) st.innerHTML=DATA.metroSource==='live'
+    ?'&gt; LIVE FEED CONNECTED :: the board reads Metro directly, no import needed \u2014 paste below only to override it'
+    :'&gt; no live feed \u2014 paste Metro\u2019s board below';
+  const names=[...new Set(rows.map(r=>r.metro_name).filter(Boolean))].sort((x,y)=>x.localeCompare(y));
+  el.innerHTML=`<datalist id="metroNames">${names.map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>`
+    +DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
     const on=rows.some(r=>r.enrolled&&r.agent_id===a.id);
     return `<div class="mb-link">
       <span class="nm">${esc(a.name)}</span>
-      <input class="sale-in mb-nm" style="max-width:230px" data-aid="${esc(a.id)}" value="${esc(a.metro_name||'')}" placeholder="name on the Metro board" maxlength="120" autocomplete="off">
+      <input class="sale-in mb-nm" style="max-width:230px" list="metroNames" data-aid="${esc(a.id)}" value="${esc(a.metro_name||'')}" placeholder="name on the Metro board" maxlength="120" autocomplete="off">
       <button class="btn ghost mb-save" data-aid="${esc(a.id)}">Save</button>
-      <span class="mb-stamp">${on?'matched':'no metro row'}</span>
+      <span class="mb-stamp">${on?'matched by '+esc((rows.find(r=>r.agent_id===a.id)||{}).match||'name'):'no metro row'}</span>
     </div>`;
   }).join('')+(loose.length?`<div class="hint" style="margin-top:12px">on Metro, not enrolled here: ${loose.slice(0,14).map(esc).join(' · ')}${loose.length>14?` +${loose.length-14} more`:''}</div>`:'');
 }
@@ -4846,7 +4931,7 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da,apd,mb,mbap]=await Promise.all([
+  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da,apd,mb,mbap,mlive]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
@@ -4865,6 +4950,7 @@ async function loadAll(){
     db.rpc('ap_daily'),
     db.rpc('metro_board'),
     db.rpc('metro_ap_board'),
+    metroDb?metroDb.rpc('t1p_metro_board'):Promise.resolve({data:null}),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
@@ -4882,7 +4968,13 @@ async function loadAll(){
     discordAp:(da&&da.data)||[],
     apDaily:(apd&&apd.data)||[],
     metroBoard:(mb&&mb.data)||[],
-    metroAp:(mbap&&mbap.data)||[]};
+    metroAp:(mbap&&mbap.data)||[],
+    metroLive:(mlive&&mlive.data)||[]};
+  // the live agency feed wins over an imported snapshot whenever it answers
+  if(DATA.metroLive.length){
+    const built=buildMetroFromLive(DATA.metroLive);
+    DATA.metroBoard=built.board; DATA.metroAp=built.ap; DATA.metroSource='live';
+  } else DATA.metroSource=DATA.metroBoard.length?'snapshot':'none';
   try{ diffData(); }catch(e){}
 }
 function rerender(){
@@ -4894,6 +4986,7 @@ function rerender(){
 async function init(){
   try{
     db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    try{ metroDb=window.supabase.createClient(METRO_URL,METRO_KEY); }catch(e){ metroDb=null; }
     await loadAll();
     if(!DATA.agents.length) throw new Error('empty');
     demo=false; setLive(true);

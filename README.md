@@ -133,40 +133,65 @@ winner to everyone.
 
 ## The Metro board (site)
 
-`site/index.html` — toponepercent.team — now mirrors Metro's board and reads the
-team's production off it.
+`site/index.html` — toponepercent.team — mirrors Metro's board and reads the
+team's production off it. Nothing is typed in twice and nothing writes back to
+Metro; it is a one-way read.
 
 Two boards, on purpose:
 
-- **Metro Board** (`#/metro`) is the whole agency, exactly as Metro posts it.
-  Producers who have no login here still show, greyed, marked `not enrolled`.
+- **Metro Board** (`#/metro`) is the whole agency, live off Metro's own deal
+  feed. Producers with no login here still show, greyed, marked `not enrolled`.
 - **The T1P board** on the home page ranks only agents enrolled on this site —
-  a row in `agents` is a login. Their individual production marks, the team
-  goal, and the monthly contracts all read the Metro snapshot instead of being
-  logged a second time.
+  a row in `agents` is a login. Their production marks, the team goal and the
+  monthly contracts read the same Metro numbers.
+- **My Progress** gives every login their own Metro line: premium and policies
+  for the month, the week and all time, their place against the whole agency,
+  and the gap to the name above them.
 
-Setup:
+### Where the numbers come from
 
-1. Supabase > SQL Editor > run `migrations/003_metro_board.sql`.
-2. Log in as an admin, open **The Org > Metro Board**, paste Metro's board into
-   *Import The Metro Board*, pick the period (month / week / all time), Import.
-   The paste is read loosely — numbered or not, `$` or not, tabs, commas or
-   spaces; the biggest figure on a line is the premium and a small bare integer
-   is the policy count. Header rows and totals are dropped.
-3. Today's paste replaces today's snapshot for that period, so re-pasting a
-   corrected board is safe. Older captures stay; the site reads the newest.
-4. If Metro spells someone differently than we do, point their login at the
-   Metro name under *Name Links* on the same page.
+The site talks to two Supabase projects:
 
-Everyone who logs in gets their own Metro line on **My Progress** — what the
-agency posted for them this month, this week and all time, where that puts them
-against the whole agency, and how far back the name above them is.
+| project | role |
+|---|---|
+| `TOP ONE LEADERBOARD` (`obtlrivpgdrxgydcpnqo`) | this site: logins, points, contracts |
+| `METRO MAN` (`lykfmvgscybwcbgrkqno`) | the agency deal feed |
 
-Until the first import lands, the boards keep running on the Discord deal feed.
-The Gauntlet still seeds off Discord deals — Metro posts period totals, not the
-per-day detail a bracket needs.
+`METRO MAN.t1p_metro_board()` is the read: one row per producer with week,
+month and all-time premium and policy counts, Denver-cut. Aggregates only — no
+client names, no carriers, no per-deal rows — which is why the site can call it
+with a publishable key.
 
-Nothing here writes to Metro. It is a one-way read into this site.
+**It groups by Discord id, not by name.** The bot files whatever name the agent
+used that day, so one producer shows up as `Derek Broschinsky` and `dray_bro27`;
+grouping by name splits their production across two lines and reports the board
+wrong. Every alias comes back with the row so the site can match on any of them.
+
+### Matching a Metro line to a login
+
+In order, first hit wins, and a login is claimed once:
+
+1. Discord id (exact).
+2. The Metro name leadership linked to that login (`agents.metro_name`).
+3. Our name equal to any alias, punctuation and emoji ignored — `connor_tuttle`
+   matches `Connor Tuttle`, `Bella ✨` matches `Bella`.
+4. Our surname as the initial of theirs — `Alex B` matches `Alex Brown`.
+5. A first name belonging to exactly one person on each side.
+
+Anything short of that stays unenrolled rather than crediting the wrong person.
+Admins fix those under **Name Links** on the Metro Board page, picking from the
+names Metro actually posts.
+
+### The manual override
+
+If Metro's feed is ever unreachable, an admin can paste a board into *Import The
+Metro Board* on the same page and the site reads that snapshot instead. The
+paste is read loosely — numbered or not, `$` or not, tabs, commas or spaces; the
+biggest figure on a line is the premium, a small bare integer is the policy
+count, headers and totals are dropped. Today's paste replaces today's snapshot.
+
+The Gauntlet still seeds off the Discord day-by-day feed; Metro's board gives
+period totals, not the per-day detail a bracket needs.
 
 ## Local development
 
