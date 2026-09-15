@@ -459,6 +459,24 @@ body .board-ap{border-color:rgba(0,230,118,.32)}
 .lb-row.lead .lb-val{color:var(--neon-bright,#00FF66)}
 .lb-unit{display:block;font-size:9px;letter-spacing:.14em;color:var(--ink-3);margin-top:2px}
 .lb-empty{color:var(--ink-3);padding:6px 0}
+/* ---------- metro board (the agency mirror) ---------- */
+.mb-head{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.mb-tot{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.06em;color:var(--neon-dim)}
+.mb-tot b{color:var(--neon-bright,#00FF66);font-size:17px;font-weight:500}
+.mb-stamp{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.lb-row.mb-out{opacity:.5}
+.lb-row.mb-out::before{background:none}
+.lb-row.mb-out .lb-name,.lb-row.mb-out .lb-val{color:var(--ink-2)}
+.mb-tag{
+  display:inline-block;margin-left:7px;padding:1px 6px;border-radius:999px;vertical-align:1px;
+  font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+}
+.mb-tag.in{color:#02120a;background:var(--neon)}
+.mb-tag.out{color:var(--ink-3);border:1px solid var(--edge-dim)}
+.mb-link{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,230,118,.1);flex-wrap:wrap}
+.mb-link:last-child{border-bottom:none}
+.mb-link .nm{min-width:140px;font-weight:600}
+.mb-paste{width:100%;min-height:150px;resize:vertical;font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 @media(max-width:560px){
   .lb-row{grid-template-columns:22px 28px 1fr auto;gap:10px}
   .lb-av{width:28px;height:28px;font-size:10px}
@@ -1306,6 +1324,7 @@ body.tv .page-h{font-size:64px}
       <div class="ngrp">
         <button class="ngbtn" type="button">The Org <i>▾</i></button>
         <div class="ndrop">
+          <a href="#/metro" data-v="metro">Metro Board</a>
           <a href="#/tree" data-v="tree">Duplication Tree</a>
           <a href="#/ranks" data-v="ranks">Ranks</a>
           <a href="#/records" data-v="records">Records</a>
@@ -1359,9 +1378,10 @@ body.tv .page-h{font-size:64px}
     <div id="cotw" class="rv"></div>
     <div class="panel board board-ap rv">
       <h3><span class="swatch" style="background:var(--neon,#00E676)"></span>Top Producers<span class="ap-total" id="apTotal"></span></h3>
-      <div class="hint">annual premium written this month — deals posted in #deal-submissions on Discord</div>
+      <div class="hint" id="apHint">annual premium written this month</div>
       <div class="rule"></div>
       <div id="boardAP"></div>
+      <a class="mb-stamp" href="#/metro" style="display:inline-block;margin-top:12px;color:var(--neon-dim)">the whole Metro board &#187;</a>
     </div>
     <div class="panel rv" style="margin-top:20px">
       <h3 class="disp" style="font-size:15px">The Gauntlet</h3>
@@ -1678,6 +1698,42 @@ body.tv .page-h{font-size:64px}
     <div id="gauntletBox"></div>
   </section>
 
+  <!-- METRO BOARD -->
+  <section class="view" id="v-metro">
+    <div class="rv"><div class="kicker">The Agency</div>
+    <h1 class="page-h">Metro Board</h1>
+    <p class="page-sub">Metro's board, the whole agency, mirrored exactly as it is posted. Every production number on this site is read off this snapshot — but only agents enrolled here get ranked on the T1P board. No login, no spot on ours.</p></div>
+    <div class="me-head rv" style="margin-bottom:14px">
+      <div class="war-range">
+        <button class="btn ghost war-r metro-r on" data-period="month">This Month</button>
+        <button class="btn ghost war-r metro-r" data-period="week">This Week</button>
+        <button class="btn ghost war-r metro-r" data-period="all">All Time</button>
+      </div>
+    </div>
+    <div id="metroBox"></div>
+    <div class="panel rv" id="metroAdmin" style="margin-top:18px;display:none">
+      <h3 class="disp" style="font-size:15px">Import The Metro Board</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">paste it straight off Metro — one producer per line, rank and policy count optional. today's paste replaces today's snapshot for that period</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <div class="log-row" style="margin-bottom:10px">
+        <select id="metroPeriod" class="agent-pick" style="min-width:150px">
+          <option value="month">This Month</option>
+          <option value="week">This Week</option>
+          <option value="all">All Time</option>
+        </select>
+        <button class="btn" id="metroGo">Import</button>
+        <span id="metroMsg" class="log-msg"></span>
+      </div>
+      <textarea id="metroPaste" class="sale-in mb-paste" placeholder="1. Derek B  $18,250  6 policies&#10;2  Wes Alder  16,400  5&#10;Austin, 12980, 4" spellcheck="false"></textarea>
+      <div id="metroPreview" class="hint" style="margin-top:8px;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:11px"></div>
+      <div class="rule" style="margin:16px 0 12px"></div>
+      <h3 class="disp" style="font-size:15px">Name Links</h3>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">when Metro spells somebody differently than we do, point their login at the Metro name — blank falls back to matching their T1P name</div>
+      <div class="rule" style="margin:10px 0 12px"></div>
+      <div id="metroLinks"></div>
+    </div>
+  </section>
+
   <!-- VAULT RECORDS -->
   <section class="view" id="v-records">
     <div class="rv"><div class="kicker">Hall of Fame</div>
@@ -1843,9 +1899,30 @@ function demoData(){
     L('jordan','new_agent','licensed',50,5), L('jordan','new_agent','onboarding',50,0.3),
     L('sam','new_agent','licensed',50,2), L('sam','new_agent','first_appointment',25,0.05,'pending'),
   ];
+  // a stand-in Metro board: five of ours on it, four names that never enrolled
+  const today=new Date().toISOString().slice(0,10);
+  const metro=[['Derek',18250,6],['Wes Alder',16400,5],['Austin',12980,4],['Priya Nandan',11200,4],
+    ['Maya',9875,3],['Tomas Reyes',8100,3],['Jordan',6420,2],['Nina Okafor',5300,2],['Sam',3150,1]];
+  const metroBoard=[];
+  for(const per of ['month','week','all']){
+    const k=per==='week'?0.3:per==='all'?1.7:1;
+    metro.forEach(([name,ap,n],i)=>{
+      const mine=agents.find(a=>a.name===name);
+      metroBoard.push({period:per,captured_on:today,pos:i+1,metro_name:name,
+        ap:Math.round(ap*k),policies:Math.max(1,Math.round(n*k)),
+        agent_id:mine?mine.id:null,enrolled:!!mine});
+    });
+  }
+  const metroAp=metroBoard.filter(r=>r.enrolled&&r.period==='month').map(r=>{
+    const wk=metroBoard.find(x=>x.period==='week'&&x.metro_name===r.metro_name)||{ap:0,policies:0};
+    const al=metroBoard.find(x=>x.period==='all'&&x.metro_name===r.metro_name)||{ap:0,policies:0};
+    return {agent_id:r.agent_id,ap_week:wk.ap,n_week:wk.policies,
+      ap_month:r.ap,n_month:r.policies,ap_all:al.ap,n_all:al.policies};
+  });
   return {agents, log:demoLog, skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
-  ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[]};
+  ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[],
+    metroBoard, metroAp};
 }
 
 /* ================= STATE ================= */
@@ -2303,13 +2380,21 @@ const SYS_LINES=[
   }, 30000+Math.random()*25000);
 })();
 
-/* ================= AP: DISCORD DEALS + SALES TAB ================= */
-// One month-to-date AP figure per agent. Discord deal submissions ONLY — the
-// Sales tab is a client book and does not score the board, the goal, or the
-// Gauntlet. A policy counts when it's posted in #deal-submissions.
+/* ================= AP: METRO BOARD + DISCORD DEALS ================= */
+// One month-to-date AP figure per agent. Metro's board is the source of truth
+// the moment a snapshot exists — that is where the agency counts policies, so
+// nobody logs production twice. Until the first Metro import lands, the Discord
+// deal feed carries the numbers, so the board never goes dark.
+// The Sales tab stays out of it either way: it is a client book, it does not
+// score the board, the goal, or the Gauntlet.
+function apRows(){
+  const mb=DATA.metroAp||[];
+  return mb.length?mb:(DATA.discordAp||[]);
+}
+const apFromMetro=()=>!!(DATA.metroAp&&DATA.metroAp.length);
 function apThisMonth(){
   const m=new Map();
-  for(const r of (DATA.discordAp||[])){
+  for(const r of apRows()){
     const c=m.get(r.agent_id)||{ap:0,n:0};
     c.ap+=+r.ap_month||0; c.n+=+r.n_month||0;
     m.set(r.agent_id,c);
@@ -2324,6 +2409,10 @@ function initialsOf(name){
 }
 function renderApBoard(){
   const host=$('#boardAP'); if(!host) return;
+  const hint=$('#apHint');
+  if(hint) hint.textContent=apFromMetro()
+    ?'annual premium this month, read off the Metro board — only agents enrolled here are ranked'
+    :'annual premium written this month — deals posted in #deal-submissions on Discord';
   const ap=apThisMonth();
   const rows=DATA.agents.map(a=>({a,...totals(a.id),ap:(ap.get(a.id)||{}).ap||0,n:(ap.get(a.id)||{}).n||0}))
     .filter(r=>r.ap>0).sort((x,y)=>y.ap-x.ap).slice(0,10);
@@ -2351,6 +2440,170 @@ function renderApBoard(){
     host.querySelectorAll('.lb-row').forEach(el=>{ el.style.setProperty('--share', el.dataset.share+'%'); });
   }));
 }
+
+/* ================= METRO BOARD ================= */
+// Metro's board mirrored whole: everybody the agency posts, enrolled here or
+// not. Enrollment is what the T1P board ranks — this page is the raw source it
+// reads from, so the two can always be checked against each other.
+let metroPeriod='month';
+function metroRows(period){
+  return (DATA.metroBoard||[]).filter(r=>r.period===(period||metroPeriod));
+}
+const metroPeriodLabel=p=>p==='week'?'this week':p==='all'?'all time':'this month';
+function renderMetro(){
+  const el=$('#metroBox');
+  renderMetroAdmin();
+  if(!el) return;
+  const rows=metroRows().slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
+  if(!rows.length){
+    el.innerHTML=`<div class="panel"><p class="lb-empty">No Metro board imported for ${esc(metroPeriodLabel(metroPeriod))} yet.${isAdmin()?' Paste it in below and it lands for the whole floor.':' Leadership imports it off Metro — check back.'}</p></div>`;
+    return;
+  }
+  const sum=rows.reduce((n,r)=>n+(+r.ap||0),0);
+  const pol=rows.reduce((n,r)=>n+(+r.policies||0),0);
+  const ours=rows.filter(r=>r.enrolled);
+  const max=Math.max(1,...rows.map(r=>+r.ap||0));
+  const stamp=rows[0].captured_on;
+  el.innerHTML=`<div class="panel board board-ap">
+    <div class="mb-head">
+      <h3 style="margin:0"><span class="swatch" style="background:var(--neon,#00E676)"></span>Metro · ${esc(metroPeriodLabel(metroPeriod))}</h3>
+      <span class="mb-tot"><b>${fmtAP(sum)}</b> agency ap · ${pol} ${pol===1?'policy':'policies'} · ${ours.length} of ${rows.length} enrolled here</span>
+    </div>
+    <div class="hint">the agency's own numbers — greyed names produce at Metro but have no login here, so they are not on the T1P board</div>
+    <div class="rule"></div>
+    <ol class="lb">`+rows.map((r,i)=>{
+      const a=r.agent_id?agentById(r.agent_id):null;
+      const rank=a?rankOf(totals(a.id).total, a.id):null;
+      const n=+r.policies||0;
+      return `<li class="lb-row p${i+1}${i===0?' lead':''}${r.enrolled?'':' mb-out'}" data-share="${((+r.ap||0)/max*100).toFixed(1)}">
+        <span class="lb-rank">${String(i+1).padStart(2,'0')}</span>
+        <span class="lb-av" style="--av:${rank?rank.c:'#7E8C85'}">${esc(initialsOf(r.metro_name))}</span>
+        <span class="lb-id">
+          <span class="lb-name">${esc(a?a.name:r.metro_name)}<span class="mb-tag ${r.enrolled?'in':'out'}">${r.enrolled?'enrolled':'not enrolled'}</span></span>
+          <span class="lb-by">${n} ${n===1?'policy':'policies'}${rank?` · ${esc(rank.name)}`:''}</span>
+        </span>
+        <span class="lb-val">${fmtAP(+r.ap||0)}<span class="lb-unit">ap</span></span>
+      </li>`;
+    }).join('')+`</ol>
+    <div class="rule" style="margin:12px 0 8px"></div>
+    <span class="mb-stamp">snapshot captured ${esc(stamp||'')}</span>
+  </div>`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.querySelectorAll('.lb-row').forEach(x=>{ x.style.setProperty('--share', x.dataset.share+'%'); });
+  }));
+  observeReveals();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.metro-r'); if(!b) return;
+  metroPeriod=b.dataset.period;
+  document.querySelectorAll('.metro-r').forEach(x=>x.classList.toggle('on',x===b));
+  renderMetro();
+});
+
+/* ---------- the import: Metro posts text, we read it ---------- */
+// Every paste out of Metro comes back shaped a little differently — numbered or
+// not, dollar signs or not, tabs or commas or spaces. So: the name is whatever
+// words are left over, the premium is the biggest figure on the line, and a
+// small bare integer is the policy count.
+const MB_SKIP=/^(rank|pos|no|name|agent|agents|producer|producers|premium|ap|annual|policies|policy|apps|issued|total|totals|team|metro|leaderboard|standings|week|weekly|month|monthly|mtd|ytd)$/i;
+const MB_UNIT=/^(policies|policy|apps|app|deals|deal|sales|sale|ap|pts|points)$/i;
+function parseMetroPaste(txt){
+  const out=[], seen=new Set();
+  for(const raw of String(txt||'').split(/\r?\n/)){
+    let line=raw.replace(/\u00a0/g,' ').trim();
+    if(!line) continue;
+    let pos=null;
+    const lead=line.match(/^#?(\d{1,3})\s*[).:\-–—]\s*|^#?(\d{1,3})\s+(?=\D)/);
+    if(lead){ pos=+(lead[1]||lead[2]); line=line.slice(lead[0].length); }
+    const nums=[];
+    line=line.replace(/\$\s?\d[\d,]*(?:\.\d+)?|\d[\d,]*(?:\.\d+)?%|\d[\d,]*(?:\.\d+)?/g, m=>{
+      if(/%$/.test(m)) return ' ';
+      const money=/\$/.test(m);
+      const v=parseFloat(m.replace(/[^0-9.]/g,''));
+      if(Number.isFinite(v)) nums.push({v,money});
+      return ' ';
+    });
+    // whatever words are left are the name, minus the unit words a board
+    // tacks onto a count; a line of nothing but column headings is not a row
+    const words=line.replace(/[|•·—–\-_,:;=*]+/g,' ').split(/\s+/).filter(w=>w&&!MB_UNIT.test(w));
+    const name=words.join(' ');
+    if(!name||!/[a-z]/i.test(name)||words.every(w=>MB_SKIP.test(w))) continue;
+    let ap=0, policies=0;
+    if(nums.length){
+      const money=nums.filter(n=>n.money);
+      const pick=(money.length?money:nums).reduce((x,y)=>y.v>x.v?y:x);
+      ap=pick.v;
+      const rest=nums.filter(n=>n!==pick).find(n=>!n.money&&Number.isInteger(n.v)&&n.v>0&&n.v<1000);
+      policies=rest?rest.v:0;
+    }
+    const key=name.toLowerCase();
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push({pos,name,ap,policies});
+  }
+  return out;
+}
+function renderMetroPreview(){
+  const el=$('#metroPreview'), ta=$('#metroPaste'); if(!el||!ta) return;
+  const rows=parseMetroPaste(ta.value);
+  if(!rows.length){ el.textContent=ta.value.trim()?'> nothing readable yet — one producer per line':''; return; }
+  const head=rows.slice(0,3).map(r=>`${r.name} ${fmtAP(r.ap)}`).join('  |  ');
+  el.textContent=`> reads ${rows.length} producer${rows.length===1?'':'s'} · ${head}${rows.length>3?' ...':''}`;
+}
+function renderMetroAdmin(){
+  const box=$('#metroAdmin'); if(!box) return;
+  box.style.display=(isAdmin()&&!SPECTATE)?'':'none';
+  if(!isAdmin()) return;
+  const el=$('#metroLinks'); if(!el) return;
+  const rows=metroRows();
+  const loose=rows.filter(r=>!r.enrolled).map(r=>r.metro_name);
+  el.innerHTML=DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
+    const on=rows.some(r=>r.enrolled&&r.agent_id===a.id);
+    return `<div class="mb-link">
+      <span class="nm">${esc(a.name)}</span>
+      <input class="sale-in mb-nm" style="max-width:230px" data-aid="${esc(a.id)}" value="${esc(a.metro_name||'')}" placeholder="name on the Metro board" maxlength="120" autocomplete="off">
+      <button class="btn ghost mb-save" data-aid="${esc(a.id)}">Save</button>
+      <span class="mb-stamp">${on?'matched':'no metro row'}</span>
+    </div>`;
+  }).join('')+(loose.length?`<div class="hint" style="margin-top:12px">on Metro, not enrolled here: ${loose.slice(0,14).map(esc).join(' · ')}${loose.length>14?` +${loose.length-14} more`:''}</div>`:'');
+}
+document.addEventListener('input',e=>{ if(e.target.id==='metroPaste') renderMetroPreview(); });
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('#metroGo'); if(!b) return;
+  const msg=$('#metroMsg'), ta=$('#metroPaste'); if(!msg||!ta) return;
+  if(!isAdmin()){ msg.className='log-msg err'; msg.textContent='> admins only'; sDeny(); return; }
+  const rows=parseMetroPaste(ta.value);
+  if(!rows.length){ msg.className='log-msg err'; msg.textContent='> nothing read out of that paste'; sDeny(); return; }
+  if(demo){ msg.className='log-msg err'; msg.textContent='> offline — demo mode'; return; }
+  const period=($('#metroPeriod')||{value:'month'}).value;
+  msg.className='log-msg'; msg.textContent=`> importing ${rows.length} producers ...`;
+  b.disabled=true;
+  try{
+    const {data,error}=await db.rpc('import_metro_standings',
+      {p_admin_id:AUTH.id,p_pin:AUTH.pin,p_period:period,p_rows:rows});
+    if(error) throw error;
+    msg.className='log-msg ok'; msg.textContent=`> METRO BOARD IN :: ${data||rows.length} producers`; sApprove();
+    ta.value=''; renderMetroPreview();
+    await loadAll(); rerender();
+  }catch(err){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); sDeny(); }
+  finally{ b.disabled=false; }
+});
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('.mb-save'); if(!b) return;
+  const msg=$('#metroMsg');
+  if(!isAdmin()||demo){ if(msg){ msg.className='log-msg err'; msg.textContent=demo?'> offline — demo mode':'> admins only'; } sDeny(); return; }
+  const inp=document.querySelector(`.mb-nm[data-aid="${b.dataset.aid}"]`);
+  b.disabled=true;
+  try{
+    const {error}=await db.rpc('link_metro_name',
+      {p_admin_id:AUTH.id,p_pin:AUTH.pin,p_agent_id:b.dataset.aid,p_metro_name:inp?inp.value:''});
+    if(error) throw error;
+    if(msg){ msg.className='log-msg ok'; msg.textContent='> LINKED'; }
+    sApprove();
+    await loadAll(); rerender();
+  }catch(err){ if(msg){ msg.className='log-msg err'; msg.textContent='> '+(err.message||'failed'); } sDeny(); }
+  finally{ b.disabled=false; }
+});
 
 /* ================= PUBLIC GATE BOARD + DISCORD ================= */
 function discordUrl(){
@@ -2640,7 +2893,7 @@ document.addEventListener('click',async e=>{
 });
 
 /* ================= ROUTER ================= */
-const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','walkthrough','cmds','game','gauntlet','records','recruiting','academy','calls','approvals'];
+const VIEWS=['board','ranks','me','building','tree','rewards','skills','war','sales','scripts','walkthrough','cmds','game','gauntlet','metro','records','recruiting','academy','calls','approvals'];
 function route(){
   if(!AUTH&&!SPECTATE) return;
   let v=(location.hash.replace('#/','')||'board');
@@ -2673,6 +2926,7 @@ function renderCurrent(name){
   else if(name==='cmds') renderCmds();
   else if(name==='game') renderGame();
   else if(name==='gauntlet') renderGauntlet();
+  else if(name==='metro') renderMetro();
   else if(name==='records') renderRecords();
   else if(name==='recruiting') renderRecruiting();
   else if(name==='academy') renderAcademy();
@@ -4550,7 +4804,7 @@ function setLive(ok){
 }
 async function loadAll(){
   if(!db) throw new Error('no client');
-  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da,apd]=await Promise.all([
+  const [a,p,s,c,sc,sl,ad,rc,ct,ac,cl,cn,sm,ma,da,apd,mb,mbap]=await Promise.all([
     db.from('agents').select('*').order('date_joined'),
     db.from('points_log').select('*'),
     db.from('skills').select('*'),
@@ -4567,6 +4821,8 @@ async function loadAll(){
     db.rpc('month_activity'),
     db.rpc('discord_ap_board'),
     db.rpc('ap_daily'),
+    db.rpc('metro_board'),
+    db.rpc('metro_ap_board'),
   ]);
   if(a.error||p.error||s.error) throw (a.error||p.error||s.error);
   DATA={agents:a.data,log:p.data,skills:s.data,
@@ -4582,7 +4838,9 @@ async function loadAll(){
     salesMonths:(sm&&sm.data)||[],
     monthAct:(ma&&ma.data)||[],
     discordAp:(da&&da.data)||[],
-    apDaily:(apd&&apd.data)||[]};
+    apDaily:(apd&&apd.data)||[],
+    metroBoard:(mb&&mb.data)||[],
+    metroAp:(mbap&&mbap.data)||[]};
   try{ diffData(); }catch(e){}
 }
 function rerender(){

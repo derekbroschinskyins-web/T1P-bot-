@@ -131,6 +131,39 @@ Ranking is deals, then presentations, then dials.
 At `VERDICT_HOUR` on weekdays the bot sends final standings and names the day's
 winner to everyone.
 
+## The Metro board (site)
+
+`site/index.html` — toponepercent.team — now mirrors Metro's board and reads the
+team's production off it.
+
+Two boards, on purpose:
+
+- **Metro Board** (`#/metro`) is the whole agency, exactly as Metro posts it.
+  Producers who have no login here still show, greyed, marked `not enrolled`.
+- **The T1P board** on the home page ranks only agents enrolled on this site —
+  a row in `agents` is a login. Their individual production marks, the team
+  goal, and the monthly contracts all read the Metro snapshot instead of being
+  logged a second time.
+
+Setup:
+
+1. Supabase > SQL Editor > run `migrations/003_metro_board.sql`.
+2. Log in as an admin, open **The Org > Metro Board**, paste Metro's board into
+   *Import The Metro Board*, pick the period (month / week / all time), Import.
+   The paste is read loosely — numbered or not, `$` or not, tabs, commas or
+   spaces; the biggest figure on a line is the premium and a small bare integer
+   is the policy count. Header rows and totals are dropped.
+3. Today's paste replaces today's snapshot for that period, so re-pasting a
+   corrected board is safe. Older captures stay; the site reads the newest.
+4. If Metro spells someone differently than we do, point their login at the
+   Metro name under *Name Links* on the same page.
+
+Until the first import lands, the boards keep running on the Discord deal feed.
+The Gauntlet still seeds off Discord deals — Metro posts period totals, not the
+per-day detail a bracket needs.
+
+Nothing here writes to Metro. It is a one-way read into this site.
+
 ## Local development
 
 ```
