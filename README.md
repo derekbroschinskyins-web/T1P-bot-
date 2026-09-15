@@ -134,64 +134,68 @@ winner to everyone.
 ## The Metro board (site)
 
 `site/index.html` — toponepercent.team — mirrors Metro's board and reads the
-team's production off it. Nothing is typed in twice and nothing writes back to
-Metro; it is a one-way read.
+team's production off it, **month by month**. Nothing is typed in twice and
+nothing writes back to Metro; it is a one-way read.
 
-Two boards, on purpose:
-
-- **Metro Board** (`#/metro`) is the whole agency, live off Metro's own deal
-  feed. Producers with no login here still show, greyed, marked `not enrolled`.
-- **The T1P board** on the home page ranks only agents enrolled on this site —
-  a row in `agents` is a login. Their production marks, the team goal and the
-  monthly contracts read the same Metro numbers.
-- **My Progress** gives every login their own Metro line: premium and policies
-  for the month, the week and all time, their place against the whole agency,
-  and the gap to the name above them.
+- **Metro Board** (`#/metro`) is the whole agency for one calendar month, with a
+  button per month the feed has. Producers nobody here has claimed still show,
+  greyed, marked `unclaimed`.
+- **The T1P board** on the home page ranks only agents with a login here whose
+  Metro line is claimed. Their marks, the team goal and the monthly contracts
+  all read the current month off the same feed.
+- **My Progress** gives every login their own Metro line for each of the last
+  six months: premium, policies, their place against the whole agency, and the
+  gap to the name above them.
 
 ### Where the numbers come from
-
-The site talks to two Supabase projects:
 
 | project | role |
 |---|---|
 | `TOP ONE LEADERBOARD` (`obtlrivpgdrxgydcpnqo`) | this site: logins, points, contracts |
 | `METRO MAN` (`lykfmvgscybwcbgrkqno`) | the agency deal feed |
 
-`METRO MAN.t1p_metro_board()` is the read: one row per producer with week,
-month and all-time premium and policy counts, Denver-cut. Aggregates only — no
-client names, no carriers, no per-deal rows — which is why the site can call it
-with a publishable key.
+`METRO MAN.t1p_metro_board()` returns one row per producer per calendar month,
+Denver-cut: premium, policy count, and every alias. Aggregates only — no client
+names, no carriers, no per-deal rows — which is why the site can call it with a
+publishable key.
 
 **It groups by Discord id, not by name.** The bot files whatever name the agent
 used that day, so one producer shows up as `Derek Broschinsky` and `dray_bro27`;
 grouping by name splits their production across two lines and reports the board
-wrong. Every alias comes back with the row so the site can match on any of them.
+wrong.
 
-### Matching a Metro line to a login
+### Claiming a name
 
-In order, first hit wins, and a login is claimed once:
+Most people are matched automatically, in this order, first hit wins, and a
+login is claimed once:
 
 1. Discord id (exact).
-2. The Metro name leadership linked to that login (`agents.metro_name`).
+2. The Metro name the agent claimed, or leadership linked.
 3. Our name equal to any alias, punctuation and emoji ignored — `connor_tuttle`
    matches `Connor Tuttle`, `Bella ✨` matches `Bella`.
 4. Our surname as the initial of theirs — `Alex B` matches `Alex Brown`.
 5. A first name belonging to exactly one person on each side.
 
-Anything short of that stays unenrolled rather than crediting the wrong person.
-Admins fix those under **Name Links** on the Metro Board page, picking from the
-names Metro actually posts.
+A handle nobody could guess (`Yerk30`, `Pjarv`) needs the person to say it is
+theirs. Anyone logged in sees **Where You Stand At Metro** on My Progress; if no
+Metro line matched them it offers a picker of every unclaimed name. Claiming
+lands on the T1P leaderboard immediately.
+
+A name already held by another login cannot be claimed — the database refuses it
+and says who holds it. Claims are recorded with a timestamp and shown to admins
+under **Name Links** on the Metro Board page, where leadership can reassign or
+clear any of them.
 
 ### The manual override
 
-If Metro's feed is ever unreachable, an admin can paste a board into *Import The
-Metro Board* on the same page and the site reads that snapshot instead. The
-paste is read loosely — numbered or not, `$` or not, tabs, commas or spaces; the
-biggest figure on a line is the premium, a small bare integer is the policy
-count, headers and totals are dropped. Today's paste replaces today's snapshot.
+If Metro's feed is ever unreachable, an admin can paste this month's board into
+*Import The Metro Board* and the site reads that instead. The paste is read
+loosely — numbered or not, `$` or not, tabs, commas or spaces; the biggest figure
+on a line is the premium, a small bare integer is the policy count, headers and
+totals are dropped.
 
 The Gauntlet still seeds off the Discord day-by-day feed; Metro's board gives
-period totals, not the per-day detail a bracket needs.
+monthly totals, not the per-day detail a bracket needs.
 
 ## Local development
 

@@ -476,6 +476,9 @@ body .board-ap{border-color:rgba(0,230,118,.32)}
 .mb-link{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,230,118,.1);flex-wrap:wrap}
 .mb-link:last-child{border-bottom:none}
 .mb-link .nm{min-width:140px;font-weight:600}
+.mb-claim{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;border:1px dashed var(--edge-dim);border-radius:10px}
+.mb-claim .s{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--ink-2)}
+.mb-claim .s b{color:var(--neon-bright,#00FF66)}
 .mm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:12px}
 .mm-card{padding:14px 16px;border:1px solid var(--edge-dim);border-radius:10px;background:rgba(0,230,118,.03)}
 .mm-card .k{font-family:'SF Mono',ui-monospace,Menlo,Consolas,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
@@ -714,7 +717,7 @@ body:not(.locked) #ticker{display:flex}
 
 /* ---------- war room ---------- */
 .war-range{display:flex;gap:8px}
-.war-r.on{background:var(--neon);color:#02120a;text-shadow:none;border-color:var(--neon)}
+.war-r.on,.metro-r.on,.sale-r.on{background:var(--neon);color:#02120a;text-shadow:none;border-color:var(--neon)}
 .war-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .war-card{padding:18px 20px}
 .war-card .nm{font-family:'Clash Display','General Sans',sans-serif;font-weight:600;font-size:18px;margin-bottom:10px}
@@ -1418,8 +1421,9 @@ body.tv .page-h{font-size:64px}
     <div class="stat-tiles rv" id="meStats"></div>
     <div class="panel rv" id="metroMePanel" style="display:none">
       <h3 class="disp" style="font-size:18px">Where You Stand At Metro</h3>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">your line straight off the agency board — Metro's numbers, against the whole agency, not just this team</div>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">your line straight off the agency board, month by month — Metro's numbers, against the whole agency, not just this team</div>
       <div class="rule"></div>
+      <div id="metroClaim"></div>
       <div id="metroMe"></div>
     </div>
     <div class="panel rv">
@@ -1715,27 +1719,18 @@ body.tv .page-h{font-size:64px}
   <section class="view" id="v-metro">
     <div class="rv"><div class="kicker">The Agency</div>
     <h1 class="page-h">Metro Board</h1>
-    <p class="page-sub">Metro's board, the whole agency, mirrored exactly as it is posted. Every production number on this site is read off this snapshot — but only agents enrolled here get ranked on the T1P board. No login, no spot on ours.</p></div>
+    <p class="page-sub">Metro's board, the whole agency, month by month. Every production number on this site is read off this feed — but the T1P board only ranks agents who have a login here and have claimed their name. No login, no spot on ours.</p></div>
     <div class="me-head rv" style="margin-bottom:14px">
-      <div class="war-range">
-        <button class="btn ghost war-r metro-r on" data-period="month">This Month</button>
-        <button class="btn ghost war-r metro-r" data-period="week">This Week</button>
-        <button class="btn ghost war-r metro-r" data-period="all">All Time</button>
-      </div>
+      <div class="war-range" id="metroMonths"></div>
     </div>
     <div id="metroBox"></div>
     <div class="panel rv" id="metroAdmin" style="margin-top:18px;display:none">
       <h3 class="disp" style="font-size:15px">Import The Metro Board</h3>
       <div id="metroSrc" class="log-msg ok" style="margin-bottom:8px"></div>
-      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">paste it straight off Metro — one producer per line, rank and policy count optional. today's paste replaces today's snapshot for that period</div>
+      <div class="hint" style="font-size:11px;color:var(--neon-dim);font-family:'SF Mono',ui-monospace,Menlo,monospace">fallback only — the live feed normally fills this page on its own. one producer per line, rank and policy count optional; today's paste replaces today's snapshot</div>
       <div class="rule" style="margin:10px 0 12px"></div>
       <div class="log-row" style="margin-bottom:10px">
-        <select id="metroPeriod" class="agent-pick" style="min-width:150px">
-          <option value="month">This Month</option>
-          <option value="week">This Week</option>
-          <option value="all">All Time</option>
-        </select>
-        <button class="btn" id="metroGo">Import</button>
+        <button class="btn" id="metroGo">Import This Month</button>
         <span id="metroMsg" class="log-msg"></span>
       </div>
       <textarea id="metroPaste" class="sale-in mb-paste" placeholder="1. Derek B  $18,250  6 policies&#10;2  Wes Alder  16,400  5&#10;Austin, 12980, 4" spellcheck="false"></textarea>
@@ -1918,30 +1913,24 @@ function demoData(){
     L('jordan','new_agent','licensed',50,5), L('jordan','new_agent','onboarding',50,0.3),
     L('sam','new_agent','licensed',50,2), L('sam','new_agent','first_appointment',25,0.05,'pending'),
   ];
-  // a stand-in Metro board: five of ours on it, four names that never enrolled
-  const today=new Date().toISOString().slice(0,10);
+  // a stand-in Metro feed, shaped exactly like the live one: a few months of
+  // rows per producer, five of ours among names that never enrolled
   const metro=[['Derek',18250,6],['Wes Alder',16400,5],['Austin',12980,4],['Priya Nandan',11200,4],
-    ['Maya',9875,3],['Tomas Reyes',8100,3],['Jordan',6420,2],['Nina Okafor',5300,2],['Sam',3150,1]];
-  const metroBoard=[];
-  for(const per of ['month','week','all']){
-    const k=per==='week'?0.3:per==='all'?1.7:1;
-    metro.forEach(([name,ap,n],i)=>{
-      const mine=agents.find(a=>a.name===name);
-      metroBoard.push({period:per,captured_on:today,pos:i+1,metro_name:name,
-        ap:Math.round(ap*k),policies:Math.max(1,Math.round(n*k)),
-        agent_id:mine?mine.id:null,enrolled:!!mine});
-    });
+    ['Maya',9875,3],['Tomas Reyes',8100,3],['Jordan',6420,2],['Nina Okafor',5300,2],
+    ['Sam',3150,1],['Yerk30',14700,5],['Pjarv',7300,3]];
+  const metroLive=[];
+  for(let back=0;back<4;back++){
+    const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-back);
+    const ym=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';
+    const k=1-back*0.17;
+    for(const [name,ap,n] of metro){
+      metroLive.push({agent_name:name, discord_id:null, aliases:[name], ym,
+        ap:Math.round(ap*k), n:Math.max(1,Math.round(n*k))});
+    }
   }
-  const metroAp=metroBoard.filter(r=>r.enrolled&&r.period==='month').map(r=>{
-    const wk=metroBoard.find(x=>x.period==='week'&&x.metro_name===r.metro_name)||{ap:0,policies:0};
-    const al=metroBoard.find(x=>x.period==='all'&&x.metro_name===r.metro_name)||{ap:0,policies:0};
-    return {agent_id:r.agent_id,ap_week:wk.ap,n_week:wk.policies,
-      ap_month:r.ap,n_month:r.policies,ap_all:al.ap,n_all:al.policies};
-  });
   return {agents, log:demoLog, skills:[], config:{daily_goal_points:'100'}, scripts:[
     {id:1,category:'Opening',title:'Demo Script',body:'Demo mode — real scripts load from the database.',sort:1},
-  ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[],
-    metroBoard, metroAp};
+  ], sales:[], actDays:[], recruits:[], contracts:[], academy:[], calls:[], callNotes:[], salesMonths:[], monthAct:[], metroLive};
 }
 
 /* ================= STATE ================= */
@@ -2461,28 +2450,37 @@ function renderApBoard(){
 }
 
 /* ================= METRO BOARD ================= */
+// Metro's board, month by month. The agency feed hands back one row per
+// producer per calendar month; a month is the unit everywhere on this page.
+const curYM=()=>{ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+const ymLabel=ym=>{
+  const [y,m]=String(ym||'').split('-').map(Number);
+  if(!y||!m) return String(ym||'');
+  const d=new Date(y,m-1,1);
+  return d.toLocaleString(undefined,{month:'long'})+(y===new Date().getFullYear()?'':' '+y);
+};
 // Metro posts under whatever name the agent goes by over there — "timmyv" and
-// "Derek Broschinsky" sit on the same board. A Metro line is matched to a login
-// by Discord id first (exact), then the Metro name leadership linked, then our
-// own name, and only then by a first name that belongs to exactly one person on
-// each side. Anything short of that stays unenrolled rather than guessing.
+// "Derek Broschinsky" are the same person, same Discord id. A Metro line is
+// matched to a login by Discord id first (exact), then the name the agent
+// claimed, then our own name, and only then by a first name that belongs to
+// exactly one person on each side. Anything short of that stays unclaimed
+// rather than crediting the wrong person — that is what the claim is for.
 const mNorm=s=>String(s||'').toLowerCase()
   .replace(/[_.\-\/|]+/g,' ')
   .replace(/[^a-z\s]/g,'')
   .replace(/\s+/g,' ').trim();
 const mFirst=s=>mNorm(s).split(' ')[0]||'';
-// every name Metro has filed this person under, normalised
 function metroNames(row){
   const all=[row.agent_name].concat(Array.isArray(row.aliases)?row.aliases:[]);
   return [...new Set(all.map(mNorm).filter(Boolean))];
 }
-// "Alex B" is us, "Alex Brown" is Metro: same first name, and our surname is
-// the initial of theirs. Their convention, so it is worth matching on.
+// "Alex B" is us, "Alex Brown" is Metro: same first name, our surname is the
+// initial of theirs. Their convention, so it is worth matching on.
 function initialMatch(mine, theirs){
   const a=mNorm(mine).split(' '), b=mNorm(theirs).split(' ');
   if(a.length<2||b.length<2||a[0]!==b[0]) return false;
-  const last=a[a.length-1], their=b[b.length-1];
-  return last.length===1 && their.startsWith(last);
+  const last=a[a.length-1];
+  return last.length===1 && b[b.length-1].startsWith(last);
 }
 function matchMetroAgent(row){
   const did=row.discord_id?String(row.discord_id):'';
@@ -2493,18 +2491,27 @@ function matchMetroAgent(row){
   const names=metroNames(row);
   if(!names.length) return null;
   let a=DATA.agents.find(x=>x.metro_name&&names.includes(mNorm(x.metro_name)));
-  if(a) return {a,how:'linked name'};
+  if(a) return {a,how:a.metro_claimed_at?'claimed':'linked name'};
   a=DATA.agents.find(x=>names.includes(mNorm(x.name)));
   if(a) return {a,how:'name'};
   a=DATA.agents.find(x=>names.some(n=>initialMatch(x.name,n)));
   if(a) return {a,how:'name'};
   return null;
 }
-const MATCH_RANK={'discord id':0,'linked name':1,'name':2,'first name':3};
+const MATCH_RANK={'discord id':0,'claimed':1,'linked name':2,'name':3,'first name':4};
 function buildMetroFromLive(rows){
-  const marks=rows.map(r=>({r,m:matchMetroAgent(r)}));
-  // one login per Metro line: the strongest match keeps it, a second line
-  // claiming the same person is left unenrolled instead of double counting
+  // collect each producer's months under one entry, keyed the way the feed
+  // groups them, so matching happens once per person and not once per month
+  const people=new Map();
+  for(const r of rows){
+    const key=r.discord_id?('d:'+r.discord_id):('n:'+mNorm(r.agent_name));
+    let p=people.get(key);
+    if(!p){ p={agent_name:r.agent_name,discord_id:r.discord_id,aliases:r.aliases||[],months:new Map()}; people.set(key,p); }
+    p.months.set(String(r.ym).slice(0,7), {ap:+r.ap||0, n:+r.n||0});
+  }
+  const marks=[...people.values()].map(r=>({r,m:matchMetroAgent(r)}));
+  // one login per producer: the strongest match keeps it, a second line
+  // claiming the same person is left unclaimed instead of double counting
   const taken=new Map();
   for(const x of marks.slice().sort((p,q)=>(MATCH_RANK[p.m&&p.m.how]??9)-(MATCH_RANK[q.m&&q.m.how]??9))){
     if(!x.m) continue;
@@ -2518,50 +2525,69 @@ function buildMetroFromLive(rows){
     const theirs=marks.filter(y=>!y.m&&metroNames(y.r).some(n=>mine.some(a=>n.split(' ')[0]===mFirst(a.name))));
     if(mine.length===1&&theirs.length===1){ x.m={a:mine[0],how:'first name'}; taken.set(mine[0].id,x); }
   }
-  const today=new Date().toISOString().slice(0,10);
+  const months=[...new Set(rows.map(r=>String(r.ym).slice(0,7)))].sort().reverse();
   const board=[];
-  for(const [period,apK,nK] of [['month','ap_month','n_month'],['week','ap_week','n_week'],['all','ap_all','n_all']]){
-    const rs=marks.map(x=>({period,captured_on:today,pos:null,
-      metro_name:x.r.agent_name,ap:+x.r[apK]||0,policies:+x.r[nK]||0,
-      agent_id:x.m?x.m.a.id:null,enrolled:!!x.m,match:x.m?x.m.how:null}))
-      .filter(r=>r.ap>0||r.policies>0);
+  for(const ym of months){
+    const rs=[];
+    for(const x of marks){
+      const v=x.r.months.get(ym);
+      if(!v||(v.ap<=0&&v.n<=0)) continue;
+      rs.push({ym, metro_name:x.r.agent_name, ap:v.ap, policies:v.n,
+        agent_id:x.m?x.m.a.id:null, enrolled:!!x.m, match:x.m?x.m.how:null, pos:0});
+    }
     rs.sort((a,b)=>b.ap-a.ap).forEach((r,i)=>{ r.pos=i+1; });
     board.push(...rs);
   }
-  const ap=marks.filter(x=>x.m).map(x=>({agent_id:x.m.a.id,
-    ap_week:+x.r.ap_week||0, n_week:+x.r.n_week||0,
-    ap_month:+x.r.ap_month||0, n_month:+x.r.n_month||0,
-    ap_all:+x.r.ap_all||0,  n_all:+x.r.n_all||0}));
-  return {board, ap};
+  // the T1P board, the goal and the contracts all read the current month
+  const cur=curYM();
+  const ap=marks.filter(x=>x.m).map(x=>{
+    const v=x.r.months.get(cur)||{ap:0,n:0};
+    return {agent_id:x.m.a.id, ap_month:v.ap, n_month:v.n};
+  });
+  // every Metro line nobody holds — what an agent picks from when they claim
+  const open=marks.filter(x=>!x.m).map(x=>x.r.agent_name).filter(Boolean)
+    .sort((a,b)=>a.localeCompare(b));
+  return {board, ap, months, open};
 }
-// Metro's board mirrored whole: everybody the agency posts, enrolled here or
-// not. Enrollment is what the T1P board ranks — this page is the raw source it
-// reads from, so the two can always be checked against each other.
-let metroPeriod='month';
-function metroRows(period){
-  return (DATA.metroBoard||[]).filter(r=>r.period===(period||metroPeriod));
+let metroMonth=null;
+function metroMonths(){
+  const ms=[...new Set((DATA.metroBoard||[]).map(r=>r.ym))].sort().reverse();
+  return ms.length?ms:[curYM()];
 }
-const metroPeriodLabel=p=>p==='week'?'this week':p==='all'?'all time':'this month';
+function metroYM(){
+  const ms=metroMonths();
+  if(!metroMonth||!ms.includes(metroMonth)) metroMonth=ms.includes(curYM())?curYM():ms[0];
+  return metroMonth;
+}
+function metroRows(ym){
+  return (DATA.metroBoard||[]).filter(r=>r.ym===(ym||metroYM()));
+}
 function renderMetro(){
   const el=$('#metroBox');
   renderMetroAdmin();
+  const pick=$('#metroMonths');
+  if(pick){
+    const cur=metroYM();
+    pick.innerHTML=metroMonths().slice(0,12).map(ym=>
+      `<button class="btn ghost metro-r${ym===cur?' on':''}" data-ym="${esc(ym)}">${esc(ymLabel(ym))}</button>`).join('');
+  }
   if(!el) return;
-  const rows=metroRows().slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
+  const ym=metroYM();
+  const rows=metroRows(ym).slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
   if(!rows.length){
-    el.innerHTML=`<div class="panel"><p class="lb-empty">No Metro board imported for ${esc(metroPeriodLabel(metroPeriod))} yet.${isAdmin()?' Paste it in below and it lands for the whole floor.':' Leadership imports it off Metro — check back.'}</p></div>`;
+    el.innerHTML=`<div class="panel"><p class="lb-empty">Nothing on Metro's board for ${esc(ymLabel(ym))} yet.${isAdmin()?' The live feed fills this in on its own; paste a board below only to override it.':''}</p></div>`;
     return;
   }
   const sum=rows.reduce((n,r)=>n+(+r.ap||0),0);
   const pol=rows.reduce((n,r)=>n+(+r.policies||0),0);
   const ours=rows.filter(r=>r.enrolled);
   const max=Math.max(1,...rows.map(r=>+r.ap||0));
-  const stamp=rows[0].captured_on;
   el.innerHTML=`<div class="panel board board-ap">
     <div class="mb-head">
-      <h3 style="margin:0"><span class="swatch" style="background:var(--neon,#00E676)"></span>Metro · ${esc(metroPeriodLabel(metroPeriod))}</h3>
-      <span class="mb-tot"><b>${fmtAP(sum)}</b> agency ap · ${pol} ${pol===1?'policy':'policies'} · ${ours.length} of ${rows.length} enrolled here</span>
+      <h3 style="margin:0"><span class="swatch" style="background:var(--neon,#00E676)"></span>Metro · ${esc(ymLabel(ym))}</h3>
+      <span class="mb-tot"><b>${fmtAP(sum)}</b> agency ap · ${pol} ${pol===1?'policy':'policies'} · ${ours.length} of ${rows.length} claimed here</span>
     </div>
-    <div class="hint">${DATA.metroSource==='live'?'live off Metro\u2019s deal feed':'last imported snapshot'} \u2014 greyed names produce at Metro but have no login here, so they are not on the T1P board</div>
+    <div class="hint">${DATA.metroSource==='live'?'live off Metro’s deal feed':'last imported snapshot'} — greyed names produce at Metro but nobody here has claimed them, so they are not on the T1P board</div>
     <div class="rule"></div>
     <ol class="lb">`+rows.map((r,i)=>{
       const a=r.agent_id?agentById(r.agent_id):null;
@@ -2571,14 +2597,12 @@ function renderMetro(){
         <span class="lb-rank">${String(i+1).padStart(2,'0')}</span>
         <span class="lb-av" style="--av:${rank?rank.c:'#7E8C85'}">${esc(initialsOf(r.metro_name))}</span>
         <span class="lb-id">
-          <span class="lb-name">${esc(a?a.name:r.metro_name)}<span class="mb-tag ${r.enrolled?'in':'out'}">${r.enrolled?'enrolled':'not enrolled'}</span></span>
-          <span class="lb-by">${n} ${n===1?'policy':'policies'}${rank?` · ${esc(rank.name)}`:''}</span>
+          <span class="lb-name">${esc(a?a.name:r.metro_name)}<span class="mb-tag ${r.enrolled?'in':'out'}">${r.enrolled?'on t1p':'unclaimed'}</span></span>
+          <span class="lb-by">${n} ${n===1?'policy':'policies'}${a?` · ${esc(r.metro_name)}`:''}</span>
         </span>
         <span class="lb-val">${fmtAP(+r.ap||0)}<span class="lb-unit">ap</span></span>
       </li>`;
     }).join('')+`</ol>
-    <div class="rule" style="margin:12px 0 8px"></div>
-    <span class="mb-stamp">${DATA.metroSource==='live'?'live \u00b7 refreshes with the board':'snapshot captured '+esc(stamp||'')}</span>
   </div>`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     el.querySelectorAll('.lb-row').forEach(x=>{ x.style.setProperty('--share', x.dataset.share+'%'); });
@@ -2587,22 +2611,74 @@ function renderMetro(){
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('.metro-r'); if(!b) return;
-  metroPeriod=b.dataset.period;
-  document.querySelectorAll('.metro-r').forEach(x=>x.classList.toggle('on',x===b));
+  metroMonth=b.dataset.ym;
   renderMetro();
 });
 
-/* ---------- the import: Metro posts text, we read it ---------- */
-// Every paste out of Metro comes back shaped a little differently — numbered or
-// not, dollar signs or not, tabs or commas or spaces. So: the name is whatever
-// words are left over, the premium is the biggest figure on the line, and a
-// small bare integer is the policy count.
+/* ---------- claiming your name ---------- */
+// Matching gets most people. A handle nobody could guess — "Yerk30", "Pjarv" —
+// needs the person to say that one is me. A claim lands on the T1P board the
+// moment it is made, and leadership can see and change every one of them.
+function myMetroName(a){
+  const r=(DATA.metroBoard||[]).find(x=>x.agent_id===a.id);
+  return r?r.metro_name:null;
+}
+function renderMetroClaim(a){
+  const el=$('#metroClaim'); if(!el) return;
+  const self=AUTH&&AUTH.id===a.id;
+  if(!self&&!isAdmin()){ el.innerHTML=''; return; }
+  const mine=myMetroName(a);
+  const open=(DATA.metroOpen||[]).slice();
+  if(mine){
+    el.innerHTML=`<div class="mb-claim">
+      <span class="s">on Metro you are <b>${esc(mine)}</b>${a.metro_claimed_at?' · claimed by you':''}</span>
+      <button class="btn ghost mc-drop">not me</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML=`<div class="mb-claim">
+    <span class="s">${open.length?'Metro has no line matched to you yet — claim your name and your production lands on the board:':'Metro has no unclaimed names left. Ask Derek if your production is missing.'}</span>
+    ${open.length?`<select class="agent-pick mc-pick" style="min-width:210px">
+      <option value="">pick your name on Metro…</option>
+      ${open.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}
+    </select>
+    <button class="btn mc-go">Claim</button>`:''}
+    <span id="claimMsg" class="log-msg"></span>
+  </div>`;
+}
+async function claimMetro(name){
+  const msg=$('#claimMsg');
+  const say=(t,c)=>{ if(msg){ msg.className='log-msg'+(c?' '+c:''); msg.textContent=t; } };
+  if(!AUTH){ say('> log in first','err'); sDeny(); return; }
+  if(demo){ say('> offline — demo mode','err'); return; }
+  say('> claiming …');
+  try{
+    const {error}=await db.rpc('claim_metro_name',
+      {p_agent_id:AUTH.id,p_pin:AUTH.pin,p_metro_name:name||''});
+    if(error) throw error;
+    say(name?'> CLAIMED :: your Metro production is on the board':'> released','ok');
+    sApprove();
+    await loadAll(); rerender();
+  }catch(err){ say('> '+(err.message||'failed'),'err'); sDeny(); }
+}
+document.addEventListener('click',e=>{
+  const go=e.target.closest('.mc-go');
+  if(go){ const p=document.querySelector('.mc-pick'); claimMetro(p&&p.value); return; }
+  const drop=e.target.closest('.mc-drop');
+  if(drop) claimMetro('');
+});
+
+/* ---------- the manual override: Metro posts text, we read it ---------- */
+// Only used when the live feed cannot be reached. Every paste out of Metro comes
+// back shaped a little differently — numbered or not, dollar signs or not, tabs
+// or commas or spaces. So: the name is whatever words are left over, the premium
+// is the biggest figure on the line, and a small bare integer is the count.
 const MB_SKIP=/^(rank|pos|no|name|agent|agents|producer|producers|premium|ap|annual|policies|policy|apps|issued|total|totals|team|metro|leaderboard|standings|week|weekly|month|monthly|mtd|ytd)$/i;
 const MB_UNIT=/^(policies|policy|apps|app|deals|deal|sales|sale|ap|pts|points)$/i;
 function parseMetroPaste(txt){
   const out=[], seen=new Set();
   for(const raw of String(txt||'').split(/\r?\n/)){
-    let line=raw.replace(/\u00a0/g,' ').trim();
+    let line=raw.replace(/ /g,' ').trim();
     if(!line) continue;
     let pos=null;
     const lead=line.match(/^#?(\d{1,3})\s*[).:\-–—]\s*|^#?(\d{1,3})\s+(?=\D)/);
@@ -2615,9 +2691,10 @@ function parseMetroPaste(txt){
       if(Number.isFinite(v)) nums.push({v,money});
       return ' ';
     });
-    // whatever words are left are the name, minus the unit words a board
-    // tacks onto a count; a line of nothing but column headings is not a row
-    const words=line.replace(/[|•·—–\-_,:;=*]+/g,' ').split(/\s+/).filter(w=>w&&!MB_UNIT.test(w));
+    // whatever words are left are the name, minus the unit words a board tacks
+    // onto a count; a line of nothing but column headings is not a row
+    const words=line.replace(/[|•·—–\-_,:;=*]+/g,' ').split(/\s+/)
+      .filter(w=>w&&!MB_UNIT.test(w));
     const name=words.join(' ');
     if(!name||!/[a-z]/i.test(name)||words.every(w=>MB_SKIP.test(w))) continue;
     let ap=0, policies=0;
@@ -2648,22 +2725,24 @@ function renderMetroAdmin(){
   if(!isAdmin()) return;
   const el=$('#metroLinks'); if(!el) return;
   const rows=metroRows();
-  const loose=rows.filter(r=>!r.enrolled).map(r=>r.metro_name);
   const st=$('#metroSrc');
   if(st) st.innerHTML=DATA.metroSource==='live'
-    ?'&gt; LIVE FEED CONNECTED :: the board reads Metro directly, no import needed \u2014 paste below only to override it'
-    :'&gt; no live feed \u2014 paste Metro\u2019s board below';
-  const names=[...new Set(rows.map(r=>r.metro_name).filter(Boolean))].sort((x,y)=>x.localeCompare(y));
+    ?'&gt; LIVE FEED CONNECTED :: the board reads Metro directly, month by month — paste below only to override it'
+    :'&gt; no live feed — paste Metro’s board for this month below';
+  const names=[...new Set((DATA.metroBoard||[]).map(r=>r.metro_name).filter(Boolean))]
+    .sort((x,y)=>x.localeCompare(y));
   el.innerHTML=`<datalist id="metroNames">${names.map(n=>`<option value="${esc(n)}"></option>`).join('')}</datalist>`
     +DATA.agents.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>{
-    const on=rows.some(r=>r.enrolled&&r.agent_id===a.id);
-    return `<div class="mb-link">
-      <span class="nm">${esc(a.name)}</span>
-      <input class="sale-in mb-nm" style="max-width:230px" list="metroNames" data-aid="${esc(a.id)}" value="${esc(a.metro_name||'')}" placeholder="name on the Metro board" maxlength="120" autocomplete="off">
-      <button class="btn ghost mb-save" data-aid="${esc(a.id)}">Save</button>
-      <span class="mb-stamp">${on?'matched by '+esc((rows.find(r=>r.agent_id===a.id)||{}).match||'name'):'no metro row'}</span>
-    </div>`;
-  }).join('')+(loose.length?`<div class="hint" style="margin-top:12px">on Metro, not enrolled here: ${loose.slice(0,14).map(esc).join(' · ')}${loose.length>14?` +${loose.length-14} more`:''}</div>`:'');
+      const line=(DATA.metroBoard||[]).find(r=>r.agent_id===a.id);
+      const how=line?(a.metro_claimed_at&&a.metro_name?'claimed by them':'matched by '+(line.match||'name')):'no metro line';
+      return `<div class="mb-link">
+        <span class="nm">${esc(a.name)}</span>
+        <input class="sale-in mb-nm" style="max-width:230px" list="metroNames" data-aid="${esc(a.id)}" value="${esc(a.metro_name||'')}" placeholder="name on the Metro board" maxlength="120" autocomplete="off">
+        <button class="btn ghost mb-save" data-aid="${esc(a.id)}">Save</button>
+        <span class="mb-stamp">${esc(how)}</span>
+      </div>`;
+    }).join('')
+    +((DATA.metroOpen||[]).length?`<div class="hint" style="margin-top:12px">unclaimed on Metro: ${DATA.metroOpen.slice(0,14).map(esc).join(' · ')}${DATA.metroOpen.length>14?` +${DATA.metroOpen.length-14} more`:''}</div>`:'');
 }
 document.addEventListener('input',e=>{ if(e.target.id==='metroPaste') renderMetroPreview(); });
 document.addEventListener('click',async e=>{
@@ -2673,12 +2752,11 @@ document.addEventListener('click',async e=>{
   const rows=parseMetroPaste(ta.value);
   if(!rows.length){ msg.className='log-msg err'; msg.textContent='> nothing read out of that paste'; sDeny(); return; }
   if(demo){ msg.className='log-msg err'; msg.textContent='> offline — demo mode'; return; }
-  const period=($('#metroPeriod')||{value:'month'}).value;
   msg.className='log-msg'; msg.textContent=`> importing ${rows.length} producers ...`;
   b.disabled=true;
   try{
     const {data,error}=await db.rpc('import_metro_standings',
-      {p_admin_id:AUTH.id,p_pin:AUTH.pin,p_period:period,p_rows:rows});
+      {p_admin_id:AUTH.id,p_pin:AUTH.pin,p_period:'month',p_rows:rows});
     if(error) throw error;
     msg.className='log-msg ok'; msg.textContent=`> METRO BOARD IN :: ${data||rows.length} producers`; sApprove();
     ta.value=''; renderMetroPreview();
@@ -2809,27 +2887,26 @@ function renderMe(){
 // name above them is. Same numbers the Metro Board page shows, cut to one agent.
 function renderMetroMe(a){
   const panel=$('#metroMePanel'), el=$('#metroMe'); if(!panel||!el) return;
+  renderMetroClaim(a);
   const all=DATA.metroBoard||[];
-  if(!all.length){ panel.style.display='none'; return; }
+  const self=AUTH&&AUTH.id===a.id;
+  if(!all.length&&!self){ panel.style.display='none'; return; }
   panel.style.display='';
-  const cards=[['month','This Month'],['week','This Week'],['all','All Time']].map(([p,label])=>{
-    const rows=all.filter(r=>r.period===p).slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
-    if(!rows.length) return '';
+  const months=metroMonths().slice(0,6);
+  el.innerHTML='<div class="mm-grid">'+months.map(ym=>{
+    const rows=all.filter(r=>r.ym===ym).slice().sort((x,y)=>(+y.ap||0)-(+x.ap||0));
     const i=rows.findIndex(r=>r.agent_id===a.id);
-    if(i<0) return `<div class="mm-card"><div class="k">${label}</div>
-      <div class="v dim">no line posted</div>
-      <div class="s">nothing on Metro's board yet</div></div>`;
+    if(i<0) return `<div class="mm-card"><div class="k">${esc(ymLabel(ym))}</div>
+      <div class="v dim">nothing posted</div>
+      <div class="s">no line on Metro that month</div></div>`;
     const me=rows[i], up=i>0?rows[i-1]:null, n=+me.policies||0;
     return `<div class="mm-card">
-      <div class="k">${label}</div>
+      <div class="k">${esc(ymLabel(ym))}</div>
       <div class="v">${fmtAP(+me.ap||0)}</div>
       <div class="s">#${i+1} of ${rows.length} at Metro \u00b7 ${n} ${n===1?'policy':'policies'}</div>
       <div class="s2">${up?`${fmtAP((+up.ap||0)-(+me.ap||0))} behind ${esc(up.metro_name)}`:'nobody ahead of you'}</div>
     </div>`;
-  }).join('');
-  const onBoard=all.some(r=>r.agent_id===a.id);
-  el.innerHTML=`<div class="mm-grid">${cards}</div>`+(onBoard?''
-    :`<p class="hint" style="margin-top:12px">Metro posts under a different spelling than \u201c${esc(a.name)}\u201d \u2014 leadership can point this login at the right Metro name on the Metro Board page.</p>`);
+  }).join('')+'</div>';
 }
 
 /* ================= RENDER: BUILDING ================= */
@@ -4973,8 +5050,18 @@ async function loadAll(){
   // the live agency feed wins over an imported snapshot whenever it answers
   if(DATA.metroLive.length){
     const built=buildMetroFromLive(DATA.metroLive);
-    DATA.metroBoard=built.board; DATA.metroAp=built.ap; DATA.metroSource='live';
-  } else DATA.metroSource=DATA.metroBoard.length?'snapshot':'none';
+    DATA.metroBoard=built.board; DATA.metroAp=built.ap; DATA.metroOpen=built.open;
+    DATA.metroSource='live';
+  } else {
+    // the fallback snapshot only ever covers the month it was pasted for
+    const snap=(DATA.metroBoard||[]).filter(r=>r.period==='month')
+      .map(r=>({...r, ym:curYM()}));
+    const built=snap.length?buildMetroFromLive(snap.map(r=>({
+      agent_name:r.metro_name, discord_id:null, aliases:[r.metro_name],
+      ym:r.ym, ap:r.ap, n:r.policies}))):{board:[],ap:[],open:[]};
+    DATA.metroBoard=built.board; DATA.metroAp=built.ap; DATA.metroOpen=built.open;
+    DATA.metroSource=built.board.length?'snapshot':'none';
+  }
   try{ diffData(); }catch(e){}
 }
 function rerender(){
@@ -4998,6 +5085,11 @@ async function init(){
     setInterval(async()=>{ if(demo) return; try{ await loadAll(); rerender(); }catch(e){} }, 60000);
   }catch(err){
     demo=true; DATA=demoData(); setLive(false);
+    try{
+      const built=buildMetroFromLive(DATA.metroLive||[]);
+      DATA.metroBoard=built.board; DATA.metroAp=built.ap;
+      DATA.metroOpen=built.open; DATA.metroSource='live';
+    }catch(e){}
     try{ diffData(); }catch(e){}
     setInterval(async()=>{
       try{ await loadAll(); if(DATA.agents.length){demo=false;setLive(true);rerender();} }catch(e){}
