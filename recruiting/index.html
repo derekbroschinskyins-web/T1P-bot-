@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top One Percent — Apply</title>
+<meta name="description" content="Mortgage protection agency. Free leads from day one, the scripts our producers use, and a written path from unlicensed to $20K months. Commission only, 1099. Book a 15-minute interview.">
+<link rel="canonical" href="https://applytop1.com/">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://applytop1.com/">
+<meta property="og:title" content="Free leads on day one. A written path to $20K months.">
+<meta property="og:description" content="We hand new agents leads they don't pay for, the exact script our producers use, and a 12-step path that's already been walked. Commission only. Book a 15-minute interview.">
+<meta property="og:image" content="https://applytop1.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#030604">
+
+<link rel="preconnect" href="https://obtlrivpgdrxgydcpnqo.supabase.co" crossorigin>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-700.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-500.woff2">
+
+<style>
+@font-face{font-family:'Clash Display';font-weight:600;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-600.woff2') format('woff2')}
+@font-face{font-family:'Clash Display';font-weight:700;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/clash-display-700.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:400;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-400.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:500;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-500.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:600;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-600.woff2') format('woff2')}
+@font-face{font-family:'General Sans';font-weight:700;font-display:swap;src:url('https://obtlrivpgdrxgydcpnqo.supabase.co/storage/v1/object/public/site/assets/fonts/general-sans-700.woff2') format('woff2')}
+
+:root{
+  --bg:#030604;
+  --panel:#101312;
+  --panel-2:#171B19;
+  --edge:rgba(0,230,118,.22);
+  --edge-dim:rgba(255,255,255,.08);
+  --neon:#00E676;
+  --neon-bright:#66FFA6;
+  --neon-deep:#00804A;
+  --ink:#E8F5EE;
+  --ink-2:#9FB8AA;
+  --ink-3:#6B8477;
+  --red:#FF6B6B;
+  --amber:#FFC83C;
+  --cyan:#22D3EE;
+  --maxw:1080px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:
+    linear-gradient(rgba(0,230,118,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,230,118,.028) 1px, transparent 1px),
+    radial-gradient(1000px 560px at 50% -10%, rgba(0,230,118,.07), transparent 60%),
+    radial-gradient(1100px 700px at 50% 115%, rgba(0,120,60,.07), transparent 60%),
+    var(--bg);
+  background-size:44px 44px, 44px 44px, auto, auto, auto;
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:'General Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:84px;
+}
+@media(min-width:820px){body{padding-bottom:0}}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px}
+.disp{font-family:'Clash Display','General Sans',sans-serif;font-weight:700;letter-spacing:-.02em;line-height:1.04}
+.mono{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+
+/* ---- setup banner (only shows when BOOKING_URL is unset) ---- */
+#setupBar{display:none;background:#3A1111;border-bottom:1px solid #7A2B2B;color:#FFD9D9;padding:12px 16px;text-align:center;font-size:13.5px;line-height:1.5}
+#setupBar code{background:rgba(0,0,0,.4);padding:2px 6px;border-radius:4px;color:#FFB4B4}
+body.needs-setup #setupBar{display:block}
+
+/* ---- header ---- */
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(3,6,4,.78);border-bottom:1px solid var(--edge-dim)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em;color:var(--ink);text-decoration:none}
+.logo .dot{width:9px;height:9px;border-radius:50%;background:var(--neon);box-shadow:0 0 12px var(--neon);flex:none}
+.hd .btn{display:none}
+@media(min-width:820px){.hd .btn{display:inline-flex}}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:'General Sans',sans-serif;font-weight:600;font-size:15px;
+  padding:14px 24px;border-radius:10px;border:1px solid transparent;
+  background:var(--neon);color:#042010;text-decoration:none;cursor:pointer;
+  transition:transform .14s ease, box-shadow .14s ease, background .14s ease;
+  box-shadow:0 0 0 1px rgba(0,230,118,.4), 0 8px 28px -10px rgba(0,230,118,.6);
+  text-align:center;
+}
+.btn:hover{background:var(--neon-bright);transform:translateY(-1px);box-shadow:0 0 0 1px rgba(0,230,118,.6), 0 12px 34px -10px rgba(0,230,118,.75)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--edge);box-shadow:none}
+.btn.ghost:hover{background:rgba(0,230,118,.07);border-color:var(--neon);color:var(--neon-bright)}
+.btn.lg{font-size:17px;padding:17px 32px;width:100%}
+@media(min-width:560px){.btn.lg{width:auto}}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none;filter:grayscale(.4)}
+.btn .arw{transition:transform .14s ease}
+.btn:hover .arw{transform:translateX(3px)}
+
+/* ---- hero ---- */
+.hero{padding:56px 0 46px;position:relative}
+@media(min-width:820px){.hero{padding:92px 0 72px}}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--neon);background:rgba(0,230,118,.08);border:1px solid var(--edge);
+  padding:7px 13px;border-radius:100px;margin-bottom:22px;
+}
+.kicker .pulse{width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 8px var(--neon);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+h1{font-size:clamp(34px,7.4vw,66px);margin-bottom:20px}
+h1 em{font-style:normal;color:var(--neon);text-shadow:0 0 34px rgba(0,230,118,.45)}
+.lede{font-size:clamp(16.5px,2.3vw,19.5px);color:var(--ink-2);max-width:62ch;margin-bottom:14px}
+.lede b{color:var(--ink);font-weight:600}
+.hero-cta{display:flex;flex-direction:column;gap:12px;margin:30px 0 20px}
+@media(min-width:560px){.hero-cta{flex-direction:row;align-items:center}}
+.cta-sub{font-size:13.5px;color:var(--ink-3);display:flex;align-items:center;gap:7px}
+.cta-sub svg{flex:none}
+
+/* ---- stat strip ---- */
+.strip{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--edge-dim);border:1px solid var(--edge-dim);border-radius:14px;overflow:hidden;margin-top:38px}
+@media(min-width:720px){.strip{grid-template-columns:repeat(4,1fr)}}
+.strip div{background:var(--panel);padding:20px 16px;text-align:center}
+.strip .v{font-family:'Clash Display',sans-serif;font-weight:700;font-size:clamp(22px,4vw,30px);color:var(--neon);line-height:1.1}
+.strip .l{font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;margin-top:7px;font-family:ui-monospace,Menlo,monospace}
+
+/* ---- sections ---- */
+section{padding:56px 0}
+@media(min-width:820px){section{padding:84px 0}}
+.sec-k{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--neon);margin-bottom:13px}
+h2{font-size:clamp(26px,4.6vw,42px);margin-bottom:16px}
+.sec-sub{color:var(--ink-2);font-size:clamp(15.5px,2vw,18px);max-width:64ch;margin-bottom:38px}
+.rule{height:1px;background:linear-gradient(90deg,var(--edge),transparent);margin:0 0 38px}
+
+/* ---- cards ---- */
+.grid{display:grid;gap:14px}
+@media(min-width:720px){.grid.g2{grid-template-columns:repeat(2,1fr)}.grid.g3{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--panel);border:1px solid var(--edge-dim);border-radius:14px;padding:24px 22px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:2px;background:linear-gradient(90deg,var(--pc,var(--neon)),transparent);opacity:.7}
+.card h3{font-family:'Clash Display',sans-serif;font-weight:600;font-size:18.5px;margin-bottom:9px;letter-spacing:-.01em}
+.card p{color:var(--ink-2);font-size:15px}
+.card p+p{margin-top:9px}
+.card b{color:var(--ink);font-weight:600}
+
+/* ---- the path ---- */
+.phase{display:flex;align-items:center;gap:14px;margin:34px 0 16px}
+.phase:first-child{margin-top:0}
+.ph-n{font-family:'Clash Display',sans-serif;font-weight:700;font-size:13px;letter-spacing:.16em;color:var(--pc);padding:6px 12px;border:1px solid var(--pc);border-radius:100px;flex:none}
+.ph-t{font-size:14.5px;color:var(--ink-3)}
+.step{display:flex;gap:16px;padding:17px 0;border-bottom:1px solid var(--edge-dim)}
+.step:last-child{border-bottom:0}
+.st-n{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--pc);flex:none;width:26px;padding-top:3px;font-weight:600}
+.st-b h4{font-size:16px;font-weight:600;margin-bottom:4px}
+.st-b p{color:var(--ink-2);font-size:14.5px}
+
+/* ---- for / not for ---- */
+.fit{display:grid;gap:14px}
+@media(min-width:760px){.fit{grid-template-columns:repeat(2,1fr)}}
+.fit-col{background:var(--panel);border:1px solid var(--edge-dim);border-radius:14px;padding:26px 22px}
+.fit-col.yes{border-color:rgba(0,230,118,.3)}
+.fit-col.no{border-color:rgba(255,107,107,.26)}
+.fit-col h3{font-family:'Clash Display',sans-serif;font-weight:600;font-size:19px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.fit-col.yes h3{color:var(--neon)}
+.fit-col.no h3{color:var(--red)}
+.fit-col ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+.fit-col li{display:flex;gap:11px;font-size:15px;color:var(--ink-2);line-height:1.48}
+.fit-col li svg{flex:none;margin-top:3px}
+
+/* ---- next steps ---- */
+.nxt{display:grid;gap:14px;counter-reset:n}
+@media(min-width:760px){.nxt{grid-template-columns:repeat(3,1fr)}}
+.nxt .card{padding-top:26px}
+.nxt .num{font-family:'Clash Display',sans-serif;font-weight:700;font-size:13px;color:var(--neon);letter-spacing:.14em;margin-bottom:11px}
+
+/* ---- faq ---- */
+details{background:var(--panel);border:1px solid var(--edge-dim);border-radius:12px;margin-bottom:10px;overflow:hidden}
+details[open]{border-color:var(--edge)}
+summary{padding:19px 22px;cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px;transition:color .14s}
+summary::-webkit-details-marker{display:none}
+summary:hover{color:var(--neon-bright)}
+summary .chev{flex:none;transition:transform .2s ease;color:var(--neon)}
+details[open] summary .chev{transform:rotate(180deg)}
+details .body{padding:0 22px 20px;color:var(--ink-2);font-size:15px}
+details .body p+p{margin-top:11px}
+details .body b{color:var(--ink);font-weight:600}
+
+/* ---- booking ---- */
+#book{scroll-margin-top:72px}
+.bookwrap{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:10px;box-shadow:0 0 0 1px rgba(0,230,118,.08), 0 30px 80px -40px rgba(0,230,118,.5)}
+#calFrame{width:100%;height:760px;border:0;border-radius:10px;background:#fff;display:block}
+#calFallback{padding:44px 24px;text-align:center}
+#calFallback p{color:var(--ink-2);margin-bottom:22px;font-size:15.5px}
+
+/* ---- sticky mobile cta ---- */
+#sticky{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(3,6,4,.92);backdrop-filter:blur(14px);
+  border-top:1px solid var(--edge);
+  transform:translateY(120%);transition:transform .26s cubic-bezier(.2,.8,.3,1);
+}
+#sticky.on{transform:translateY(0)}
+#sticky .btn{width:100%}
+@media(min-width:820px){#sticky{display:none}}
+
+/* ---- footer ---- */
+footer{border-top:1px solid var(--edge-dim);padding:40px 0 48px;margin-top:20px}
+.disc{font-size:12.5px;color:var(--ink-3);line-height:1.65;max-width:78ch}
+.disc b{color:var(--ink-2);font-weight:600}
+.fmeta{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;justify-content:space-between;margin-top:26px;font-size:13px;color:var(--ink-3)}
+.fmeta a{color:var(--ink-3);text-decoration:none;border-bottom:1px solid var(--edge-dim)}
+.fmeta a:hover{color:var(--neon)}
+
+/* ---- reveal ---- */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.3,1)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+:focus-visible{outline:2px solid var(--neon);outline-offset:3px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<div id="setupBar" role="status">
+  <b>Setup needed —</b> open <code>recruiting/index.html</code>, scroll to <code>const CONFIG</code> at the bottom, and set <code>BOOKING_URL</code> to your Calendly / GHL link. This bar disappears once it's set and is never shown to visitors after that.
+</div>
+
+<header>
+  <div class="wrap hd">
+    <a class="logo" href="#top"><span class="dot"></span>TOP ONE PERCENT</a>
+    <a class="btn cta" href="#book" data-cta="header">Book your interview</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker rv"><span class="pulse"></span>Mortgage Protection · Now Contracting</div>
+      <h1 class="disp rv">Free leads on day one.<br>A written path to <em>$20K months</em>.</h1>
+      <p class="lede rv">Most agencies hand you a contract and wish you luck. We hand you <b>leads you don't pay for</b>, the exact scripts our producers run, and a twelve-step path that has already been walked by everyone above you.</p>
+      <p class="lede rv"><b>Commission only. 1099.</b> If you're looking for a salary, stop reading — we'll both save an hour.</p>
+      <div class="hero-cta rv">
+        <a class="btn lg cta" href="#book" data-cta="hero">Book your interview <span class="arw">→</span></a>
+        <span class="cta-sub">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6B8477" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          15 minutes. Straight answers. No pitch deck.
+        </span>
+      </div>
+
+      <div class="strip rv">
+        <div><div class="v">$0</div><div class="l">Lead cost to start</div></div>
+        <div><div class="v">3</div><div class="l">Deals out of the Gulag</div></div>
+        <div><div class="v">$600</div><div class="l">Aged leads when you do</div></div>
+        <div><div class="v">12</div><div class="l">Steps, written down</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HONEST VERSION ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">Read this before you book</div>
+      <h2 class="disp rv">The honest version</h2>
+      <p class="sec-sub rv">Every recruiting page you've seen buries this part. We're putting it first, because the people it scares off were going to quit in week three anyway.</p>
+      <div class="rule rv"></div>
+      <div class="grid g2">
+        <div class="card rv" style="--pc:var(--red)">
+          <h3>You are paid on commission. Only.</h3>
+          <p>No base. No draw. No hourly. You're a <b>1099 independent contractor</b>, and you get paid when business <b>issues and places</b> — not when you submit it. Submitted business is cool. Placed business pays.</p>
+        </div>
+        <div class="card rv" style="--pc:var(--red)">
+          <h3>You need a license. We don't get it for you.</h3>
+          <p>Pre-licensing course, state exam, fingerprints, NPN, carrier contracting through SureLC. We walk you through every step and Brin pushes your contracting along — but <b>you do the coursework and you sit the exam</b>.</p>
+        </div>
+        <div class="card rv" style="--pc:var(--red)">
+          <h3>This is a phone job.</h3>
+          <p>You start by <b>hand dialing</b>. Not with a power dialer, not with automation. You learn how to control a conversation, handle objections, and stay on the call. <b>Tools help after skill. Not before.</b></p>
+        </div>
+        <div class="card rv" style="--pc:var(--red)">
+          <h3>Most people quit early.</h3>
+          <p>Not because they couldn't do it. Because they stopped before the reps compounded. In our own new-agent guide it's written in plain English: <b>most people quit before they ever get enough reps to improve.</b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT YOU GET ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">What's actually on the table</div>
+      <h2 class="disp rv">What you get on day one</h2>
+      <p class="sec-sub rv">Not "unlimited income potential." Actual things, that actually exist, that you can actually use this week.</p>
+      <div class="rule rv"></div>
+      <div class="grid g3">
+        <div class="card rv">
+          <h3>The Gulag — free leads</h3>
+          <p>Everybody starts here, and the leads cost you <b>nothing</b>. Three set deals gets you out, and you leave with <b>$600 of aged leads</b> in your pocket. The point isn't perfection. The point is reps.</p>
+        </div>
+        <div class="card rv">
+          <h3>Scripts you don't have to write</h3>
+          <p>Fresh and aged mortgage scripts, memorized inside your first week. A word-for-word objections outline. <b>You don't reinvent anything</b> — you learn structure, flow, transitions, tonality and control.</p>
+        </div>
+        <div class="card rv">
+          <h3>Daily training, not a welcome PDF</h3>
+          <p>The Academy runs every day: audios, live calls, objection handling, sales breakdowns, tonality, presentations. Plus recorded trainings from producers who've posted <b>$100K months</b>.</p>
+        </div>
+        <div class="card rv">
+          <h3>Underwriting you can actually reach</h3>
+          <p>Carrier guides, product breakdowns, and an underwriting tool that tells you which carrier takes your client's health profile <b>before</b> you waste a submission on a decline.</p>
+        </div>
+        <div class="card rv">
+          <h3>Your numbers, in public</h3>
+          <p>Dials, presentations, deals and premium on a live leaderboard, with a rank ladder and all-time records. <b>Production is visible here.</b> That's a feature, and for some people it's the whole reason they stay.</p>
+        </div>
+        <div class="card rv">
+          <h3>An upline that picks up</h3>
+          <p>Write down any objection you couldn't handle and take it to your upline. That's the actual instruction we give new agents. <b>Nobody here is too busy for your questions.</b></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE PATH ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">The path</div>
+      <h2 class="disp rv">Unlicensed to producing, step by step</h2>
+      <p class="sec-sub rv">This isn't a motivational framework. It's the checklist we hand every new agent on day one, condensed. Four phases, twelve steps, in order.</p>
+      <div class="rule rv"></div>
+
+      <div class="phase rv" style="--pc:var(--cyan)"><span class="ph-n">01 · SETUP</span><span class="ph-t">Get licensed, get organized, get plugged in</span></div>
+      <div class="card rv" style="--pc:var(--cyan);padding:6px 22px">
+        <div class="step"><div class="st-n" style="--pc:var(--cyan)">01</div><div class="st-b"><h4>Licensing &amp; contracting</h4><p>Pre-licensing course, state exam, fingerprints, NPN, active license through NIPR, New Agent Agreement, carrier contracting via SureLC.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--cyan)">02</div><div class="st-b"><h4>Plug into daily training</h4><p>You're in the rooms from the start — before your license clears, not after.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--cyan)">03</div><div class="st-b"><h4>Get organized early</h4><p>License number, NPN, writing numbers, carrier logins, underwriting contacts — one place, from day one. The organized agents stay in business longer.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--cyan)">04</div><div class="st-b"><h4>Get your access</h4><p>Agent resources, past trainings, carrier guides, underwriting info, product breakdowns.</p></div></div>
+      </div>
+
+      <div class="phase rv" style="--pc:var(--neon)"><span class="ph-n">02 · LEARN</span><span class="ph-t">Study the business until it sounds like you</span></div>
+      <div class="card rv" style="--pc:var(--neon);padding:6px 22px">
+        <div class="step"><div class="st-n" style="--pc:var(--neon)">05</div><div class="st-b"><h4>Learn mortgage protection</h4><p>Conversation flow, discovery questions, tonality, presenting options, objection handling, closing simply.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--neon)">06</div><div class="st-b"><h4>Live in the resources</h4><p>Agency drive, Academy, quoting and product tools. Early on, most of your learning is just hearing the business repeatedly.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--neon)">07</div><div class="st-b"><h4>Study people who are producing</h4><p>Live dials, objection handling, sales psychology, underwriting breakdowns, phone structure. Immersion matters.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--neon)">08</div><div class="st-b"><h4>Memorize the script — week one</h4><p>Don't reinvent it. The best agents understand conversations, not just scripts — but you earn that by knowing the script cold first.</p></div></div>
+      </div>
+
+      <div class="phase rv" style="--pc:var(--red)"><span class="ph-n">03 · DIAL</span><span class="ph-t">Reps on the phone — the Gulag makes you</span></div>
+      <div class="card rv" style="--pc:var(--red);padding:6px 22px">
+        <div class="step"><div class="st-n" style="--pc:var(--red)">09</div><div class="st-b"><h4>Start hand dialing</h4><p>How to talk to people, control conversations, handle objections, stay on calls, book appointments. Dialer tools come later, once you've earned them.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--red)">10</div><div class="st-b"><h4>Enter the Gulag</h4><p>Free leads. Three set deals gets you out and hands you $600 of aged leads. Learn the phones, learn follow-up, learn to close, get comfortable being uncomfortable.</p></div></div>
+      </div>
+
+      <div class="phase rv" style="--pc:var(--amber)"><span class="ph-n">04 · PRODUCE</span><span class="ph-t">Write it, place it, keep it, scale it</span></div>
+      <div class="card rv" style="--pc:var(--amber);padding:6px 22px">
+        <div class="step"><div class="st-n" style="--pc:var(--amber)">11</div><div class="st-b"><h4>Track every policy</h4><p>Pending business, draft dates, policy status, placement, retention. Confirm the first payment cleared. Issued and placed is what pays.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--amber)">12</div><div class="st-b"><h4>Graduate to aged, then fresh</h4><p>Roll Gulag money into $2–$6 aged leads. High volume, more conversations, more reps. <b>GULAG → AGED → FRESH.</b> You earn the right to work fresh.</p></div></div>
+        <div class="step"><div class="st-n" style="--pc:var(--amber)">★</div><div class="st-b"><h4>The standard</h4><p><b>$20–25K a month is the standard we hold agents to.</b> From there you either become elite at production, or you start building and developing people. Either way: become undeniable at writing business first.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIT ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">Qualification</div>
+      <h2 class="disp rv">Who this works for</h2>
+      <p class="sec-sub rv">We'd rather lose you on this page than in week four. Read both columns honestly.</p>
+      <div class="rule rv"></div>
+      <div class="fit">
+        <div class="fit-col yes rv">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Book the call if</h3>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span>You'll dial when nobody is watching and nobody is making you.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span>You can hear "no" forty times in a day and dial again on forty-one.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span>You want your numbers measured and posted where people can see them.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span>You'd rather be handed a path than a pep talk.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2.6" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span>You can go through licensing and ramp-up before real money shows up.</span></li>
+          </ul>
+        </div>
+        <div class="fit-col no rv">
+          <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>Don't waste the slot if</h3>
+          <ul>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span>You need guaranteed money landing in two weeks.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span>You expect fresh leads handed to you before you've proven anything.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span>You want to try this five hours a week and see how it goes.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span>You'll argue with the script before you've run it a hundred times.</span></li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span>You need somebody to manage you into doing the work.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AFTER YOU BOOK ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">No mystery</div>
+      <h2 class="disp rv">What happens after you book</h2>
+      <p class="sec-sub rv">Three steps. Nobody is going to surprise you with a group Zoom or a $500 "starter package."</p>
+      <div class="rule rv"></div>
+      <div class="nxt">
+        <div class="card rv"><div class="num">STEP 01</div><h3>A 15-minute call</h3><p>Both directions. We ask what you've done and what you're actually willing to do. <b>You interview us too</b> — bring the hard questions about comp, leads and time.</p></div>
+        <div class="card rv"><div class="num">STEP 02</div><h3>If it fits, you get the path</h3><p>New Agent Agreement, your licensing roadmap, and the exact course to enroll in for your state. If it doesn't fit, we'll tell you on the call instead of stringing you along.</p></div>
+        <div class="card rv"><div class="num">STEP 03</div><h3>Licensing and contracting run in parallel</h3><p>You start coursework; contracting moves through SureLC at the same time. Carrier approvals take a while — <b>you don't sit around waiting</b>, you're already training.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-k rv">Straight answers</div>
+      <h2 class="disp rv">The questions you were going to ask anyway</h2>
+      <div class="rule rv"></div>
+
+      <details class="rv"><summary>Is this an MLM?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p>No — and here's the honest, complete answer instead of a one-word denial.</p>
+        <p><b>You are never paid for recruiting somebody.</b> You are paid commission on insurance policies that issue and place with real clients. That's the only thing that generates revenue here.</p>
+        <p>There is a build track: once you're producing at a high level, you can bring on agents and earn an override on the business <b>they write</b>. It's optional. Plenty of our people never touch it and just produce. <b>There is no buy-in, no inventory, no product you purchase, and no requirement to recruit anybody, ever.</b></p>
+      </div></details>
+
+      <details class="rv"><summary>Do I need my license before I book?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p>No. Most people book this call unlicensed — that's the normal starting point. We'll tell you exactly what your state requires and how long it typically takes.</p>
+        <p>If you're already licensed and contracted elsewhere, say so on the call; that conversation goes differently.</p>
+      </div></details>
+
+      <details class="rv"><summary>What does it cost me?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p><b>We don't charge you to join, and we don't sell you a training package.</b></p>
+        <p>You will pay your state and your course provider for pre-licensing, the exam and fingerprinting. That's normal licensing cost for anyone entering insurance in any state, and it goes to them, not to us. We'll give you the real number for your state on the call.</p>
+        <p>Your starting leads come from the Gulag at <b>no cost to you</b>. Later, aged leads are bought out of money you've already made.</p>
+      </div></details>
+
+      <details class="rv"><summary>How long until I'm actually making money?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p>Licensing usually runs a few weeks depending on your state and how fast you move through the coursework. Carrier contracting overlaps with it.</p>
+        <p>After that it depends almost entirely on your dial volume, and we're not going to pretend otherwise. <b>Nobody can promise you a timeline or an income</b> — this is commission only. What we can promise is that the leads, scripts, training and support are there from your first day, at no cost to you.</p>
+      </div></details>
+
+      <details class="rv"><summary>Can I do this part time?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p>People have started part time while transitioning out of a job, and that's a real conversation to have on the call.</p>
+        <p>What doesn't work is <b>five hours a week, indefinitely</b>. Leads are time-sensitive, the skill is built on volume, and part-time dialing tends to produce part-time reps and full-time frustration. Be straight with us about your hours and we'll be straight with you about whether it's worth your time.</p>
+      </div></details>
+
+      <details class="rv"><summary>What exactly am I selling?<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="body">
+        <p>Primarily <b>mortgage protection</b> — life insurance for homeowners so the mortgage doesn't fall on the family if something happens. You're working leads from people who requested information, not cold-calling strangers out of a phone book.</p>
+        <p>You'll be contracted with multiple carriers, so you're choosing the right fit for the client rather than forcing one product on everybody.</p>
+      </div></details>
+    </div>
+  </section>
+
+  <!-- ============ BOOK ============ -->
+  <section id="book">
+    <div class="wrap">
+      <div class="sec-k rv">Last step</div>
+      <h2 class="disp rv">Book your interview</h2>
+      <p class="sec-sub rv">Pick a time that works. Fifteen minutes, camera optional, and you'll get a straight yes or no by the end of it.</p>
+      <div class="bookwrap rv">
+        <iframe id="calFrame" title="Book your interview" loading="lazy" style="display:none"></iframe>
+        <div id="calFallback">
+          <p>Booking calendar loading — if it doesn't appear, use the button below.</p>
+          <a class="btn lg cta" href="#book" data-cta="fallback">Open the booking page <span class="arw">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="disc">
+      <b>Important:</b> Top One Percent contracts <b>independent 1099 agents</b>. This is a commission-only opportunity and <b>not an offer of employment</b>. There is no salary, draw, hourly wage or guaranteed income of any kind. Any figures referenced on this page — including the $20–25K monthly standard and any producer results — describe the internal performance standard we hold agents to and the results of specific individuals. <b>They are not typical, not projected, and not a promise of what you will earn.</b> Your results depend on your own effort, activity, skill, licensing status and market, and many agents earn substantially less or nothing at all. You are responsible for obtaining and maintaining your own state insurance license. Insurance products are offered through contracted carriers and are subject to underwriting approval.
+    </p>
+    <div class="fmeta">
+      <span>© <span id="yr">2026</span> Top One Percent</span>
+      <span><a href="#top">Back to top</a></span>
+    </div>
+  </div>
+</footer>
+
+<div id="sticky">
+  <a class="btn cta" href="#book" data-cta="sticky">Book your interview <span class="arw">→</span></a>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — set BOOKING_URL and you're live.
+   Calendly:  https://calendly.com/your-handle/interview
+   GHL:       https://api.leadconnectorhq.com/widget/booking/XXXXXXXX
+   ============================================================ */
+const CONFIG = {
+  BOOKING_URL: "",              // <-- REQUIRED. Paste your scheduling link here.
+  CALENDAR_HEIGHT: 760,         // px height of the embedded calendar on desktop
+  EMBED: true                   // true = embed inline (converts better). false = CTAs link straight out.
+};
+
+(function () {
+  "use strict";
+
+  var url = (CONFIG.BOOKING_URL || "").trim();
+  var ctas = Array.prototype.slice.call(document.querySelectorAll(".cta"));
+  var frame = document.getElementById("calFrame");
+  var fallback = document.getElementById("calFallback");
+
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  /* ---- no booking link configured: make it loudly obvious, to you only ---- */
+  if (!url) {
+    document.body.classList.add("needs-setup");
+    ctas.forEach(function (a) {
+      a.setAttribute("aria-disabled", "true");
+      a.setAttribute("href", "#book");
+    });
+    if (fallback) fallback.querySelector("p").textContent =
+      "No booking link is configured yet. Set CONFIG.BOOKING_URL in the page source.";
+  } else if (CONFIG.EMBED) {
+    /* ---- embed inline; CTAs scroll down instead of bouncing the visitor off-site ---- */
+    frame.style.height = CONFIG.CALENDAR_HEIGHT + "px";
+    frame.addEventListener("load", function () {
+      frame.style.display = "block";
+      if (fallback) fallback.style.display = "none";
+    });
+    frame.src = url;
+    var fb = fallback && fallback.querySelector("a");
+    if (fb) { fb.setAttribute("href", url); fb.setAttribute("target", "_blank"); fb.setAttribute("rel", "noopener"); }
+  } else {
+    ctas.forEach(function (a) {
+      a.setAttribute("href", url);
+      a.setAttribute("target", "_blank");
+      a.setAttribute("rel", "noopener");
+    });
+  }
+
+  /* ---- CTA click tracking: fires into GA4 / Plausible / Fathom if any is present ---- */
+  ctas.forEach(function (a) {
+    a.addEventListener("click", function () {
+      var where = a.getAttribute("data-cta") || "unknown";
+      try { if (window.gtag) window.gtag("event", "book_click", { cta_location: where }); } catch (e) {}
+      try { if (window.plausible) window.plausible("Book Click", { props: { location: where } }); } catch (e) {}
+      try { if (window.fathom) window.fathom.trackEvent("book click " + where); } catch (e) {}
+    });
+  });
+
+  /* ---- sticky mobile CTA: show after the hero, hide once the calendar is on screen ---- */
+  var sticky = document.getElementById("sticky");
+  var bookSec = document.getElementById("book");
+  var pastHero = false, atBook = false;
+  function sync() { sticky.classList.toggle("on", pastHero && !atBook); }
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { pastHero = !e.isIntersecting; sync(); });
+    }, { rootMargin: "-140px 0px 0px 0px" }).observe(document.querySelector(".hero"));
+
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) { atBook = e.isIntersecting; sync(); });
+    }, { threshold: 0.12 }).observe(bookSec);
+
+    /* ---- reveal on scroll ---- */
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+    document.querySelectorAll(".rv").forEach(function (el, i) {
+      el.style.transitionDelay = Math.min(i % 6, 5) * 55 + "ms";
+      io.observe(el);
+    });
+  } else {
+    document.querySelectorAll(".rv").forEach(function (el) { el.classList.add("in"); });
+    sticky.classList.add("on");
+  }
+})();
+</script>
+</body>
+</html>
