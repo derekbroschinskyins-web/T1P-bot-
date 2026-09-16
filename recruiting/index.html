@@ -218,7 +218,10 @@ a:focus-visible,.btn:focus-visible{outline:2px solid var(--navy);outline-offset:
 /* Paste your scheduling link here and the site is live.
    Calendly: https://calendly.com/your-handle/call
    GHL:      https://api.leadconnectorhq.com/widget/booking/XXXXXXXX */
-var BOOKING_URL = "";
+var BOOKING_URL = "https://calendly.com/derekbroschinsky-ins/new-meeting";
+
+/* Calendly embed styling — matches the page (navy on ivory, no GDPR bar). */
+var EMBED_PARAMS = "hide_gdpr_banner=1&background_color=ffffff&text_color=17212e&primary_color=14496b";
 
 (function () {
   "use strict";
@@ -240,7 +243,7 @@ var BOOKING_URL = "";
     frame.style.display = "block";
     fallback.style.display = "none";
   });
-  frame.src = url;
+  frame.src = url + (url.indexOf("?") === -1 ? "?" : "&") + EMBED_PARAMS;
 
   var open = fallback.querySelector("a");
   open.setAttribute("href", url);
