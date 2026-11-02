@@ -7,18 +7,18 @@ function draft(){try{return JSON.parse(sessionStorage.getItem(draftKey)||'null')
 export default function Notepad({row,onSaved}:{row:any;onSaved:()=>Promise<void>}){
  const [text,setText]=useState<string>(()=>draft()?.text??row?.data?.text??'');
  const current=useRef(text),saved=useRef<string>(row?.data?.text||''),version=useRef<string|undefined>(draft()?draft().baseVersion:row?.updated_at),lock=useRef(false);
- const [status,setStatus]=useState(text===saved.current?'Saved':'Draft restored'),[error,setError]=useState('');
+ const [status,setStatus]=useState(text===saved.current?'Saved':'Draft restored'),[error,setError]=useState(''),[flush,setFlush]=useState(0);
  const [collapsed,setCollapsed]=useState(()=>window.matchMedia('(max-width: 800px)').matches);
  useEffect(()=>{if(!lock.current&&current.current===saved.current&&row?.updated_at!==version.current){saved.current=row?.data?.text||'';version.current=row?.updated_at;current.current=saved.current;setText(saved.current)}},[row?.updated_at]);
  async function save(){
   if(lock.current||current.current===saved.current)return;
-  const snapshot=current.current;lock.current=true;setStatus('Saving…');setError('');
-  try{version.current=await writeMemory('desk_notepad',{text:snapshot},version.current);saved.current=snapshot;
+  const snapshot=current.current;let succeeded=false;lock.current=true;setStatus('Saving…');setError('');
+  try{version.current=await writeMemory('desk_notepad',{text:snapshot},version.current);saved.current=snapshot;succeeded=true;
    if(current.current===snapshot){sessionStorage.removeItem(draftKey);setStatus('Saved')}else{sessionStorage.setItem(draftKey,JSON.stringify({text:current.current,baseVersion:version.current}));setStatus('Unsaved')}
    await onSaved().catch(()=>{});
-  }catch(e:any){setStatus('Not saved');setError(e.message||'Could not save. Your draft is still here.')}finally{lock.current=false}
+  }catch(e:any){setStatus('Not saved');setError(e.message||'Could not save. Your draft is still here.')}finally{lock.current=false;if(succeeded&&current.current!==saved.current)setFlush(n=>n+1)}
  }
- useEffect(()=>{if(text===saved.current)return;const timer=setTimeout(()=>{void save()},1000);return()=>clearTimeout(timer)},[text,status==='Unsaved']);
+ useEffect(()=>{if(text===saved.current)return;const timer=setTimeout(()=>{void save()},1000);return()=>clearTimeout(timer)},[text,flush]);
  function edit(value:string){current.current=value;setText(value);setStatus('Unsaved');setError('');try{sessionStorage.setItem(draftKey,JSON.stringify({text:value,baseVersion:version.current}))}catch{}}
  return <section className={'sidebar-notepad '+(collapsed?'notes-collapsed':'')} aria-label="Personal notepad">
   <button className="notepad-heading" onClick={()=>setCollapsed(c=>!c)} aria-expanded={!collapsed}><NotebookPen size={16}/><span>My notepad</span><small>{collapsed?'Open':'Hide'}</small></button>
