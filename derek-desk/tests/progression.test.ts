@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {dialProgress,garageProgress,periodOf} from '../src/progression.ts';
+const day='2026-11-02';const dial=(key:string,delta:number,time:string,method='Hand dial')=>({key:'dial_'+key,data:{day,delta,method,createdAt:time}});
+const rows=[dial('1',250,'2026-11-02T18:59:00Z'),dial('2',250,'2026-11-02T19:00:00Z'),dial('3',500,'2026-11-02T20:00:00Z','Wavv')];
+assert.equal(periodOf(rows[0].data),'morning');assert.equal(periodOf(rows[1].data),'afternoon');assert.deepEqual(dialProgress(rows,day),{hand:500,wavv:500,morning:250,afternoon:250});
+assert.equal(garageProgress(rows,day).cars.find(c=>c.id==='revuelto')?.unlocked,true);
+const corrected=[...rows,dial('4',-1,'2026-11-02T20:00:00Z')];assert.equal(garageProgress(corrected,day).cars.find(c=>c.id==='revuelto')?.unlocked,false);
+assert.equal(garageProgress([rows[2]],day).cars.find(c=>c.id==='lambo')?.unlocked,false);
+const leader=(n:number,date:string)=>({key:'desk_leadership_'+n,data:{date}});const leadership=[1,2,3,4,5].map(n=>leader(n,day));
+assert.equal(garageProgress(leadership,day).cars.find(c=>c.id==='rs6')?.unlocked,true);assert.equal(garageProgress([...leadership,leader(6,'2026-11-01')],day).leadershipCount,5);
+assert.equal(garageProgress([{key:'desk_deal_1',data:{status:'Cancelled'}}],day).xp,0);
+assert.equal(garageProgress([],day).rank.name,'Rookie');console.log('Passed: noon boundary, hand-only totals, corrections, unlocks, leadership week, cancelled deals, starting rank.');
