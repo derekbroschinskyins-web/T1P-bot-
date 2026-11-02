@@ -3,11 +3,12 @@ import {Play,Pause,Volume2,VolumeX,X} from 'lucide-react';
 
 export function Intro({onClose}:{onClose:()=>void}){
  const video=useRef<HTMLVideoElement>(null);
- const [started,setStarted]=useState(false),[playing,setPlaying]=useState(false),[muted,setMuted]=useState(true),[error,setError]=useState('');
+ const [started,setStarted]=useState(true),[playing,setPlaying]=useState(false),[muted,setMuted]=useState(true),[error,setError]=useState('');
  useEffect(()=>{const old=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=old}},[]);
- async function play(){setError('');try{await video.current?.play();setStarted(true);}catch{setError('Tap play to retry, or head straight to your desk.')}}
+ async function play(){setError('');try{await video.current?.play();setStarted(true);}catch{setStarted(false);setError('Autoplay was paused by your browser. Tap play, or open your desk.')}}
+ useEffect(()=>{void play()},[]);
  return <div className="cinema-intro" role="dialog" aria-modal="true" aria-label="Derek’s garage film" onKeyDown={e=>{if(e.key==='Escape')onClose()}}>
-  <video ref={video} className="intro-film" src="/media/garage-intro.mp4" poster="/media/cars/lambo.webp" preload="none" playsInline muted={muted} onPlay={()=>setPlaying(true)} onPause={()=>setPlaying(false)} onEnded={onClose} onError={()=>setError('The film could not load. You can still open your desk.')} aria-label="Lamborghini entry and closed-circuit racing film"/>
+  <video ref={video} className="intro-film" src="/media/garage-intro.mp4?v=lamborghini" poster="/media/cars/lambo.webp" preload="auto" autoPlay playsInline muted={muted} onPlay={()=>{setPlaying(true);setStarted(true)}} onPause={()=>setPlaying(false)} onEnded={onClose} onError={()=>setError('The film could not load. You can still open your desk.')} aria-label="Lamborghini entry and closed-circuit racing film"/>
   <button autoFocus className="intro-skip" onClick={onClose}>Open my desk <X size={16}/></button>
   {!started&&<div className="cinema-welcome"><span className="eyebrow">DEREK’S PERFORMANCE GARAGE</span><h1>Take your seat.</h1><p>The next move is yours.</p><button className="primary" onClick={play}><Play size={18}/> Start the film</button><small>12 seconds · Lamborghini Huracán</small></div>}
   <div className="cinema-controls">{started&&<button onClick={()=>playing?video.current?.pause():play()} aria-label={playing?'Pause film':'Play film'}>{playing?<Pause size={18}/>:<Play size={18}/>}</button>}<button onClick={()=>setMuted(m=>!m)} aria-label={muted?'Turn engine sound on':'Mute engine sound'}>{muted?<VolumeX size={18}/>:<Volume2 size={18}/>}<span>{muted?'Sound off':'Engine sound on'}</span></button><span className="film-credit">HIGGSFIELD ORIGINAL · 01</span></div>
