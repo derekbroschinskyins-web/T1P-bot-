@@ -14,8 +14,8 @@ Generated through the user's connected Higgsfield account on November 2, 2026. T
 | Finish-line film, 6 seconds | 864a84db-be51-41d5-b044-631ee6b712e4 |
 | T1P car logo | dba50cb0-d3fc-489c-94c2-347de28ea362 |
 
-WebP images and H.264 MP4 videos are served from this deployment. Videos have fast-start metadata and do not depend on third-party generation URLs. The intro automatically plays muted when the signed-in desk opens, offers sound/pause/skip, and closes at its end. Blocked autoplay offers a play button. Finish-line playback is muted and honors reduced-motion preferences. Neither media nor the notepad modifies dial or business outcomes.
+WebP images and H.264 MP4 videos are served from this deployment. Videos have fast-start metadata and do not depend on third-party generation URLs. The intro automatically plays muted only after a successful sign-in through the desk login form. Restoring an existing session, refreshing, token refreshes, and changing pages do not trigger it. Manual replay remains available. It offers sound/pause/skip and closes at its end. Blocked autoplay offers a play button. Finish-line playback is muted and honors reduced-motion preferences. Neither media nor the notepad modifies dial or business outcomes.
 
 The sidebar notepad is stored privately in derek_crm_settings, key desk_notepad, through the existing owner-scoped client and RLS. Writes use the shared optimistic concurrency guard. A session draft survives refresh until saved, and errors preserve the draft for retry. Account memory includes the notepad in the ChatGPT review prompt.
 
-The Lamborghini shield is the actual logo PNG from https://www.lamborghini.com/sites/it-en/files/themes/custom/lambo_facelift_2019/images/logo.png (retrieved November 2, 2026) and is composited into the intro video. It remains the trademark of Automobili Lamborghini; it is used in this private fan-themed garage and is not a generated substitute.
+The entry film uses the original Higgsfield export without an added Lamborghini badge overlay.
