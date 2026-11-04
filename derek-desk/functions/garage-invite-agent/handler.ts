@@ -7,10 +7,12 @@ export type InviteDependencies={
  prepare:(actor:string,name:string,email:string)=>Promise<Prepared>;
  generate:(email:string,name:string)=>Promise<Link>;
 };
-export function inviteHandler(deps:InviteDependencies){return async(req:Request)=>{
- const headers={'Access-Control-Allow-Origin':GARAGE_ORIGIN,'Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin','Content-Type':'application/json','Cache-Control':'no-store'};
+export function inviteHandler(deps:InviteDependencies,cors:Record<string,string>={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type'}){return async(req:Request)=>{
+ // Embedded browsers / exported app pages may have an opaque Origin ("null").
+ // CORS only permits the browser transport. Every POST still requires a verified
+ // bearer token and a server-checked admin identity; cookies are never accepted.
+ const headers={...cors,'Access-Control-Allow-Methods':'POST, OPTIONS','Content-Type':'application/json','Cache-Control':'no-store'};
  const reply=(status:number,data:unknown)=>new Response(JSON.stringify(data),{status,headers});
- if(req.headers.has('origin')&&req.headers.get('origin')!==GARAGE_ORIGIN)return reply(403,{error:'This request must come from THE GARAGE.'});
  if(req.method==='OPTIONS')return new Response(null,{status:204,headers});
  if(req.method!=='POST')return reply(405,{error:'Use POST.'});
  const auth=req.headers.get('authorization')||'';

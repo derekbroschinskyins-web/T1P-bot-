@@ -12,13 +12,22 @@ assert.equal((await handle(req(null))).status,401);
 assert.equal((await handle(req('forged-admin'))).status,401);
 assert.equal((await handle(req('valid-agent',{name:'Agent',email:'x@example.com',role:'admin',actor:'verified-admin'}))).status,403);
 assert.deepEqual(calls,[],'Unauthorized requests never reach account creation');
-assert.equal((await handle(req('valid-admin',{},'https://untrusted.example'))).status,403);
+for(const origin of [GARAGE_ORIGIN,'null','https://preview.example']){
+ const preflight=await handle(new Request(GARAGE_ORIGIN,{method:'OPTIONS',headers:{Origin:origin,'Access-Control-Request-Method':'POST','Access-Control-Request-Headers':'authorization,apikey,content-type,x-client-info'}}));
+ assert.equal(preflight.status,204,'Browser preflight must not require authentication');
+ assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),'*');
+ assert.equal(preflight.headers.get('Access-Control-Allow-Credentials'),null,'No ambient cookie credentials');
+ assert.equal((await handle(req(null,{},origin))).status,401);
+ assert.equal((await handle(req('valid-agent',{},origin))).status,403);
+}
+assert.deepEqual(calls,[],'Preflight and unauthorized requests never provision accounts');
 assert.equal((await handle(req('valid-admin',{name:'Agent',email:'invalid'}))).status,400);
 const created=await handle(req('valid-admin',{name:'  New Agent  ',email:' New@Example.com ',role:'admin',redirectTo:'https://untrusted.example'}));
 assert.equal(created.status,200);const result=await created.json();
 assert.equal(result.url,GARAGE_ORIGIN+'/accept-invite#invite_token=one-time-test-token&invite_type=invite');
 assert.deepEqual(calls,['verified-admin|New Agent|new@example.com','generate']);
 assert.equal(created.headers.get('Cache-Control'),'no-store');
+assert.equal(created.headers.get('Access-Control-Allow-Origin'),'*');
 calls.length=0;
 const existing=await (await handle(req('valid-admin',{name:'Existing Agent',email:'existing@example.com'}))).json();
 assert.equal(existing.url,GARAGE_ORIGIN+'/');
@@ -30,4 +39,4 @@ const denied=inviteHandler({...deps,prepare:async()=>{throw Error('Admin access 
 assert.equal((await denied(req('valid-admin'))).status,400);
 const results=await Promise.all(Array.from({length:50},(_,i)=>handle(req('valid-admin',{name:'Agent '+i,email:`agent${i}@example.com`}))));
 assert(results.every(r=>r.status===200),'Isolated invitation requests remain independent');
-console.log('Passed: missing/forged tokens, non-admin denial, origin and input validation, fixed destination, existing-account privacy, errors, and 50 independent invitation requests.');
+console.log('Passed: production/opaque/preview preflights, missing/forged tokens, non-admin denial, input validation, fixed destination, existing-account privacy, errors, and 50 independent invitation requests.');
