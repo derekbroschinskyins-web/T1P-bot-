@@ -44,3 +44,37 @@
 .account-actions{display:flex;align-items:center;gap:10px;padding-top:10px}.account-actions button{display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;color:var(--muted);border:0;border-radius:6px;font-size:11px;min-height:34px}.account-actions .account-settings{width:34px;flex-shrink:0}.account-actions .account-signout{padding:7px 8px}.account-actions button:hover,.account-actions .active{color:var(--lime);background:#ffffff08}.account-actions button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}.mobile-settings{display:none}@media(max-width:800px){.mobile-settings{display:flex}}
 
 .premium-colors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0 32px}.premium-colors button{padding:18px 12px;text-align:left;background:#171c14;color:var(--ink);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;gap:8px}.premium-colors button.selected{border:2px solid var(--lime)}.premium-colors button:disabled{cursor:default;opacity:.65}.premium-colors i{width:26px;height:26px;border-radius:50%;display:block}.premium-colors small,.premium-colors em{font-size:10px;color:var(--muted);font-style:normal}.premium-colors span{font-size:12px}.premium-approvals{margin-top:24px}.premium-approvals>p{line-height:1.6;color:var(--muted)}.premium-approvals fieldset{border:0;padding:0;margin:0}.garage-wordmark>span{font-size:20px;letter-spacing:2px}.garage-wordmark small{display:block;font-size:8px;letter-spacing:2.5px;margin-top:7px}.login-brand.garage-wordmark{display:flex;flex-direction:column;align-items:flex-start;gap:9px}.login-brand.garage-wordmark strong{font-size:27px;letter-spacing:3px}.login-brand.garage-wordmark>span{font-size:9px;letter-spacing:3px}.sidebar-rank>small{line-height:1.5}@media(max-width:800px){.brand.garage-wordmark>span{font-size:14px!important;max-width:none!important}.brand.garage-wordmark small{display:block;font-size:7px}.premium-colors{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.premium-colors{grid-template-columns:1fr}}
+
+/* Earned themes recolor every dashboard surface while preserving car photography. */
+.simple-desk.earned-theme{
+ --paper:color-mix(in srgb,var(--green) 18%,#080a10);
+ --theme-panel:color-mix(in srgb,var(--green) 27%,#0b0d14);
+ --theme-deep:color-mix(in srgb,var(--green) 14%,#080a10);
+ --theme-raised:color-mix(in srgb,var(--green) 36%,#0b0d14);
+ --line:color-mix(in srgb,var(--green) 46%,#232735);
+ --ink:color-mix(in srgb,var(--green) 9%,#fff);
+ --muted:color-mix(in srgb,var(--green) 27%,#c9ced6);
+ min-height:100dvh;background:var(--paper);color:var(--ink)
+}
+.simple-desk.earned-theme .main,.simple-desk.earned-theme .content{background:var(--paper)}
+.simple-desk.earned-theme .sidebar,.simple-desk.earned-theme .topbar{background:var(--theme-deep);border-color:var(--line)}
+.simple-desk.earned-theme :is(.panel,.drawer,.daily-stat-grid article,.badge-grid article,.premium-colors button,.settings-car-grid>button,.sidebar-notepad,.unlock-car,.finish-card){background:var(--theme-panel);border-color:var(--line);color:var(--ink)}
+.simple-desk.earned-theme .dial-arena{background:radial-gradient(ellipse at 15% 20%,var(--theme-raised),var(--theme-panel) 75%)}
+.simple-desk.earned-theme :is(.sidebar-rank,.notepad-heading,.notepad-footer>button,.compact-blocks>div,.split-targets>div,.dial-batches button,.daily-stat-grid button,.goal-presets button,.profile>span,.avatar,.stage){background:var(--theme-raised);border-color:var(--line);color:var(--ink)}
+.simple-desk.earned-theme :is(.dial-inner,.segmented,.note-form input,.note-form textarea,.note-form select,.preferences-options select){background:var(--theme-deep);border-color:var(--line);color:var(--ink)}
+.simple-desk.earned-theme :is(.nav-item,.private,.brand small,.profile small,.subtitle,.fineprint,.eyebrow,.rank-xp button,.compact-blocks small,.dial-inner small,.dial-inner span,.dial-method-totals,.dial-week span,.table-heading,.team-table th,.team-table td small,.next-row small,.journal-row small,.car-state,.settings-car-grid small){color:var(--muted)}
+.simple-desk.earned-theme :is(.sidebar-rank strong,.compact-blocks strong,.dial-inner strong,.text-button,.notepad-heading,.notepad-footer,.card-action,.settings-saved,.achievement-filters button,.rank-xp span){color:var(--lime)}
+.simple-desk.earned-theme :is(.win-card,.win-card:hover){background:linear-gradient(130deg,var(--theme-raised),var(--theme-panel));border-color:var(--line)}
+.simple-desk.earned-theme :is(.garage-hero,.journal-banner){background:var(--theme-deep);border-color:var(--line)}
+.simple-desk.earned-theme :is(.garage-hero,.journal-banner):after{background:linear-gradient(90deg,var(--theme-deep),transparent 80%)}
+.simple-desk.earned-theme :is(.garage-caption,.car-state){background:var(--theme-deep);border-color:var(--line)}
+.simple-desk.earned-theme :is(.journal-row:hover,.icon-button:hover,.nav-item.active,.unlock-car.unlocked,.compact-blocks>div.current,.premium-colors .selected,.settings-car-grid>button.selected){background:var(--theme-raised);border-color:var(--green)}
+.simple-desk.earned-theme .progress{background:var(--theme-deep)}
+.simple-desk.earned-theme .dial-ring{background:conic-gradient(var(--lime) var(--progress),var(--theme-raised) 0);box-shadow:0 0 40px color-mix(in srgb,var(--green) 12%,transparent)}
+.simple-desk.earned-theme :is(.memory-dot,.compact-blocks i){background:var(--green)}
+.simple-desk.earned-theme :is(.goal-presets .chosen,.achievement-filters .selected,.toast){background:var(--green);color:#101318;border-color:var(--lime)}
+.simple-desk.earned-theme .primary:hover{background:color-mix(in srgb,var(--green) 80%,white)}
+.simple-desk.earned-theme :is(.team-table th,.team-table td,.achievement-filters button,.journal-row,.next-row,.memory,.leadership-history){border-color:var(--line)}
+.simple-desk.earned-theme .sidebar-notepad textarea{color:var(--ink);background:repeating-linear-gradient(transparent,transparent 27px,color-mix(in srgb,var(--green) 15%,transparent) 27px,color-mix(in srgb,var(--green) 15%,transparent) 28px)}
+.simple-desk.earned-theme :is(.modal-backdrop,.finish-overlay){background:color-mix(in srgb,var(--theme-deep) 88%,transparent)}
+.settings-car-grid>button:disabled{opacity:.72;cursor:default}.settings-car-grid>button.locked .reward-car-photo{filter:grayscale(1);opacity:.55}.settings-car-grid .banner-car-state,.settings-car-grid .banner-car-goal{display:block;margin:0 12px 10px;font-size:10px;line-height:1.5;color:var(--muted)}.settings-car-grid .banner-car-state{color:var(--lime);font-weight:700}.settings-car-grid button:focus-visible,.premium-colors button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}

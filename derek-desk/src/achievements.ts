@@ -18,3 +18,5 @@ export function achievements(rows:any[],today=dayKey()){
  {title:'Build the drivers',label:'Log 5 leadership actions',group:'Leadership',target:5,value:rows.filter(r=>r.key.startsWith('desk_leadership_')).length}];
  return specs.map((a,i)=>({...a,id:'reward-'+i,name:rewardCars[i],slot:i,unlocked:a.value>=a.target}));
 }
+
+export function availableBanner(slot:number,cars:{slot:number;unlocked:boolean}[]){return cars.some(c=>c.slot===slot&&c.unlocked)?slot:-1}

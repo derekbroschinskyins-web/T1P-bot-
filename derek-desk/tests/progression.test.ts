@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {activeDials,dialProgress,garageProgress,periodOf,goalStreak} from '../src/progression.ts';
-import {achievements} from '../src/achievements.ts';
+import {achievements,availableBanner} from '../src/achievements.ts';
 const today='2026-11-04';
 const dial=(n:number,method='Wavv',period='morning',day=today,time='2026-11-04T15:59:00Z')=>({key:'dial_'+Math.random(),data:{delta:n,method,period,day,createdAt:time,goalAtDial:500}});
 assert.equal(periodOf({createdAt:'2026-11-04T18:59:00Z'}),'morning');assert.equal(periodOf({createdAt:'2026-11-04T19:00:00Z'}),'morning');
@@ -25,3 +25,11 @@ assert.equal(achievements(streakRows,today).find(a=>a.title==='Three-day drive')
 console.log('Passed: 25 unique rewards, ten dial boundaries, both blocks, Wavv XP, 4 presentations, combined appointments/presentations same day, before-9 boundary, reset archives, history retention, rollover and streaks.');
 
 assert.equal(periodOf({createdAt:'2026-11-04T19:59:59Z'}),'morning');assert.equal(periodOf({createdAt:'2026-11-04T20:00:00Z'}),'afternoon');assert.equal(periodOf({createdAt:'2026-07-04T19:00:00Z'}),'afternoon');assert.equal(periodOf({createdAt:'2026-11-04T07:00:00Z'}),'morning');console.log('Passed: 1 PM Mountain boundary, daylight saving offset, and midnight.');
+
+assert.equal(availableBanner(0,achievements([],today)),-1,'Locked cars cannot be equipped');
+assert.equal(availableBanner(0,achievements([dial(50)],today)),0,'First earned car can be equipped');
+assert.equal(availableBanner(1,achievements([dial(50)],today)),-1,'Unearned next car stays locked');
+assert.equal(availableBanner(2,achievements([batch,reset],today)),-1,'Corrected achievements remove banner eligibility');
+assert.equal(availableBanner(0,achievements([dial(50)],'2026-11-05')),0,'Past achievements remain equipable');
+assert.equal(availableBanner(-1,achievements([],today)),-1,'Standard garage is always available');
+console.log('Passed: banner car gating, historical unlocks, and reset fallback.');
