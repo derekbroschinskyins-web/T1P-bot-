@@ -2,6 +2,11 @@ import {activeDials,dialProgress,goalStreak,dialCredit} from './progression.ts';
 import {dayKey} from './strategy.ts';
 export const rewardCars=['BMW M3','Lamborghini Huracán','Audi RS 6 Avant','Porsche 911 GT3','Lamborghini Revuelto','Ferrari F8 Tributo','McLaren 720S','Mercedes-AMG GT','Corvette C8','Nissan GT-R','Lamborghini Aventador SVJ','Ferrari 812 Superfast','McLaren P1','Porsche 918 Spyder','Bugatti Chiron','Koenigsegg Jesko','Pagani Huayra','Aston Martin Valkyrie','McLaren Senna','Lamborghini Sián','Ferrari SF90','Porsche Carrera GT','Bugatti Mistral','Mercedes-AMG One','Koenigsegg Regera'];
 export function achievements(rows:any[],today=dayKey()){
+ const fromDay=rows.find(r=>r.key==='desk_garage_start')?.data?.fromDay;
+ // A personal restart changes car eligibility, never the underlying activity history.
+ if(typeof fromDay==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(fromDay)&&fromDay<=today){
+  rows=rows.filter(r=>r.key.startsWith('desk_dial_reset_')||((r.data.day||r.data.date||'')>=fromDay));
+ }
  const dials=activeDials(rows);const days=[...new Set([today,...dials.map(r=>r.data.day),...rows.filter(r=>r.key.startsWith('desk_metric_')||r.key.startsWith('desk_deal_')).map(r=>r.data.day||r.data.date)])].filter(d=>d&&d<=today);
  const sum=(day:string,metric:string)=>Math.max(0,rows.filter(r=>r.key.startsWith('desk_metric_')&&r.data.day===day&&r.data.metric===metric).reduce((s,r)=>s+Number(r.data.delta||0),0));
  const best=(fn:(day:string)=>number)=>Math.max(0,...days.map(fn));const streak=goalStreak(rows,today);

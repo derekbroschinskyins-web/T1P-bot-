@@ -1,6 +1,11 @@
 import {dayKey} from './strategy.ts';
-export const dialCredit=(hand:number,wavv:number)=>hand+wavv/2;
-export const eventCredit=(data:any)=>Number(data.delta||0)*(data.method==='Wavv'?.5:1);
+export const dialCredit=(hand:number,wavv:number)=>(hand*3+wavv)/3;
+export const eventCredit=(data:any)=>Number(data.delta||0)/(data.method==='Wavv'?3:1);
+// Keep exact thirds for scoring; format fractions only at the display boundary.
+export function formatDials(value:number){
+ const thirds=Math.round(value*3),whole=Math.floor(Math.abs(thirds)/3),fraction=Math.abs(thirds)%3;
+ return (thirds<0?'−':'')+(whole||!fraction?whole.toLocaleString('en-US'):'')+(['','⅓','⅔'][fraction]);
+}
 export function periodOf(data:any){if(data.period==='morning'||data.period==='afternoon')return data.period;const n=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',hour:'numeric',hourCycle:'h23'}).format(new Date(data.createdAt)));return n<13?'morning':'afternoon';}
 // Reset receipts archive exactly the dial events the user confirmed. New events
 // from another device are never erased by a stale screen or a retried reset.
