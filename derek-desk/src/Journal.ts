@@ -1,6 +1,6 @@
 import {sb,OWNER} from './api';
-export let memoryOwner=OWNER;export let memberName='Derek Broschinsky';
-export function setMemoryUser(id:string,name:string){memoryOwner=id;memberName=name;}
+export let memoryOwner=OWNER;export let memberName='Derek Broschinsky';export let memberIsAdmin=false;
+export function setMemoryUser(id:string,name:string,isAdmin=false){memoryOwner=id;memberName=name;memberIsAdmin=isAdmin;}
 const memoryTable=()=>memoryOwner===OWNER?'derek_crm_settings':'t1p_desk_memory';
 export type JournalEvent={id:string;at:string;text:string;status:string;nextStep:string;nextDate:string};
 export type JournalItem={key:string;version?:string;kind:'deal'|'recruit';name:string;phone:string;date:string;amount:number;carrier:string;status:string;nextStep:string;nextDate:string;events:JournalEvent[];createdAt:string};
