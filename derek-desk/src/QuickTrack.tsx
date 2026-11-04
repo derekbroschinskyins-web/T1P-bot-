@@ -5,7 +5,7 @@ import {FinishFilm} from './Cinema';
 import {dayKey} from './strategy';
 import {writeMemory} from './Journal';
 import {activeDials,dialProgress,periodOf} from './progression';
-export default function QuickTrack({rows,onSaved}:{rows:any[];onSaved:()=>Promise<void>}){
+export default function QuickTrack({rows,onSaved,showHistory=true}:{rows:any[];onSaved:()=>Promise<void>;showHistory?:boolean}){
  const [method,setMethod]=useState('Hand dial'),[batch,setBatch]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[message,setMessage]=useState(''),[burst,setBurst]=useState(0),[pending,setPending]=useState<any>(null),[finish,setFinish]=useState(false);
  const block=useWorkBlock();
  const [resetPreview,setResetPreview]=useState<any>(null);
@@ -46,6 +46,6 @@ export default function QuickTrack({rows,onSaved}:{rows:any[];onSaved:()=>Promis
   {finish&&<div className="finish-overlay" role="dialog" aria-modal="true" aria-label="Daily dial goal reached"><div className="finish-card"><Trophy size={48}/><span className="eyebrow">CHECKERED FLAG</span><h2>{goal} total dials.<br/>You did the work.</h2><FinishFilm/><p>Your goal is complete and your progress is saved.</p><button className="primary" onClick={()=>setFinish(false)}>Keep the momentum</button></div></div>}
  </section>
  <section className="panel dial-target-panel" aria-label="Daily dial target"><div className="target-heading"><span>Daily target</span><strong>{total}<small> / {goal} dials</small></strong></div><div className="progress"><span style={{width:progress+'%'}}/></div><details className="target-settings"><summary>Change target</summary><div className="goal-presets">{[150,250,400,500].map(n=><button key={n} className={goal===n?'chosen':''} disabled={disabled} onClick={()=>changeGoal(null,n)}>{n}</button>)}</div><form className="note-form compact-batch" onSubmit={changeGoal}><label>Custom target<input type="number" min="1" max="10000" required placeholder={String(goal)} value={goalDraft} onChange={e=>setGoalDraft(e.target.value)}/></label><button className="text-button" disabled={disabled||!goalDraft}>Save</button></form></details></section>
- <section className="panel dial-history-panel" aria-label="Weekly dial history"><div className="section-head"><span className="eyebrow">LAST 7 DAYS</span><small>{week.reduce((s,w)=>s+w.total,0)} dials</small></div><div className="dial-week" aria-label="Last seven days">{week.map(w=><div key={w.day} className={w.day===today?'today':''}><strong>{w.total}</strong><span>{new Date(w.day+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'})}</span><i style={{height:Math.max(3,Math.min(24,w.total/goal*24))}}/></div>)}</div></section>
+ {showHistory&&<section className="panel dial-history-panel" aria-label="Weekly dial history"><div className="section-head"><span className="eyebrow">LAST 7 DAYS</span><small>{week.reduce((s,w)=>s+w.total,0)} dials</small></div><div className="dial-week" aria-label="Last seven days">{week.map(w=><div key={w.day} className={w.day===today?'today':''}><strong>{w.total}</strong><span>{new Date(w.day+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'})}</span><i style={{height:Math.max(3,Math.min(24,w.total/goal*24))}}/></div>)}</div></section>}
  </div>
 }
