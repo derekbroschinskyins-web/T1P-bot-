@@ -19,3 +19,10 @@ WebP images and H.264 MP4 videos are served from this deployment. Videos have fa
 The sidebar notepad is stored privately in derek_crm_settings, key desk_notepad, through the existing owner-scoped client and RLS. Writes use the shared optimistic concurrency guard. A session draft survives refresh until saved, and errors preserve the draft for retry. Account memory includes the notepad in the ChatGPT review prompt.
 
 The entry film uses the original Higgsfield export without an added Lamborghini badge overlay.
+
+## THE GARAGE rebrand — November 4, 2026
+- App title, login and navigation: THE GARAGE. Clean path-based T1P mark in `public/media/t1p-mark.svg`; no generated car artwork or imitation manufacturer badge in the logo.
+- The active intro is real filmed Lamborghini Aventador footage by Ojyrai Films, Pexels asset 7727416: https://www.pexels.com/video/a-lamborghini-car-on-the-road-7727416/ . Nine seconds, 1920×1080, H.264, original audio. Played from https://videos.pexels.com/video-files/7727416/7727416-hd_1920_1080_25fps.mp4 .
+- License checked https://www.pexels.com/license/ : free website/app use and modifications. This is automotive scenery, without manufacturer endorsement or use of footage as the app trademark.
+- Local poster `real-lamborghini-poster.webp` is a real frame extracted at 2 seconds. No AI alteration to the footage or manufacturer emblem. Login-only autoplay, manual replay, sound/pause/skip and error fallback remain.
+- Legacy generated entry video files remain in version history but are no longer referenced by the intro. Existing car-reward imagery remains AI-created.
