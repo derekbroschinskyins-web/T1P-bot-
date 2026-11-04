@@ -5,7 +5,8 @@ import {premiumTiers,premiumProgress,selectedPremiumColor,type Approval} from '.
 export type Preferences={colorTier:string;showHero:boolean;showHistory:boolean;heroCar:number;salesCar:number;recruitCar:number};
 export const defaults:Preferences={colorTier:'default',showHero:true,showHistory:true,heroCar:-1,salesCar:3,recruitCar:2};
 export function preferencesOf(row?:any):Preferences{const d=row?.data||{};const car=(n:any,fallback:number,min=0)=>Number.isInteger(n)&&n>=min&&n<25?n:fallback;return {colorTier:premiumTiers.some(t=>t.id===d.colorTier)?d.colorTier:'default',showHero:d.showHero!==false,showHistory:d.showHistory!==false,heroCar:car(d.heroCar,-1,-1),salesCar:car(d.salesCar,3),recruitCar:car(d.recruitCar,2)}}
-export function CarPhoto({slot,className=''}:{slot:number;className?:string}){return <div className={'reward-car-photo '+className} role="img" aria-label={rewardCars[slot]} style={{backgroundImage:'url(/media/cars/reward-atlas.webp)',backgroundPosition:`${(slot%5)*25}% ${Math.floor(slot/5)*25}%`}}/>}
+export const carImages=Array.from({length:25},(_,i)=>'/media/cars/'+(['starter.webp','lambo.webp','rs6.webp','porsche.webp','revuelto.webp'][i]||`reward-${i}.webp`));
+export function CarPhoto({slot,className=''}:{slot:number;className?:string}){return <img className={'reward-car-photo '+className} src={carImages[slot]} alt={rewardCars[slot]} loading="lazy" decoding="async"/>}
 export default function PreferencesPanel({row,onSaved,approvals,cars}:{row?:any;onSaved:()=>Promise<void>;approvals:Approval[];cars:ReturnType<typeof achievements>}){
  const [draft,setDraft]=useState<Preferences>(()=>preferencesOf(row)),[busy,setBusy]=useState(false),[error,setError]=useState(''),[saved,setSaved]=useState(false);const dirty=useRef(false),version=useRef(row?.updated_at);const lock=useRef(false);
  useEffect(()=>{if(!dirty.current){setDraft(preferencesOf(row));version.current=row?.updated_at}},[row?.updated_at]);
