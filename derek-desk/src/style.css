@@ -80,3 +80,34 @@
 .settings-car-grid>button:disabled{opacity:.72;cursor:default}.settings-car-grid>button.locked .reward-car-photo{filter:grayscale(1);opacity:.55}.settings-car-grid .banner-car-state,.settings-car-grid .banner-car-goal{display:block;margin:0 12px 10px;font-size:10px;line-height:1.5;color:var(--muted)}.settings-car-grid .banner-car-state{color:var(--lime);font-weight:700}.settings-car-grid button:focus-visible,.premium-colors button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
 
 .photo-win>img.front-card-car{height:auto;aspect-ratio:1910/1080;object-fit:contain;object-position:center;width:calc(100% + 52px);margin:-30px -26px 20px;border-radius:0}@media(max-width:700px){.photo-win>img.front-card-car{width:calc(100% + 36px);margin:-30px -18px 18px}}
+
+/* Curated rank palettes: neutral foundations, distinct surfaces, controlled color. */
+.simple-desk.earned-theme[data-theme="p10"]{--paper:#0c1420;--theme-deep:#0a111b;--theme-panel:#142235;--theme-raised:#1d324a;--line:#2b4159;--green:#86c5ee;--lime:#b9e3ff;--ink:#edf5fc;--muted:#a6b8ca}
+.simple-desk.earned-theme[data-theme="p20"]{--paper:#0c1715;--theme-deep:#09120f;--theme-panel:#142620;--theme-raised:#203c31;--line:#305044;--green:#75c8a3;--lime:#b4e8d0;--ink:#edf7f2;--muted:#a3bfb2}
+.simple-desk.earned-theme[data-theme="p30"]{--paper:#15121f;--theme-deep:#100d18;--theme-panel:#221d31;--theme-raised:#332b46;--line:#49405d;--green:#b5a0e5;--lime:#ded0ff;--ink:#f4f0fc;--muted:#b9aecb}
+.simple-desk.earned-theme[data-theme="p40"]{--paper:#1b1116;--theme-deep:#130c10;--theme-panel:#2c1c24;--theme-raised:#422a35;--line:#60404c;--green:#e797a8;--lime:#ffc7d2;--ink:#fcf0f3;--muted:#c9aab5}
+.simple-desk.earned-theme[data-theme="p50"]{--paper:#18150f;--theme-deep:#110f0b;--theme-panel:#28231a;--theme-raised:#3b3324;--line:#554a33;--green:#d6bb7d;--lime:#f4dfaa;--ink:#f7f3e9;--muted:#c2b69a}
+.simple-desk.earned-theme[data-theme="t100"]{--paper:#1c1510;--theme-deep:#140f0b;--theme-panel:#2c2119;--theme-raised:#433124;--line:#604633;--green:#dea978;--lime:#ffd6ae;--ink:#fcf2e9;--muted:#cbb19b}
+.simple-desk.earned-theme[data-theme="t200"]{--paper:#13161b;--theme-deep:#0d1015;--theme-panel:#20252e;--theme-raised:#303844;--line:#485363;--green:#b9c6d8;--lime:#e4edfa;--ink:#f2f5fa;--muted:#abb8ca}
+.simple-desk.earned-theme[data-theme="t500"]{--paper:#1b131c;--theme-deep:#130d14;--theme-panel:#2b1e2d;--theme-raised:#412e43;--line:#5d4360;--green:#d7a1cb;--lime:#f8cdee;--ink:#fcf0fa;--muted:#c8acc4}
+.simple-desk.earned-theme .panel{box-shadow:0 8px 24px #00000014}
+.simple-desk.earned-theme .dial-arena{background:var(--theme-panel)}
+.simple-desk.earned-theme .sidebar-rank{background:var(--theme-panel);border-color:var(--line);box-shadow:inset 3px 0 0 var(--green)}
+.simple-desk.earned-theme .nav-item{color:var(--muted)}
+.simple-desk.earned-theme .nav-item.active{background:var(--theme-raised);border-color:transparent;color:var(--ink)}
+.simple-desk.earned-theme :is(.daily-stat-grid article,.badge-grid article,.compact-blocks>div,.sidebar-notepad){background:var(--theme-deep);border-color:var(--line)}
+.simple-desk.earned-theme .compact-blocks>div.current{background:var(--theme-raised);border-color:var(--green)}
+.simple-desk.earned-theme :is(.win-card,.win-card:hover){background:var(--theme-panel);border-color:var(--line)}
+.simple-desk.earned-theme .win-card:hover{border-color:var(--green)}
+.simple-desk.earned-theme :is(.win-card .eyebrow,.card-action,.text-link,.next-row small){color:var(--lime)}
+.simple-desk.earned-theme :is(.win-card p,.notepad-status,.dial-goal-label,.dial-method-totals,.dial-reset-note){color:var(--muted)}
+.simple-desk.earned-theme .dial-main{background:var(--green);border-color:transparent;color:#101820;box-shadow:0 3px 0 var(--theme-deep)}
+.simple-desk.earned-theme .dial-main:active{box-shadow:none;transform:translateY(2px)}
+.simple-desk.earned-theme .dial-batches button{background:var(--theme-deep);border-color:var(--line);color:var(--ink)}
+.simple-desk.earned-theme :is(.primary,.dark-button){font-weight:600}
+.simple-desk.earned-theme :is(.pill,.stage){background:var(--theme-raised);color:var(--lime)}
+.simple-desk.earned-theme .notepad-heading{background:var(--theme-panel);color:var(--ink)}
+.simple-desk.earned-theme .notepad-footer>button{background:var(--theme-raised);color:var(--lime)}
+.simple-desk.earned-theme .note-form :is(input,textarea,select):focus{outline:2px solid var(--green);outline-offset:2px}
+.simple-desk.earned-theme .premium-colors button{background:var(--theme-deep);border-color:var(--line)}
+.simple-desk.earned-theme .premium-colors button.selected{background:var(--theme-raised);border-color:var(--green)}
