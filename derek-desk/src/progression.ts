@@ -13,9 +13,8 @@ export function garageProgress(rows:any[],today=dayKey()){
  const monday=new Date(today+'T12:00:00Z');monday.setUTCDate(monday.getUTCDate()-((monday.getUTCDay()+6)%7));const week=monday.toISOString().slice(0,10);const weekLeaders=leaders.filter(r=>r.data.date>=week&&r.data.date<=today);
  const wavv=daily.reduce((s,d)=>s+d.wavv,0);const xp=hand+wavv+leaders.length*100+deals.length*250+recruits.length*50+recruits.filter(r=>r.data.status==='Onboarded').length*250;
  const ranks=[{name:'Rookie',at:0},{name:'Street Driver',at:500},{name:'Track Contender',at:1500},{name:'Team Captain',at:3500},{name:'Elite Driver',at:7500},{name:'Top One',at:15000}];const rank=[...ranks].reverse().find(r=>xp>=r.at)!;const next=ranks.find(r=>r.at>xp);
- const best=Math.max(0,...daily.map(d=>d.hand+d.wavv));const bestSplit=Math.max(0,...daily.map(d=>Math.min(d.morning,d.afternoon)*2));
- const cars=[{id:'starter',name:'BMW M3',label:'Your starting ride',value:1,target:1,tone:'silver'}, ...[{id:'lambo',name:'Lamborghini Huracán',target:150,tone:'lime'},{id:'rs6',name:'Audi RS 6 Avant',target:250,tone:'graphite'},{id:'porsche',name:'Porsche 911 GT3',target:400,tone:'white'},{id:'revuelto',name:'Lamborghini Revuelto',target:500,tone:'orange'}].map(c=>({...c,label:c.target+' total dials in one day',value:best}))];
- return {xp,rank,next,cars:cars.map(c=>({...c,unlocked:c.value>=c.target})),leadershipCount:weekLeaders.length,leaders,hand};
+
+ return {xp,rank,next,leadershipCount:weekLeaders.length,leaders,hand};
 }
 
 export function goalStreak(rows:any[],today=dayKey()){
