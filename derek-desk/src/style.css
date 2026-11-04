@@ -78,3 +78,5 @@
 .simple-desk.earned-theme .sidebar-notepad textarea{color:var(--ink);background:repeating-linear-gradient(transparent,transparent 27px,color-mix(in srgb,var(--green) 15%,transparent) 27px,color-mix(in srgb,var(--green) 15%,transparent) 28px)}
 .simple-desk.earned-theme :is(.modal-backdrop,.finish-overlay){background:color-mix(in srgb,var(--theme-deep) 88%,transparent)}
 .settings-car-grid>button:disabled{opacity:.72;cursor:default}.settings-car-grid>button.locked .reward-car-photo{filter:grayscale(1);opacity:.55}.settings-car-grid .banner-car-state,.settings-car-grid .banner-car-goal{display:block;margin:0 12px 10px;font-size:10px;line-height:1.5;color:var(--muted)}.settings-car-grid .banner-car-state{color:var(--lime);font-weight:700}.settings-car-grid button:focus-visible,.premium-colors button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+
+.photo-win>img.front-card-car{height:auto;aspect-ratio:1910/1080;object-fit:contain;object-position:center;width:calc(100% + 52px);margin:-30px -26px 20px;border-radius:0}@media(max-width:700px){.photo-win>img.front-card-car{width:calc(100% + 36px);margin:-30px -18px 18px}}
