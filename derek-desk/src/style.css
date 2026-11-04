@@ -32,3 +32,17 @@
 .login-card .access-notice{margin:18px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--theme-deep);color:var(--muted);font-size:12px;line-height:1.5;text-align:center}
 
 .sidebar-invite{width:100%;margin-top:12px}.team-invites{margin-top:20px}.invite-result{padding:18px;border:1px solid var(--green);border-radius:9px;background:var(--theme-deep);margin:20px 0}.invite-result>p{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.invite-result .note-form{grid-template-columns:minmax(0,1fr) auto;align-items:end}.pending-invites{margin-top:24px;border-top:1px solid var(--line);padding-top:20px}.pending-invite{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-top:1px solid var(--line)}.pending-invite>span{min-width:0}.pending-invite strong,.pending-invite small{display:block;overflow-wrap:anywhere}.pending-invite small{color:var(--muted);margin-top:4px;font-size:11px}.pending-invite .outline-button{flex-shrink:0;font-size:11px}@media(max-width:800px){.sidebar-invite{grid-column:1/-1;margin:0}}@media(max-width:600px){.invite-result .note-form{grid-template-columns:1fr}.pending-invite{align-items:flex-start;flex-wrap:wrap}}
+/* Shared onboarding and an optional review tucked into notebook settings. */
+.join-steps{padding-left:22px;margin:20px 0;line-height:1.7;color:var(--muted)}
+.join-steps li{margin:6px 0}
+.shared-onboarding,.access-requests{padding:20px 0;border-bottom:1px solid var(--line);margin-bottom:24px}
+.shared-onboarding p,.access-requests p,.daily-review p{line-height:1.6}
+.shared-onboarding button{justify-self:start}
+.request-actions,.review-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.daily-review{border-top:1px solid var(--line);margin-top:28px;padding-top:20px}
+.daily-review summary{cursor:pointer;font-weight:650;line-height:1.7}
+.daily-review summary span{color:var(--muted);font-size:12px;font-weight:400;margin-left:8px}
+.daily-review .note-form{margin-top:18px}
+.daily-review textarea{resize:vertical;min-height:240px;line-height:1.5}
+.review-actions a{text-decoration:none}
+@media(max-width:600px){.request-actions{width:100%}.daily-review summary span{display:block;margin-left:0}.shared-onboarding{padding-top:8px}.review-actions>*{flex:1;justify-content:center;text-align:center}}
