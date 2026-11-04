@@ -3,7 +3,7 @@ import {activeDials,dialProgress,garageProgress,periodOf,goalStreak} from '../sr
 import {achievements} from '../src/achievements.ts';
 const today='2026-11-04';
 const dial=(n:number,method='Wavv',period='morning',day=today,time='2026-11-04T15:59:00Z')=>({key:'dial_'+Math.random(),data:{delta:n,method,period,day,createdAt:time,goalAtDial:500}});
-assert.equal(periodOf({createdAt:'2026-11-04T18:59:00Z'}),'morning');assert.equal(periodOf({createdAt:'2026-11-04T19:00:00Z'}),'afternoon');
+assert.equal(periodOf({createdAt:'2026-11-04T18:59:00Z'}),'morning');assert.equal(periodOf({createdAt:'2026-11-04T19:00:00Z'}),'morning');
 assert.equal(achievements([],today).length,25);assert.equal(new Set(achievements([],today).map(a=>a.name)).size,25);
 for(const n of [50,150,250,350,450,550,650,750,850,950]){for(const value of [n-1,n]){assert.equal(achievements([dial(value)],today).find(a=>a.group==='Daily'&&a.target===n)?.unlocked,value>=n)}}
 for(const block of ['morning','afternoon'])for(const n of [50,150,250])assert.equal(achievements([dial(n,'Wavv',block)],today).find(a=>a.group===block[0].toUpperCase()+block.slice(1)&&a.target===n)?.unlocked,true);
@@ -23,3 +23,5 @@ const streakRows=['2026-11-01','2026-11-02','2026-11-03'].map(day=>dial(500,'Wav
 assert.equal(goalStreak(streakRows,today).current,3);assert.equal(goalStreak(streakRows,'2026-11-05').current,0);assert.equal(goalStreak(streakRows,'2026-11-05').best,3);
 assert.equal(achievements(streakRows,today).find(a=>a.title==='Three-day drive')?.unlocked,true);
 console.log('Passed: 25 unique rewards, ten dial boundaries, both blocks, Wavv XP, 4 presentations, combined appointments/presentations same day, before-9 boundary, reset archives, history retention, rollover and streaks.');
+
+assert.equal(periodOf({createdAt:'2026-11-04T19:59:59Z'}),'morning');assert.equal(periodOf({createdAt:'2026-11-04T20:00:00Z'}),'afternoon');assert.equal(periodOf({createdAt:'2026-07-04T19:00:00Z'}),'afternoon');assert.equal(periodOf({createdAt:'2026-11-04T07:00:00Z'}),'morning');console.log('Passed: 1 PM Mountain boundary, daylight saving offset, and midnight.');

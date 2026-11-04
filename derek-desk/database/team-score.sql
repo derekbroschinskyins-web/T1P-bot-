@@ -47,7 +47,7 @@ begin
  select key,data from public.derek_crm_settings where owner_id=uid and uid='ba7639ca-0d78-429a-b711-1958374e23ed'
  union all select key,data from public.t1p_desk_memory where owner_id=uid),
  erased as (select jsonb_array_elements_text(case when jsonb_typeof(data->'eventKeys')='array' then data->'eventKeys' else '[]'::jsonb end) as key from memory where key like 'desk_dial_reset_%'),
- source as (select key,data,coalesce(data->>'day',data->>'date')::date as day,coalesce(data->>'period',case when extract(hour from (data->>'createdAt')::timestamptz at time zone 'America/Denver')<12 then 'morning' else 'afternoon' end) as period from memory where (key like 'dial_%' or key like 'desk_metric_%' or key like 'desk_deal_%' or key like 'desk_leadership_%') and coalesce(data->>'day',data->>'date') ~ '^\d{4}-\d{2}-\d{2}$' and not exists(select 1 from erased where erased.key=memory.key)),
+ source as (select key,data,coalesce(data->>'day',data->>'date')::date as day,coalesce(data->>'period',case when extract(hour from (data->>'createdAt')::timestamptz at time zone 'America/Denver')<13 then 'morning' else 'afternoon' end) as period from memory where (key like 'dial_%' or key like 'desk_metric_%' or key like 'desk_deal_%' or key like 'desk_leadership_%') and coalesce(data->>'day',data->>'date') ~ '^\d{4}-\d{2}-\d{2}$' and not exists(select 1 from erased where erased.key=memory.key)),
  totals as (select day,
  greatest(0,coalesce(sum((data->>'delta')::integer) filter(where key like 'dial_%' and data->>'method'='Hand dial'),0)) hand,
  greatest(0,coalesce(sum((data->>'delta')::integer) filter(where key like 'dial_%' and data->>'method'='Wavv'),0)) wavv,

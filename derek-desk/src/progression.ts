@@ -1,5 +1,5 @@
 import {dayKey} from './strategy.ts';
-export function periodOf(data:any){if(data.period==='morning'||data.period==='afternoon')return data.period;const n=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',hour:'numeric',hourCycle:'h23'}).format(new Date(data.createdAt)));return n<12?'morning':'afternoon';}
+export function periodOf(data:any){if(data.period==='morning'||data.period==='afternoon')return data.period;const n=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/Denver',hour:'numeric',hourCycle:'h23'}).format(new Date(data.createdAt)));return n<13?'morning':'afternoon';}
 // Reset receipts archive exactly the dial events the user confirmed. New events
 // from another device are never erased by a stale screen or a retried reset.
 export function activeDials(rows:any[]) {
